@@ -1,0 +1,33 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  padding-left: 15px;
+  padding-right: 15px;
+  font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+.content-container {
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+
+@media (max-width: 768px) {
+  .content-container {
+    padding-left: 5vw;
+    padding-right: 5vw;
+  }
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: darkgreen !important;
+}
+
+.nav-link {
+  font-weight: bold;
+}
+
+.navbar-light .navbar-nav .nav-link.active {
+  color: #fff !important;
+  background-color: darkgreen !important; /* Active link background color */
+}

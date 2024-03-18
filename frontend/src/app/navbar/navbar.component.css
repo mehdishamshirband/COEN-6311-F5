@@ -1,0 +1,33 @@
+body {
+  font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+.card-header {
+  font-size: 18px;
+}
+
+.card-text {
+  margin-bottom: 5px;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+.website-link {
+  color: #007BFF;
+}
+
+.website-link .fas {
+  color: inherit;
+}
+
+.nav-item {
+  margin-right: 5px;
+  margin-left: 5px;
+  font-size: 18px;
+}
+
+.navbar {
+  background-color: transparent;
+}

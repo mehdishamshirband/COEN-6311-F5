@@ -1,0 +1,190 @@
+<!-- user-booking-information.component.html -->
+<app-navbar></app-navbar>
+<div class="container">
+  <hr>
+    <!-- Title -->
+  <div class="row">
+    <div class="col-12">
+      <h2 class="my-1">Bookings</h2>
+    </div>
+  </div>
+</div>
+
+<!-- Booking Information -->
+<div *ngIf="booking" class="container mt-4">
+  <div class="card">
+    <div class="card-header">
+      Booking Information
+    </div>
+    <div class="card-body">
+      <p class="card-title" style="font-weight: bold;">{{ booking.bookingNo }} - {{ booking.bookingState }}</p>
+      <p class="card-text" >Total cost: ${{ booking.cost }}</p>
+      <p class="card-text">Purchase Date: {{ booking.purchaseDate | date }}</p>
+    </div>
+  </div>
+
+ <div class="mt-4 card">
+  <div class="card-header">
+    Travel Package
+  </div>
+  <div class="card-body">
+    <div class="d-flex align-items-center">
+      <!-- Image container -->
+      <div *ngIf="booking.travelPackage.photos && booking.travelPackage.photos.length > 0" class="flex-shrink-0 mr-3 me-4">
+        <img [src]="booking.travelPackage.photos[0].url" class="img-fluid rounded-2" alt="{{ booking.travelPackage.photos[0].caption }}" style="object-fit: cover; width: 380px; height: 380px;">
+      </div>
+
+      <!-- Text content -->
+      <div class="flex-grow-1">
+        <h4 class="card-title mb-3">{{ booking.travelPackage.name }}</h4>
+        <p class="card-text">{{ booking.travelPackage.description }}</p>
+        <p class="card-text">Price: ${{ booking.travelPackage.price }}</p>
+        <p class="card-text">Travel Dates: {{ booking.travelPackage.startingDate | date }} - {{ booking.travelPackage.endingDate | date }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!--
+  <div *ngIf="booking.travelPackage.flights?.length" class="mt-4">
+    <div class="card">
+      <div class="card-header">
+        Flights
+      </div>
+      <ul class="list-group list-group-flush">
+        <li *ngFor="let flight of booking.travelPackage.flights" class="list-group-item">
+          From {{ flight.departure }} to {{ flight.arrival }} - {{ flight.airline }} (${{ flight.price }}) <br>
+          Departure: {{ flight.departureDate | date:'medium' }} <br>
+          Arrival: {{ flight.arrivalDate | date:'medium' }}
+        </li>
+      </ul>
+    </div>
+  </div>
+-->
+
+  <!--
+  <div *ngIf="booking.travelPackage.hotels?.length" class="mt-4">
+    <div class="card">
+      <div class="card-header">
+        Hotels
+      </div>
+      <ul class="list-group list-group-flush">
+        <li *ngFor="let hotel of booking.travelPackage.hotels" class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="flex-grow-1 me-3"> <-- Added me-3 to ensure some space between the text and the image --
+              <span class="hotel-name">{{ hotel.name }}</span>
+              <a *ngIf="hotel.website" href="{{ hotel.website }}" target="_blank" class="no-underline website-link ms-2"><i class="fas fa-globe"></i> Website</a>
+              <div>{{ hotel.location }}</div>
+              <div>${{ hotel.totalPrice }}</div>
+              <div>Check-in: {{ hotel.checkIn | date:'mediumDate' }} - Check-out: {{ hotel.checkOut | date:'mediumDate' }}</div>
+            </div>
+            <-- Image container --
+            <div *ngIf="hotel.photo">
+              <img [src]="hotel.photo.url" class="img-fluid rounded-2" alt="{{ hotel.photo.caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+-->
+
+<!--
+  <div *ngIf="booking.travelPackage.activities?.length" class="mt-4">
+    <div class="card">
+      <div class="card-header">
+        Activities
+      </div>
+      <ul class="list-group list-group-flush">
+        <li *ngFor="let activity of booking.travelPackage.activities" class="list-group-item">
+          {{ activity.name }} - {{ activity.type }} (${{ activity.price }}) <br>
+          {{ activity.date | date:'mediumDate' }} at {{ activity.location }}
+        </li>
+      </ul>
+    </div>
+  </div>
+-->
+
+  <div class="card mt-4">
+    <div class="card-header">
+      Course of your journey
+    </div>
+    <ul class="list-group list-group-flush">
+      <li *ngFor="let item of sortedItems" class="list-group-item">
+        <ng-container [ngSwitch]="item['type']">
+          <div><h6>{{ item['type'] }}</h6></div>
+          <ng-container *ngSwitchCase="'Flight'">
+            <!-- Flight details -->
+            <div>From {{ item['departure'] }} to {{ item['arrival'] }} - {{ item['airline'] }} (${{ item['price'] }})</div>
+            <div>Departure: {{ item['departureDate'] | date:'medium' }}</div>
+            <div>Arrival: {{ item['arrivalDate'] | date:'medium' }}</div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'Hotel'">
+            <!-- Hotel details -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1 me-3">
+                <div><span class="hotel-name">{{ item['name'] }} (${{ item['totalPrice'] }})</span>
+                  <a *ngIf="item['website']" href="{{ item['website'] }}" target="_blank" class="no-underline website-link ms-2"><i class="fas fa-globe"></i> Website</a></div>
+                <div>{{ item['location'] }}</div>
+                <div>Check-in: {{ item['checkIn'] | date:'mediumDate' }}</div>
+                <div>Check-out: {{ item['checkOut'] | date:'mediumDate' }}</div>
+              </div>
+              <!-- Image container for Hotel -->
+              <div *ngIf="item['photo']">
+                <img [src]="item['photo'].url" class="img-fluid rounded-2" alt="{{ item['photo'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'Activity'">
+            <!-- Activity details with first photo from a list -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1 me-3">
+                <div>{{ item['name'] }} (${{ item['price'] }})</div>
+                <div>Date: {{ item['date'] | date:'mediumDate' }} at {{ item['location'] }}</div>
+              </div>
+              <!-- Image container for Activity, displaying the first photo -->
+              <div *ngIf="item['photos'] && item['photos'].length > 0">
+                <img [src]="item['photos'][0].url" class="img-fluid rounded-2" alt="{{ item['photos'][0].caption || 'Activity photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              </div>
+            </div>
+          </ng-container>
+
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+
+  <div class="mt-4 card">
+    <div class="card-header">
+      Contact Information
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ booking.firstName }} {{ booking.lastName }}</p>
+      <p class="card-text">{{ booking.firstLineAddress }}</p>
+      <p class="card-text">{{ booking.secondLineAddress }}</p>
+      <p class="card-text mb-3">{{ booking.zipCode }}, {{ booking.city }}, {{ booking.state_area }}, {{ booking.country }}</p>
+      <p class="card-text">{{ booking.email }}</p>
+      <p class="card-text">{{ booking.phone }}</p>
+    </div>
+  </div>
+
+  <div class="mt-4 card mb-5">
+    <div class="card-header">
+      Billing Address
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ booking.billing.firstName }} {{ booking.billing.lastName }}</p>
+      <p class="card-text">{{ booking.billing.firstLineAddress }}</p>
+      <p class="card-text">{{ booking.billing.secondLineAddress }}</p>
+      <p class="card-text mb-3">{{ booking.billing.zipCode }}, {{ booking.billing.city }}, {{ booking.billing.state_area }}, {{ booking.billing.country }}</p>
+      <p class="card-text">Payment method: {{ booking.billing.paymentType}}</p>
+      <p class="card-text" >Total cost: ${{ booking.cost }}</p>
+      <p class="card-text">Purchase Date: {{ booking.purchaseDate | date }}</p>
+    </div>
+  </div>
+
+
+
+</div>

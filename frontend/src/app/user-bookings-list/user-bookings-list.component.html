@@ -1,0 +1,41 @@
+<app-navbar></app-navbar>
+<div class="container">
+  <hr>
+    <!-- Title -->
+  <div class="row">
+    <div class="col-12">
+      <h2 class="my-1">Bookings</h2>
+    </div>
+  </div>
+</div>
+
+<!-- List of travel packages -->
+<div class="content-container mt-4">
+  <div class="list-group mb-3">
+    <a *ngFor="let booking of bookings" class="list-group-item list-group-item-action flex-column align-items-start" [routerLink]="['/booking-details', booking.bookingNo]" style="border-bottom: 1px solid lightgray">
+      <div class="d-flex w-100 justify-content-between align-items-center">
+        <!-- Image container -->
+        <div class="image-container mr-3" *ngIf="booking.travelPackage.photos && booking.travelPackage.photos.length > 0">
+          <img [src]="booking.travelPackage.photos[0].url" class="img-fluid rounded-2" alt="{{ booking.travelPackage.photos[0].caption }}" style="object-fit: cover; width: 200px; height: 200px;">
+        </div>
+
+        <!-- Text content -->
+        <div class="text-content">
+          <h5 class="mb-3">{{ booking.travelPackage.name }}</h5>
+          <p class="mb-1">{{ booking.travelPackage.description }}</p>
+          <p class="mb-1">From {{ booking.travelPackage.startingDate | date: 'mediumDate' }} to {{ booking.travelPackage.endingDate | date: 'mediumDate' }}</p>
+          <h6 class="mb-2 text-muted">$ {{ booking.travelPackage.price }}</h6>
+        </div>
+
+        <!-- Button Group for Actions -->
+        <div class="action-buttons">
+          <a href="#" class="btn btn-custom d-block mb-2" style="background-color: black; color: white">Change Booking</a>
+          <a [routerLink]="['/booking-details', booking.bookingNo]" class="btn btn-custom d-block mb-2" style="border-radius: 20px;">Booking Details</a>
+          <a href="#" class="btn btn-custom d-block"  style="border-radius: 20px;">Browse Similar Packages</a>
+        </div>
+      </div>
+    </a>
+  </div>
+  <hr>
+</div>
+

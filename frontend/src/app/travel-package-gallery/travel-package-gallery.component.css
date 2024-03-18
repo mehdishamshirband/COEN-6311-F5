@@ -1,0 +1,44 @@
+/* Customizes the search input and button */
+.input-group .form-control {
+  border-right: 0; /* Removes the right border on the input to blend with the button */
+}
+
+.input-group .btn-outline-secondary {
+  color: #495057; /* Changes text color to something more subdued */
+  border-color: #ced4da; /* Matches the border color with Bootstrap's default */
+  background-color: #f8f9fa; /* Light grey background for the button */
+}
+
+.input-group .btn-outline-secondary:hover {
+  color: #212529; /* Darker text on hover */
+  background-color: #e9ecef; /* Slightly darker background on hover */
+}
+
+.input-group .form-control:focus {
+  box-shadow: none; /* Removes the default blue glow */
+  border-color: #ced4da; /* Ensures the border color is consistent on focus */
+}
+
+/* Ensures the button aligns properly with the input */
+.input-group .btn {
+  border-left: 0; /* Removes the left border on the button to blend with the input */
+}
+
+.pseudo-placeholder-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dynamic-placeholder {
+  position: absolute;
+  left: 12px; /* Align with input text */
+  pointer-events: none; /* Allows clicks to pass through to the input */
+  color: #6c757d; /* Bootstrap's default placeholder color */
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade {
+  opacity: 0;
+}
+

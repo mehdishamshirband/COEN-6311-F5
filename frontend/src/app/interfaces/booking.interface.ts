@@ -1,0 +1,113 @@
+export interface Photo {
+  url: string;
+  caption?: string;
+}
+
+export enum PaymentType {
+  Visa = 'Visa',
+  Paypal = 'Paypal',
+}
+
+export enum PaymentState {
+  FirstDeposit,
+  SecondDeposit,
+  LastDeposit,
+}
+
+export enum BookingState {
+  Processing = 'In process',
+  Confirmed = 'Confirmed',
+  Canceled = 'Canceled',
+  Failed = 'Failed',
+  Refunded = 'Refunded',
+}
+
+export interface Flight {
+  id: number;
+  departure: string;
+  arrival: string;
+  departureDate: Date;
+  arrivalDate: Date;
+  airline: string;
+  price: number;
+  showDetails?: boolean;
+}
+
+export interface Hotel {
+  id: number;
+  name: string;
+  location: string;
+  checkIn: Date;
+  checkOut: Date;
+  pricePerNight: number;
+  totalPrice: number;
+  photo?: Photo;
+  website?: string;
+  showDetails?: boolean;
+}
+
+export interface Activity {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+  location: string;
+  date: Date;
+  price: number;
+  photos?: Photo[];
+  showDetails?: boolean;
+}
+
+export interface TravelPackage {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  flights?: Flight[];
+  hotels?: Hotel[];
+  activities: Activity[];
+  startingDate: Date;
+  endingDate: Date;
+  photos?: Photo[];
+  showDetails?: boolean;
+}
+
+export interface Billing {
+  id: number;
+  paymentType: PaymentType;
+  paymentState: PaymentState;
+  firstName: string;
+  lastName: string;
+  firstLineAddress: string;
+  secondLineAddress: string;
+  zipCode: string;
+  city: string;
+  state_area: string;
+  country: string;
+}
+
+export interface Booking {
+  id: number;
+  bookingNo: string;
+  cost: number;
+  purchaseDate: Date;
+  billing: Billing;
+  bookingState: BookingState;
+  travelPackage: TravelPackage;
+  firstName: string;
+  lastName: string;
+  firstLineAddress: string;
+  secondLineAddress: string;
+  zipCode: string;
+  city: string;
+  state_area: string;
+  country: string;
+  email: string;
+  phone: string;
+}
+
+export interface MergedItem {
+  sortDate: Date;
+  type: 'Flight' | 'Hotel' | 'Activity';
+  [key: string]: any; // Allows the object to have any number of other properties
+}

@@ -1,0 +1,41 @@
+<!-- OLD VERSION
+<section>
+  <form (submit)="filterResults(filter.value); $event.preventDefault();">
+    <input type="text" placeholder="Filter by name, description, or other properties" #filter>
+    <button type="submit">Search</button>
+  </form>
+</section>
+<section class="results">
+  <app-travel-package-item *ngFor="let travelPackage of filteredTravelPackageList" [travelPackage]="travelPackage"></app-travel-package-item>
+</section>
+-->
+
+<!-- travel-package-gallery.component.html -->
+<div class="container mt-4">
+
+  <!-- Filter bar -->
+<section>
+  <form (submit)="filterResults(filter.value); $event.preventDefault();" class="mb-3">
+    <div class="input-group pseudo-placeholder-group">
+      <input type="text" #filter class="form-control" [attr.aria-label]="placeholderSearchbarText">
+      <label for="dynamicPlaceholder" [class.fade]="fade" class="dynamic-placeholder">{{placeholderSearchbarText}}</label>
+      <button type="submit" class="btn btn-outline-secondary">Search</button>
+    </div>
+  </form>
+</section>
+
+  <!-- Search results with cards -->
+  <section class="results">
+    <div class="container mt-4">
+    <div class="list-group mb-3">
+      <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
+        <div class="col" *ngFor="let travelPackage of filteredTravelPackageList">
+          <app-travel-package-item [travelPackage]="travelPackage"></app-travel-package-item>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+</div>

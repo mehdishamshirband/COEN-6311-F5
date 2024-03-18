@@ -1,0 +1,82 @@
+<div *ngIf="travelPackage; else noPackageInfo">
+  <div class="mt-4 card">
+    <div class="card-header">
+      <i class="fas fa-arrow-left go-back-icon" (click)="goBack()" aria-hidden="true" title="Go back"></i>
+      Travel Package
+    </div>
+    <div class="card-body">
+      <div class="d-flex align-items-center">
+        <!-- Image container -->
+        <div *ngIf="travelPackage.photos && travelPackage.photos.length > 0; else noPhoto" class="flex-shrink-0 mr-3 me-4">
+          <img [src]="photoUrl" class="img-fluid rounded-2" [alt]="photoCaption" style="object-fit: cover; width: 380px; height: 380px;">
+        </div>
+        <!-- Text content -->
+        <div class="flex-grow-1">
+          <h4 class="card-title mb-3">{{ travelPackage!.name }}</h4>
+          <p class="card-text">{{ travelPackage!.description }}</p>
+          <p class="card-text">Price: ${{ travelPackage!.price }}</p>
+          <p class="card-text">Travel Dates: {{ travelPackage!.startingDate }} - {{ travelPackage!.endingDate }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <div class="card mt-4">
+    <div class="card-header">
+      Course of the journey
+    </div>
+    <ul class="list-group list-group-flush">
+      <li *ngFor="let item of sortedItems" class="list-group-item">
+        <ng-container [ngSwitch]="item['type']">
+          <div><h6>{{ item['type'] }}</h6></div>
+          <ng-container *ngSwitchCase="'Flight'">
+            <!-- Flight details -->
+            <div>From {{ item['departure'] }} to {{ item['arrival'] }} - {{ item['airline'] }} (${{ item['price'] }})</div>
+            <div>Departure: {{ item['departureDate'] | date:'medium' }}</div>
+            <div>Arrival: {{ item['arrivalDate'] | date:'medium' }}</div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'Hotel'">
+            <!-- Hotel details -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1 me-3">
+                <div><span class="hotel-name">{{ item['name'] }} (${{ item['totalPrice'] }})</span>
+                  <a *ngIf="item['website']" href="{{ item['website'] }}" target="_blank" class="no-underline website-link ms-2"><i class="fas fa-globe"></i> Website</a></div>
+                <div>{{ item['location'] }}</div>
+                <div>Check-in: {{ item['checkIn'] | date:'mediumDate' }}</div>
+                <div>Check-out: {{ item['checkOut'] | date:'mediumDate' }}</div>
+              </div>
+              <!-- Image container for Hotel -->
+              <div *ngIf="item['photo']">
+                <img [src]="item['photo'].url" class="img-fluid rounded-2" alt="{{ item['photo'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              </div>
+            </div>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'Activity'">
+            <!-- Activity details with first photo from a list -->
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1 me-3">
+                <div>{{ item['name'] }} (${{ item['price'] }})</div>
+                <div>Date: {{ item['date'] | date:'mediumDate' }} at {{ item['location'] }}</div>
+              </div>
+              <!-- Image container for Activity, displaying the first photo -->
+              <div *ngIf="item['photos'] && item['photos'].length > 0">
+                <img [src]="item['photos'][0].url" class="img-fluid rounded-2" alt="{{ item['photos'][0].caption || 'Activity photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              </div>
+            </div>
+          </ng-container>
+
+        </ng-container>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<ng-template #noPackageInfo>
+  <p>Package information is not available.</p>
+</ng-template>
+
+<ng-template #noPhoto>
+  <div class="no-photo-available">No photo available</div>
+</ng-template>

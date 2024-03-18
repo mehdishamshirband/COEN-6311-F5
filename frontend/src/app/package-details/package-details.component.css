@@ -1,0 +1,28 @@
+.container {
+  max-width: 800px; /* Adjust based on your layout */
+}
+
+.card-header {
+  background-color: #f8f9fa; /* A light background */
+  border-bottom: 1px solid #e0e0e0; /* A light border for separation */
+}
+
+.img-fluid {
+  max-height: 400px; /* Limit image height */
+  object-fit: cover; /* Ensure the image covers the area nicely */
+}
+
+.card-text, .card-title {
+  margin-bottom: 1rem; /* Add some space between text elements */
+}
+
+.go-back-icon {
+  cursor: pointer;
+  font-size: 24px; /* Adjust size as needed */
+  margin-right: 15px; /* Space before the title */
+  color: #007bff; /* Bootstrap primary color for consistency, change as needed */
+}
+
+.go-back-icon:hover {
+  color: #0056b3; /* Darker shade for hover effect, adjust as needed */
+}

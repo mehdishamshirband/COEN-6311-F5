@@ -1,0 +1,47 @@
+<!---
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">{{ travelPackage.name }}</h5>
+    <p class="card-text">{{ travelPackage.description }}</p>
+    <h6 class="card-subtitle mb-2 text-muted">Price: {{ travelPackage.price | currency }}</h6>
+    <p class="card-text">Dates: {{ travelPackage.startingDate | date }} - {{ travelPackage.endingDate | date }}</p>
+
+    -- Photos --
+    <div class="photos mb-3">
+      <img *ngFor="let photo of travelPackage.photos" [src]="photo.url" [alt]="photo.caption" class="img-fluid rounded">
+    </div>
+
+    -- Activities --
+    <div class="activities">
+      <h6 class="card-subtitle mb-2">Activities:</h6>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item" *ngFor="let activity of travelPackage.activities">
+          {{ activity.name }} - {{ activity.date | date:'mediumDate' }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+--->
+
+<!-- travel-package-item.component.html -->
+<div class="card travel-package-card" [routerLink]="['/package-details', travelPackage.id]">
+  <!-- Image with overlay title -->
+  <div class="image-overlay-container position-relative">
+    <div class="image-container mr-3" *ngIf="travelPackage.photos && travelPackage.photos.length > 0">
+      <img [src]="travelPackage.photos[0].url" class="card-img-top img-fluid" alt="{{ travelPackage.photos[0].caption }}">
+    </div>
+    <div class="overlay-title position-absolute bottom-0 start-0 text-white p-3" style="background: rgba(0,0,0,0.5);">
+      <h5>{{ travelPackage.name }}</h5>
+    </div>
+  </div>
+
+  <!-- Card body for description, dates, and price -->
+  <div class="card-body">
+    <p class="card-text">{{ travelPackage.description }}</p>
+    <p class="card-text">From {{ travelPackage.startingDate | date: 'mediumDate' }} to {{ travelPackage.endingDate | date: 'mediumDate' }}</p>
+    <h6 class="card-text text-muted">$ {{ travelPackage.price }}</h6>
+  </div>
+</div>
+
+
