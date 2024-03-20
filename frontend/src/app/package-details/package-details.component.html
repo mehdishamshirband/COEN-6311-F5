@@ -5,17 +5,23 @@
       Travel Package
     </div>
     <div class="card-body">
-      <div class="d-flex align-items-center">
+      <div class="d-flex">
         <!-- Image container -->
         <div *ngIf="travelPackage.photos && travelPackage.photos.length > 0; else noPhoto" class="flex-shrink-0 mr-3 me-4">
           <img [src]="photoUrl" class="img-fluid rounded-2" [alt]="photoCaption" style="object-fit: cover; width: 380px; height: 380px;">
         </div>
         <!-- Text content -->
-        <div class="flex-grow-1">
-          <h4 class="card-title mb-3">{{ travelPackage!.name }}</h4>
-          <p class="card-text">{{ travelPackage!.description }}</p>
-          <p class="card-text">Price: ${{ travelPackage!.price }}</p>
-          <p class="card-text">Travel Dates: {{ travelPackage!.startingDate }} - {{ travelPackage!.endingDate }}</p>
+        <div class="d-flex align-items-center flex-row">
+          <div class="flex-grow-1">
+            <h4 class="card-title mb-3">{{ travelPackage!.name }}</h4>
+            <p class="card-text">{{ travelPackage!.description }}</p>
+            <p class="card-text">Price: ${{ travelPackage!.price }}</p>
+            <p class="card-text">Travel Dates: {{ travelPackage!.startingDate }} - {{ travelPackage!.endingDate }}</p>
+          </div>
+        </div>
+        <!-- Button to reserve the package -->
+        <div class="align-top">
+          <button class="btn btn-primary mb-3 " (click)="reservePackage()">Reserve</button>
         </div>
       </div>
     </div>

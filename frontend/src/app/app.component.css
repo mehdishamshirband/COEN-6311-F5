@@ -1,0 +1,27 @@
+.icon-wrapper {
+  position: relative;
+  height: 1em;
+  width: 1em;
+  font-size: 36px;
+  cursor: pointer;
+}
+
+.icon-wrapper .bi {
+  position: absolute;
+}
+
+.icon-wrapper .bi-person-fill {
+  opacity: 0;
+}
+
+.icon-wrapper .bi-person {
+  opacity: 1;
+}
+
+.icon-wrapper:hover .bi-person-fill {
+  opacity: 1;
+}
+
+.icon-wrapper:hover .bi-person {
+  opacity: 0;
+}

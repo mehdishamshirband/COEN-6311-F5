@@ -58,29 +58,33 @@ export class TravelPackageDetailsComponent implements OnInit {
     this.location.back();
   }
 
-    mergeAndSortItems(): MergedItem[] {
-    let mergedItems: MergedItem[] = [];
+  reservePackage(): void {
+    // To implement
+  }
 
-    if (!this._travelPackage) return [];
+  mergeAndSortItems(): MergedItem[] {
+  let mergedItems: MergedItem[] = [];
 
-    const { flights, hotels, activities } = this._travelPackage;
+  if (!this._travelPackage) return [];
 
-    flights?.forEach(flight => {
-      mergedItems.push({ ...flight, sortDate: flight.departureDate, type: 'Flight'});
-    });
+  const { flights, hotels, activities } = this._travelPackage;
 
-    hotels?.forEach(hotel => {
-      mergedItems.push({ ...hotel, sortDate: hotel.checkIn, type: 'Hotel' });
-    });
+  flights?.forEach(flight => {
+    mergedItems.push({ ...flight, sortDate: flight.departureDate, type: 'Flight'});
+  });
 
-    activities.forEach(activity => {
-      mergedItems.push({ ...activity, sortDate: activity.date, type: 'Activity' });
-    });
+  hotels?.forEach(hotel => {
+    mergedItems.push({ ...hotel, sortDate: hotel.checkIn, type: 'Hotel' });
+  });
 
-    // Sort by sortDate
-    mergedItems.sort((a, b) => a.sortDate.getTime() - b.sortDate.getTime());
+  activities.forEach(activity => {
+    mergedItems.push({ ...activity, sortDate: activity.date, type: 'Activity' });
+  });
 
-    return mergedItems;
+  // Sort by sortDate
+  mergedItems.sort((a, b) => a.sortDate.getTime() - b.sortDate.getTime());
+
+  return mergedItems;
   }
 
 }
