@@ -1,4 +1,33 @@
-.icon-wrapper {
+.cart-icon-wrapper {
+  position: relative;
+  height: 1em;
+  width: 1.2em;
+  font-size: 32px;
+  cursor: pointer;
+}
+
+.cart-icon-wrapper .bi {
+  position: absolute;
+}
+
+.cart-icon-wrapper .bi-cart-fill {
+  opacity: 0;
+}
+
+.cart-icon-wrapper .bi-cart {
+  opacity: 1;
+}
+
+.cart-icon-wrapper:hover .bi-cart-fill {
+  opacity: 1;
+}
+
+.cart-icon-wrapper:hover .bi-cart {
+  opacity: 0;
+}
+
+
+.login-icon-wrapper {
   position: relative;
   height: 1em;
   width: 1em;
@@ -6,22 +35,23 @@
   cursor: pointer;
 }
 
-.icon-wrapper .bi {
+.login-icon-wrapper .bi {
   position: absolute;
 }
 
-.icon-wrapper .bi-person-fill {
+.login-icon-wrapper .bi-person-fill {
   opacity: 0;
 }
 
-.icon-wrapper .bi-person {
+.login-icon-wrapper .bi-person {
   opacity: 1;
 }
 
-.icon-wrapper:hover .bi-person-fill {
+.login-icon-wrapper:hover .bi-person-fill {
   opacity: 1;
 }
 
-.icon-wrapper:hover .bi-person {
+.login-icon-wrapper:hover .bi-person {
   opacity: 0;
 }
+

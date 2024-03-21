@@ -4,10 +4,11 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TravelPackageService } from '../services/travel-package.service';
 import { TravelPackage, MergedItem } from '../interfaces/booking.interface';
+import {RouterModule} from '@angular/router';
 
 @Component({
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './package-details.component.html',
   styleUrl: './package-details.component.css'
 })
