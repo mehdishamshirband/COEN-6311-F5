@@ -7,9 +7,19 @@
   border-bottom: 1px solid #e0e0e0; /* A light border for separation */
 }
 
+
 .img-fluid {
   max-height: 400px; /* Limit image height */
   object-fit: cover; /* Ensure the image covers the area nicely */
+}
+
+.btn-primary{
+  border-radius: 20px 20px 20px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
 }
 
 .card-text, .card-title {

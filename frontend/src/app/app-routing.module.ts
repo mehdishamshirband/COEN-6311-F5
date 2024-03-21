@@ -9,6 +9,9 @@ import { FlightGalleryComponent } from "./flight-gallery/flight-gallery.componen
 import {HotelGalleryComponent} from "./hotel-gallery/hotel-gallery.component";
 import {ActivityGalleryComponent} from "./activity-gallery/activity-gallery.component";
 import {CustomPackageCreationComponent} from "./custom-package-creation/custom-package-creation.component";
+import { UserLoginComponent } from './user-login/user-login.component';
+import { UserSignUpComponent } from "./user-sign-up/user-sign-up.component";
+import { ForgotPasswordComponent } from "./forgot-password/forgot-password.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -20,7 +23,9 @@ const routes: Routes = [
   { path: 'custom-package/hotels', component: HotelGalleryComponent },
   { path: 'custom-package/activities', component: ActivityGalleryComponent },
   { path: 'custom-package', component: CustomPackageCreationComponent },
-
+  { path: 'login', component: UserLoginComponent },
+  { path: 'signup', component: UserSignUpComponent },
+  { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];
 
