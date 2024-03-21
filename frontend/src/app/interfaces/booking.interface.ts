@@ -24,12 +24,19 @@ export enum BookingState {
 
 export interface Flight {
   id: number;
-  departure: string;
-  arrival: string;
+  airlineLogo?: string;
+  departureAirport: string;
+  departureCity: string;
+  departureCountry: string;
+  arrivalAirport: string;
+  arrivalCity: string;
+  arrivalCountry: string;
   departureDate: Date;
   arrivalDate: Date;
   airline: string;
+  duration: number;
   price: number;
+  stops?: Flight[];
   showDetails?: boolean;
 }
 
@@ -37,12 +44,16 @@ export interface Hotel {
   id: number;
   name: string;
   location: string;
-  checkIn: Date;
-  checkOut: Date;
-  pricePerNight: number;
-  totalPrice: number;
   photo?: Photo;
   website?: string;
+}
+
+export interface HotelBooking {
+  id: number;
+  hotel: Hotel;
+  checkIn: Date;
+  checkOut: Date;
+  totalPrice: number;
   showDetails?: boolean;
 }
 
@@ -64,7 +75,7 @@ export interface TravelPackage {
   description: string;
   price: number;
   flights?: Flight[];
-  hotels?: Hotel[];
+  hotels?: HotelBooking[];
   activities: Activity[];
   startingDate: Date;
   endingDate: Date;
@@ -111,3 +122,8 @@ export interface MergedItem {
   type: 'Flight' | 'Hotel' | 'Activity';
   [key: string]: any; // Allows the object to have any number of other properties
 }
+
+export type JourneyItem =
+  | (Flight & { type: 'flight' })
+  | (HotelBooking & { type: 'hotel' })
+  | (Activity & { type: 'activity' });

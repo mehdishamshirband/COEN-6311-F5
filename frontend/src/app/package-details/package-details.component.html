@@ -14,8 +14,8 @@
         <div class="flex-grow-1">
           <h4 class="card-title mb-3">{{ travelPackage!.name }}</h4>
           <p class="card-text">{{ travelPackage!.description }}</p>
-          <p class="card-text">Price: ${{ travelPackage!.price }}</p>
-          <p class="card-text">Travel Dates: {{ travelPackage!.startingDate }} - {{ travelPackage!.endingDate }}</p>
+          <p class="card-text"><b>Price: ${{ travelPackage!.price }}</b></p>
+          <p class="card-text"><b>Travel Dates: {{ travelPackage!.startingDate | date: 'short'}} - {{ travelPackage!.endingDate | date: 'short' }}</b></p>
         </div>
       </div>
     </div>
@@ -31,7 +31,7 @@
           <div><h6>{{ item['type'] }}</h6></div>
           <ng-container *ngSwitchCase="'Flight'">
             <!-- Flight details -->
-            <div>From {{ item['departure'] }} to {{ item['arrival'] }} - {{ item['airline'] }} (${{ item['price'] }})</div>
+            <div>From {{ item['departureCity'] }} ({{item['departureAirport']}}) to {{ item['arrivalCity'] }} ({{item['arrivalAirport']}}) - {{ item['airline'] }} (${{ item['price'] }})</div>
             <div>Departure: {{ item['departureDate'] | date:'medium' }}</div>
             <div>Arrival: {{ item['arrivalDate'] | date:'medium' }}</div>
           </ng-container>
@@ -40,15 +40,15 @@
             <!-- Hotel details -->
             <div class="d-flex justify-content-between align-items-center">
               <div class="flex-grow-1 me-3">
-                <div><span class="hotel-name">{{ item['name'] }} (${{ item['totalPrice'] }})</span>
-                  <a *ngIf="item['website']" href="{{ item['website'] }}" target="_blank" class="no-underline website-link ms-2"><i class="fas fa-globe"></i> Website</a></div>
-                <div>{{ item['location'] }}</div>
+                <div><span class="hotel-name">{{ item['hotel']['name'] }} (${{ item['totalPrice'] }})</span>
+                  <a *ngIf="item['hotel']['website']" href="{{ item['hotel']['website'] }}" target="_blank" class="no-underline website-link ms-2"><i class="fas fa-globe"></i> Website</a></div>
+                <div>{{ item['hotel']['location'] }}</div>
                 <div>Check-in: {{ item['checkIn'] | date:'mediumDate' }}</div>
                 <div>Check-out: {{ item['checkOut'] | date:'mediumDate' }}</div>
               </div>
               <!-- Image container for Hotel -->
-              <div *ngIf="item['photo']">
-                <img [src]="item['photo'].url" class="img-fluid rounded-2" alt="{{ item['photo'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              <div *ngIf="item['hotel']['photo']">
+                <img [src]="item['hotel']['photo'].url" class="img-fluid rounded-2" alt="{{ item['hotel']['photo'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
               </div>
             </div>
           </ng-container>

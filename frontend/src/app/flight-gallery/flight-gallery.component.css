@@ -1,0 +1,102 @@
+.card {
+  max-width: 980px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between; /* Add this line */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+.card-img-left {
+  width: 25%; /* Set a fixed width for all images */
+  height: 240px; /* Adjust height as necessary */
+  object-fit: cover; /* Cover the area of the figure without stretching */
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+
+.card-img {
+  height: 1200px; /* Adjust this height to your preference */
+  object-fit: cover; /* Keeps the aspect ratio of the image */
+  grid-area: image; /* Assigns the image to the 'image' area in the grid */
+}
+
+.card-body {
+  grid-area: content; /* Assigns the card body to the 'content' area in the grid */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  margin-bottom: .75rem;
+}
+
+.card-text {
+  margin-bottom: .5rem;
+}
+
+/****/
+
+.flight-card .card {
+  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+.airline-logo {
+  max-width: 60px; /* Adjust size as needed */
+}
+
+.flight-times {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 0.9rem; /* Adjust as needed */
+}
+
+.flight-times .arrow {
+  font-size: 2rem; /* Adjust size as needed */
+}
+
+.flight-price strong {
+  font-size: 1.5rem; /* Large text for price */
+  color: #333; /* Dark text for emphasis */
+}
+
+.btn-primary {
+  background-color: #0056b3;
+  padding: .375rem .75rem; /* Standard padding for buttons */
+}
+
+.btn-custom-primary {
+  padding: 5px 25px; /* Increase padding for larger button size */
+  font-size: 1rem; /* Increase font size for larger text */
+  border-radius: 100px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between buttons */
+  border: 1px solid black; /* Thicker border */
+  color: white;
+  background-color: black;
+}
+
+.btn-custom-primary:hover {
+  background-color: #333333;
+}
+
+.btn-custom-primary:focus {
+  background-color: #333333;
+  color: white;
+}
+
+.btn-custom-secondary {
+  padding: 5px 25px; /* Increase padding for larger button size */
+  font-size: 1rem; /* Increase font size for larger text */
+  border-radius: 100px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between buttons */
+  border: 1px solid lightgray; /* Thicker border */
+}
+
+.btn-custom-secondary:hover {
+  border: 1px solid black; /* Border color changes to black on hover */
+}

@@ -1,0 +1,35 @@
+<!-- activity-gallery.component.html -->
+<div class="container mt-3">
+  <h2>Activity Search</h2>
+  <form [formGroup]="searchForm" (ngSubmit)="searchActivities()">
+    <div class="row mb-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Location" formControlName="location">
+      </div>
+      <div class="col">
+        <input type="date" class="form-control" placeholder="Date" formControlName="date">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <button type="submit" class="btn btn-custom-primary me-3">Search</button>
+        <button *ngIf="searchPerformed" type="reset" class="btn btn-custom-secondary" (click)="resetSearch()">Reset</button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Results Section -->
+  <div *ngIf="activityList.length > 0">
+    <h4 class="mb-3">Search Results</h4>
+    <div *ngFor="let activity of activityList" class="card mb-3 d-flex flex-row align-items-center">
+      <img [src]="activity.photos ? activity.photos[0].url : 0" class="card-img-left" alt="{{ activity.name }}">
+      <div  class="card-body d-flex flex-column justify-content-between">
+        <h5 class="card-title">{{activity.name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{activity.type}}</h6>
+        <p class="card-text">{{activity.description}}</p>
+        <p class="card-text"><small class="text-muted">{{activity.location}} - {{activity.date | date: 'longDate'}}</small></p>
+        <a type="button" class="btn btn-custom-primary mt-2 align-self-end" (click)="addToJourney(activity); resetSearch()">Add to Journey</a>
+      </div>
+    </div>
+  </div>
+</div>

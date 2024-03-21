@@ -1,0 +1,92 @@
+.airline-logo {
+  max-width: 60px;
+  max-height: 60px;
+  width: auto;
+  height: auto;
+}
+
+/* Banner styles */
+.item-banner {
+  background-color: #f0f0f0;
+  display: inline-block;
+  border-radius: 5px;
+}
+
+/* Badge within the item banner */
+.item-banner .badge {
+  background-color: #6c757d; /* Bootstrap secondary color */
+}
+
+/* General padding and margin adjustments for the banner */
+.item-banner span {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+/* Styles for the image in activity items */
+.activity-photo {
+  max-height: 200px;
+  width: auto;
+  max-width: 100%;
+}
+
+/* Right-aligned content for price and remove button */
+.price-remove-container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding-right: 15px; /* Adjust based on your layout */
+}
+
+/* Adjusts the price display for consistency */
+.flight-price, .activity-price {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.check-in-out {
+  margin-bottom: 5px; /* Reduce space between check-in and check-out lines */
+}
+
+.btn-primary {
+  background-color: #0056b3;
+  padding: .375rem .75rem;
+}
+
+/* Enhance the remove button appearance */
+.btn-remove {
+  margin-top: 10px;
+  border-radius: 100px;
+}
+
+.btn-custom-primary {
+  padding: 5px 25px; /* Increase padding for larger button size */
+  font-size: 1rem; /* Increase font size for larger text */
+  border-radius: 100px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between buttons */
+  border: 1px solid black; /* Thicker border */
+  color: white;
+  background-color: black;
+}
+
+.btn-custom-primary:hover {
+  background-color: #333333;
+}
+
+.btn-custom-primary:focus {
+  background-color: #333333;
+  color: white;
+}
+
+.btn-custom-secondary {
+  padding: 5px 25px; /* Increase padding for larger button size */
+  font-size: 1rem; /* Increase font size for larger text */
+  border-radius: 100px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between buttons */
+  border: 1px solid lightgray; /* Thicker border */
+}
+
+.btn-custom-secondary:hover {
+  border: 1px solid black; /* Border color changes to black on hover */
+}
+

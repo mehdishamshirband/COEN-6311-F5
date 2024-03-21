@@ -31,3 +31,34 @@ body {
   color: #fff !important;
   background-color: darkgreen !important; /* Active link background color */
 }
+
+.btn-custom-primary {
+  padding: 5px 25px; /* Increase padding for larger button size */
+  font-size: 1rem; /* Increase font size for larger text */
+  border-radius: 100px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between buttons */
+  border: 1px solid black; /* Thicker border */
+  color: white;
+  background-color: black;
+}
+
+.btn-custom-primary:hover {
+  background-color: #333333;
+}
+
+.btn-custom-primary:focus {
+  background-color: #333333;
+  color: white;
+}
+
+.btn-custom-secondary {
+  padding: 5px 25px; /* Increase padding for larger button size */
+  font-size: 1rem; /* Increase font size for larger text */
+  border-radius: 100px; /* Rounded corners */
+  margin-bottom: 10px; /* Space between buttons */
+  border: 1px solid lightgray; /* Thicker border */
+}
+
+.btn-custom-secondary:hover {
+  border: 1px solid black; /* Border color changes to black on hover */
+}

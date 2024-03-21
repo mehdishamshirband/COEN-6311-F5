@@ -23,28 +23,35 @@ export class TravelPackageService {
         flights: [
           {
             id: 0,
-            departure: 'YourCity',
-            arrival: 'Terville',
-            departureDate: new Date(2024, 3, 10),
-            arrivalDate: new Date(2024, 3, 10),
+            departureAirport: 'JFK',
+            departureCity: 'New York',
+            departureCountry: 'United States',
+            arrivalAirport: 'IDK',
+            arrivalCity: 'Terville',
+            arrivalCountry: 'France',
+            departureDate: new Date(2024, 3, 10, 7, 21),
+            arrivalDate: new Date(2024, 3, 10, 20, 26),
             airline: 'Air Terville',
             price: 300,
+            duration: 485
           }
         ],
         hotels: [
           {
             id: 0,
-            name: "My House *****",
-            location: "Terville, France",
+            hotel: {
+              id: 50,
+              name: "My House *****",
+              location: "Terville, France",
+              photo: {
+                url: 'https://example.com/hotel-terville.jpg',
+                caption: 'My House ***** in Terville',
+              },
+              website: "https://myhouse.com",
+            },
             checkIn: new Date(2024, 3, 10),
             checkOut: new Date(2024, 3, 15),
-            pricePerNight: 200,
             totalPrice: 1000,
-            photo: {
-              url: 'https://example.com/hotel-terville.jpg',
-              caption: 'My House ***** in Terville',
-            },
-            website: "https://myhouse.com",
           }
         ],
         activities: [
@@ -81,28 +88,35 @@ export class TravelPackageService {
     flights: [
       {
         id: 1,
-        departure: 'YourCity',
-        arrival: 'Budapest',
-        departureDate: new Date(2024, 4, 20),
-        arrivalDate: new Date(2024, 4, 20),
+        departureAirport: 'JFK',
+        departureCity: 'New York',
+        departureCountry: 'United States',
+        arrivalAirport: 'BUD',
+        arrivalCity: 'Budapest',
+        arrivalCountry: 'Hungary',
+        departureDate: new Date(2024, 4, 20, 10, 12),
+        arrivalDate: new Date(2024, 4, 20, 23, 26),
         airline: 'Air Hungary',
         price: 500,
+        duration: 494
       },
     ],
     hotels: [
       {
         id: 1,
-        name: "Four Seasons *****",
-        location: "Budapest, Hungary",
+        hotel: {
+          id: 51,
+          name: "Four Seasons *****",
+          location: "Budapest, Hungary",
+          photo: {
+            url: 'https://example.com/hotel-budapest.jpg',
+            caption: 'Four Seasons, Budapest',
+          },
+          website: "https://fourseasons.com",
+        },
         checkIn: new Date(2024, 4, 20),
         checkOut: new Date(2024, 4, 25),
-        pricePerNight: 300,
         totalPrice: 1500,
-        photo: {
-          url: 'https://example.com/hotel-budapest.jpg',
-          caption: 'Four Seasons, Budapest',
-        },
-        website: "https://fourseasons.com",
       },
     ],
     activities: [
@@ -155,28 +169,35 @@ export class TravelPackageService {
     flights: [
       {
         id: 2,
-        departure: 'YourCity',
-        arrival: 'Copenhagen',
-        departureDate: new Date(2024, 6, 15),
-        arrivalDate: new Date(2024, 6, 15),
+        departureAirport: 'JFK',
+        departureCity: 'New York',
+        departureCountry: 'United States',
+        arrivalAirport: 'CPH',
+        arrivalCity: 'Copenhagen',
+        arrivalCountry: 'Denmark',
+        departureDate: new Date(2024, 6, 15, 7, 55),
+        arrivalDate: new Date(2024, 6, 15, 20, 46),
         airline: 'Danish Air',
         price: 400,
+        duration: 471
       },
     ],
     hotels: [
       {
         id: 2,
-        name: "Hotel D'Angleterre *****",
-        location: "Copenhagen, Denmark",
+        hotel: {
+          id: 52,
+          name: "Hotel D'Angleterre *****",
+          location: "Copenhagen, Denmark",
+          photo: {
+            url: 'https://example.com/hotel-copenhagen.jpg',
+            caption: 'Hotel D\'Angleterre, Copenhagen',
+          },
+          website: "https://dangleterre.com",
+        },
         checkIn: new Date(2024, 6, 15),
         checkOut: new Date(2024, 6, 20),
-        pricePerNight: 350,
         totalPrice: 1750,
-        photo: {
-          url: 'https://example.com/hotel-copenhagen.jpg',
-          caption: 'Hotel D\'Angleterre, Copenhagen',
-        },
-        website: "https://dangleterre.com",
       },
     ],
     activities: [
@@ -244,28 +265,35 @@ export class TravelPackageService {
       flights: [
         {
           id: 3,
-          departure: 'YourCity',
-          arrival: 'Paris',
-          departureDate: new Date(2024, 6, 20),
-          arrivalDate: new Date(2024, 6, 20),
+          departureAirport: 'JFK',
+          departureCity: 'New York',
+          departureCountry: 'United States',
+          arrivalAirport: 'CDG',
+          arrivalCity: 'Paris',
+          arrivalCountry: 'France',
+          departureDate: new Date(2024, 6, 20, 21, 50),
+          arrivalDate: new Date(2024, 6, 20, 10, 37),
           airline: 'Air France',
           price: 550,
+          duration: 467
         },
       ],
       hotels: [
         {
           id: 3,
-          name: "Hôtel Plaza Athénée *****",
-          location: "Paris, France",
+          hotel: {
+            id: 53,
+            name: "Hôtel Plaza Athénée *****",
+            location: "Paris, France",
+            photo: {
+              url: 'https://example.com/hotel-paris.jpg',
+              caption: 'Luxury stay at Hôtel Plaza Athénée',
+            },
+            website: "https://dorchestercollection.com",
+          },
           checkIn: new Date(2024, 6, 20),
           checkOut: new Date(2024, 6, 25),
-          pricePerNight: 500,
           totalPrice: 2500,
-          photo: {
-            url: 'https://example.com/hotel-paris.jpg',
-            caption: 'Luxury stay at Hôtel Plaza Athénée',
-          },
-          website: "https://dorchestercollection.com",
         },
       ],
       activities: [
@@ -318,28 +346,35 @@ export class TravelPackageService {
       flights: [
         {
           id: 3,
-          departure: 'YourCity',
-          arrival: 'Paris',
-          departureDate: new Date(2024, 6, 20),
-          arrivalDate: new Date(2024, 6, 20),
+          departureAirport: 'JFK',
+          departureCity: 'New York',
+          departureCountry: 'United States',
+          arrivalAirport: 'CDG',
+          arrivalCity: 'Paris',
+          arrivalCountry: 'France',
+          departureDate: new Date(2024, 6, 20, 14, 44),
+          arrivalDate: new Date(2024, 6, 20, 3, 21),
           airline: 'Air France',
           price: 550,
+          duration: 467
         },
       ],
-      hotels: [
+hotels: [
         {
-          id: 3,
-          name: "Hôtel Plaza Athénée *****",
-          location: "Paris, France",
+          id: 4,
+          hotel: {
+            id: 53,
+            name: "Hôtel Plaza Athénée *****",
+            location: "Paris, France",
+            photo: {
+              url: 'https://example.com/hotel-paris.jpg',
+              caption: 'Luxury stay at Hôtel Plaza Athénée',
+            },
+            website: "https://dorchestercollection.com",
+          },
           checkIn: new Date(2024, 6, 20),
           checkOut: new Date(2024, 6, 25),
-          pricePerNight: 500,
           totalPrice: 2500,
-          photo: {
-            url: 'https://example.com/hotel-paris.jpg',
-            caption: 'Luxury stay at Hôtel Plaza Athénée',
-          },
-          website: "https://dorchestercollection.com",
         },
       ],
       activities: [

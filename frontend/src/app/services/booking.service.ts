@@ -40,34 +40,43 @@ export class BookingService {
         flights: [
           {
             id: 101,
-            departure: 'JFK',
-            arrival: 'FCO',
-            departureDate: new Date('2024-04-20'),
-            arrivalDate: new Date('2024-04-21'),
+            departureAirport: 'JFK',
+            departureCity: 'New York City',
+            departureCountry: 'United States of America',
+            arrivalAirport: 'FCO',
+            arrivalCity: 'Rome',
+            arrivalCountry: 'Italy',
+            departureDate: new Date(2024, 4, 20, 17, 31),
+            arrivalDate: new Date(2024, 4, 21, 6, 28),
             airline: 'United Airlines',
-            price: 449
+            price: 449,
+            duration: 492
           }
         ],
         hotels: [
           {
             id: 201,
-            name: 'Hotel Roma',
-            location: 'Rome, Italy',
+            hotel: {
+              id: 201,
+              name: 'Hotel Roma',
+              location: 'Rome, Italy'
+            },
             checkIn: new Date('2024-04-21'),
             checkOut: new Date('2024-04-25'),
-            pricePerNight: 80,
             totalPrice: 320
           },
           {
             id: 204,
-            name: 'Hotel Mercurio Venezia',
-            location: 'Venice, Italy',
+            hotel: {
+              id: 204,
+              name: 'Hotel Mercurio Venezia',
+              location: 'Venice, Italy',
+              website: 'https://www.hotelmercurio.com/',
+              photo: {url: 'assets/images/hotels/mercurio_venezia.jpg'}
+            },
             checkIn: new Date('2024-04-25'),
             checkOut: new Date('2024-04-27'),
-            pricePerNight: 90,
             totalPrice: 270,
-            website: 'https://www.hotelmercurio.com/',
-            photo: {url: 'assets/images/hotels/mercurio_venezia.jpg'}
           }
         ],
         activities: [
@@ -79,7 +88,7 @@ export class BookingService {
             location: 'Rome, Italy',
             date: new Date('2024-04-22'),
             price: 19,
-            photos: [{url: 'assets/images/activities/colosseum-tour.jpg'}] // Adjusted for consistency
+            photos: [{url: 'assets/images/activities/colosseum-tour.jpg'}]
           },
           {
             id: 302,
@@ -134,43 +143,57 @@ export class BookingService {
       flights: [
         {
           id: 201,
-          departure: 'JFK',
-          arrival: 'MAD',
-          departureDate: new Date('2024-04-30'),
-          arrivalDate: new Date('2024-05-01'),
+          departureAirport: 'JFK',
+          departureCity: 'New York City',
+          departureCountry: 'United States',
+          arrivalAirport: 'MAD',
+          arrivalCity: 'Madrid',
+          arrivalCountry: 'Spain',
+          departureDate: new Date(2024, 4, 30, 18, 55),
+          arrivalDate: new Date(2024, 5, 1, 6, 59),
           airline: 'Iberia',
-          price: 500
+          price: 500,
+          duration: 472
         },
         {
           id: 202,
-          departure: 'MAD',
-          arrival: 'JFK',
-          departureDate: new Date('2024-05-10'),
-          arrivalDate: new Date('2024-05-11'),
+          departureAirport: 'MAD',
+          departureCity: 'Madrid',
+          departureCountry: 'Spain',
+          arrivalAirport: 'JFK',
+          arrivalCity: 'New York City',
+          arrivalCountry: 'United States',
+          departureDate: new Date(2024, 5, 10, 21, 18),
+          arrivalDate: new Date(2024, 5, 11, 12, 41),
           airline: 'Iberia',
-          price: 500
+          price: 500,
+          duration: 597
         }
       ],
       hotels: [
         {
           id: 301,
-          name: 'Hotel Madrid Centro',
-          location: 'Madrid, Spain',
+          hotel: {
+            id: 301,
+            name: 'Hotel Madrid Centro',
+            location: 'Madrid, Spain',
+            photo: {url: 'assets/images/hotels/hotel_madrid_centro.jpg'}
+          },
           checkIn: new Date('2024-05-01'),
           checkOut: new Date('2024-05-05'),
-          pricePerNight: 150,
-          totalPrice: 600,
-          photo: {url: 'assets/images/hotels/hotel_madrid_centro.jpg'}
+          totalPrice: 600
         },
         {
           id: 302,
-          name: 'Hotel Best Front Maritim Barcelona',
-          location: 'Barcelona, Spain',
+          hotel: {
+            id: 302,
+            name: 'Hotel Best Front Maritim Barcelona',
+            location: 'Barcelona, Spain',
+            photo: {url: 'assets/images/hotels/hotel_best_front_maritim_barcelona.jpg'}
+          },
           checkIn: new Date('2024-05-05'),
           checkOut: new Date('2024-05-10'),
-          pricePerNight: 170,
           totalPrice: 850,
-          photo: {url: 'assets/images/hotels/hotel_best_front_maritim_barcelona.jpg'}
         }
       ],
       activities: [
@@ -237,24 +260,31 @@ export class BookingService {
       flights: [
         {
           id: 301,
-          departure: 'JFK',
-          arrival: 'ZRH',
-          departureDate: new Date('2024-12-10'),
-          arrivalDate: new Date('2024-12-11'),
+          departureAirport: 'JFK',
+          departureCity: 'New York',
+          departureCountry: 'United States',
+          arrivalAirport: 'ZRH',
+          arrivalCity: 'Zurich',
+          arrivalCountry: 'Switzerland',
+          departureDate: new Date(2024, 12, 10, 17, 49),
+          arrivalDate: new Date(2024, 12, 11, 8, 57),
           airline: 'Swiss International Air Lines',
-          price: 600
+          price: 600,
+          duration: 469
         }
       ],
       hotels: [
         {
           id: 301,
-          name: 'Badrutt\'s Palace Hotel',
-          location: 'St. Moritz, Switzerland',
+          hotel: {
+            id: 301,
+            name: 'Badrutt\'s Palace Hotel',
+            location: 'St. Moritz, Switzerland',
+            photo: {url: 'assets/images/hotels/hotel_badrutts_palace.jpg'}
+          },
           checkIn: new Date('2024-12-11'),
           checkOut: new Date('2024-12-19'),
-          pricePerNight: 900,
           totalPrice: 7200,
-          photo: {url: 'assets/images/hotels/hotel_badrutts_palace.jpg'}
         }
       ],
       activities: [

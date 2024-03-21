@@ -5,6 +5,10 @@ import { UserBookingInformationComponent } from './user-booking-information/user
 import { UserBookingsListComponent } from './user-bookings-list/user-bookings-list.component';
 import { TravelPackageGalleryComponent } from "./travel-package-gallery/travel-package-gallery.component";
 import { TravelPackageDetailsComponent } from "./package-details/package-details.component"
+import { FlightGalleryComponent } from "./flight-gallery/flight-gallery.component";
+import {HotelGalleryComponent} from "./hotel-gallery/hotel-gallery.component";
+import {ActivityGalleryComponent} from "./activity-gallery/activity-gallery.component";
+import {CustomPackageCreationComponent} from "./custom-package-creation/custom-package-creation.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -12,6 +16,10 @@ const routes: Routes = [
   { path: 'bookings', component: UserBookingsListComponent},
   { path: 'search', component: TravelPackageGalleryComponent},
   { path: 'package-details/:id', component: TravelPackageDetailsComponent },
+  { path: 'custom-package/flights', component: FlightGalleryComponent },
+  { path: 'custom-package/hotels', component: HotelGalleryComponent },
+  { path: 'custom-package/activities', component: ActivityGalleryComponent },
+  { path: 'custom-package', component: CustomPackageCreationComponent },
 
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];

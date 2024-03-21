@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TravelPackage } from '../interfaces/booking.interface';
 import { TravelPackageItemComponent } from '../travel-package-item/travel-package-item.component';
 import { TravelPackageService } from '../services/travel-package.service';
-import {NgForOf} from "@angular/common"; // Correct the path as necessary
+import {NgForOf} from "@angular/common";
 
 @Component({
   selector: 'app-travel-package-gallery',

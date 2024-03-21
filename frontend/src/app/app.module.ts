@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { AppComponent } from './app.component';
 // Import other components here
 import { AgentPackagesComponent } from './agent-packages/agent-packages.component';
@@ -15,6 +16,12 @@ import { TravelPackageGalleryComponent } from "./travel-package-gallery/travel-p
 import { TravelPackageService } from "./services/travel-package.service";
 import { ScrollToTopService } from "./services/scroll-to-top.service";
 import { TravelPackageDetailsComponent } from "./package-details/package-details.component";
+import { FlightGalleryComponent } from "./flight-gallery/flight-gallery.component";
+import { HotelGalleryComponent } from "./hotel-gallery/hotel-gallery.component";
+import { ActivityGalleryComponent } from "./activity-gallery/activity-gallery.component";
+import { CustomPackageCreationComponent } from "./custom-package-creation/custom-package-creation.component";
+import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
+
 
 @NgModule({
   declarations: [
@@ -26,15 +33,22 @@ import { TravelPackageDetailsComponent } from "./package-details/package-details
   imports: [
     BrowserModule,
     FormsModule,
+    ReactiveFormsModule,
     AppRoutingModule,
     RouterModule,
     NavBarComponent,
     TravelPackageItemComponent,
     TravelPackageGalleryComponent,
     TravelPackageDetailsComponent,
-
+    FlightGalleryComponent,
+    HotelGalleryComponent,
+    ActivityGalleryComponent,
+    CustomPackageCreationComponent,
+    MinToHoursMinPipe,
   ],
   providers: [BookingService, TravelPackageService, ScrollToTopService],
+  exports: [
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

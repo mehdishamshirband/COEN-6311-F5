@@ -1,0 +1,153 @@
+<div class="journey-container p-3">
+  <h2 class="mb-4">Your Custom Journey</h2>
+
+  <div *ngIf="journeyService.isEmpty(); else journeyContent" class="text-center py-5 border rounded mb-4">
+    <p class="lead">Your journey is empty.</p>
+    <p class="lead">Start adding flights, hotels, and activities.</p>
+  </div>
+
+  <div class="d-flex justify-content-center mb-4">
+    <button class="btn btn-custom-primary mx-2" (click)="showFlightSearch = true; showHotelSearch = false; showActivitySearch = false">Add Flight</button>
+    <button class="btn btn-custom-primary mx-2" (click)="showHotelSearch = true; showFlightSearch = false; showActivitySearch = false">Add Hotel</button>
+    <button class="btn btn-custom-primary mx-2" (click)="showActivitySearch = true; showFlightSearch = false; showHotelSearch = false;">Add Activity</button>
+  </div>
+
+  <ng-template #flightItem let-flight>
+    <a class="list-group-item list-group-item-action">
+      <div class="row align-items-center">
+        <div class="col-12">
+          <div class="item-banner mb-4">
+            <span class="badge bg-secondary">FLIGHT</span>
+            <span>{{ flight.departureDate | date:'mediumDate' }}</span>
+          </div>
+        </div>
+        <div class="col-md-2 text-center">
+          <img [src]="flight.airlineLogo" alt="{{ flight.airline }}" class="airline-logo mb-2">
+          <div class="airline-name">{{ flight.airline }}</div>
+        </div>
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-5 text-end">
+              <div class="item-date-time">
+                <div class="item-date">{{ flight.departureDate | date: 'shortDate' }}</div>
+                <div class="item-time">{{ flight.departureDate | date: 'shortTime' }}</div>
+                <div class="item-city">{{ flight.departureCity }} ({{ flight.departureAirport }})</div>
+              </div>
+            </div>
+            <div class="col-md-2 text-center">
+              <div class="flight-duration-arrow">
+                <i class="fas fa-arrow-right"></i>
+                <div class="flight-duration">{{ flight.duration | minToHoursMin }}</div>
+                <div class="direct-label">Direct</div>
+              </div>
+            </div>
+            <div class="col-md-5 text-start">
+              <div class="flight-date-time">
+                <div class="flight-date">{{ flight.arrivalDate | date: 'shortDate' }}</div>
+                <div class="flight-time">{{ flight.arrivalDate | date: 'shortTime' }}</div>
+                <div class="flight-city">{{ flight.arrivalCity }} ({{ flight.arrivalAirport }})</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-2 text-end">
+          <div class="flight-price mb-2">
+            <strong>{{ flight.price }} $</strong>
+          </div>
+          <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeFlight(flight.id); $event.stopPropagation();">Remove</button>
+        </div>
+      </div>
+    </a>
+  </ng-template>
+
+  <ng-template #hotelItem let-hotelBooking>
+    <div class="list-group-item">
+      <div class="row g-0">
+        <!-- Banner for Hotel Type and Check-in Date at the top -->
+        <div class="col-12">
+          <div class="item-banner">
+            <span class="badge bg-secondary">HOTEL</span>
+            <span>{{hotelBooking.checkIn | date:'mediumDate'}}</span>
+          </div>
+        </div>
+        <!-- Hotel Photo -->
+        <div class="col-md-2 d-flex align-items-center justify-content-center p-2">
+          <img *ngIf="hotelBooking.hotel.photo"
+               [src]="hotelBooking.hotel.photo.url"
+               alt="{{ hotelBooking.hotel.name }}"
+               class="activity-photo">
+        </div>
+        <!-- Hotel Details -->
+        <div class="col-md-8">
+          <div class="p-3">
+            <h5 class="card-title">{{ hotelBooking.hotel.name }}</h5>
+            <p class="card-text"><small class="text-muted">{{ hotelBooking.hotel.location }}</small></p>
+            <p class="card-text check-in-out">Check-in: {{hotelBooking.checkIn | date:'mediumDate'}}</p>
+            <p class="card-text check-in-out mb-3">Check-out: {{hotelBooking.checkOut | date:'mediumDate'}}</p>
+            <a *ngIf="hotelBooking.hotel.website" [href]="hotelBooking.hotel.website" target="_blank" class="btn btn-custom-secondary btn-sm">Visit Website</a>
+          </div>
+        </div>
+        <!-- Price and Remove Button -->
+        <div class="col-md-2 d-flex flex-column align-items-end justify-content-center pr-3">
+          <div class="activity-price">{{ hotelBooking.totalPrice }} $</div>
+          <button type="button" class="btn btn-outline-danger btn-sm btn-remove" (click)="removeHotel(hotelBooking.id); $event.stopPropagation();">Remove</button>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+
+<ng-template #activityItem let-activity>
+  <div class="list-group-item">
+    <div class="row g-0">
+      <!-- Banner for Activity Type and Date at the top -->
+      <div class="col-12">
+        <div class="item-banner">
+          <span class="badge bg-secondary">{{ activity.type.toUpperCase() }}</span>
+          <span>{{ activity.date | date:'mediumDate' }}</span>
+        </div>
+      </div>
+      <!-- Activity Photo -->
+      <div class="col-md-2 d-flex align-items-center justify-content-center p-2">
+        <img *ngIf="activity.photos && activity.photos.length > 0"
+             [src]="activity.photos[0].url"
+             alt="{{ activity.name }}"
+             class="activity-photo">
+      </div>
+      <!-- Activity Details -->
+      <div class="col-md-8">
+        <div class="p-3">
+          <h5 class="card-title">{{ activity.name }}</h5>
+          <p class="card-text">{{ activity.description | slice:0:150 }}{{ activity.description.length > 150 ? '...' : ''}}</p>
+          <p class="card-text"><small class="text-muted">{{ activity.location }}</small></p>
+        </div>
+      </div>
+      <!-- Price and Remove Button -->
+      <div class="col-md-2 d-flex flex-column align-items-end justify-content-center pr-3">
+        <div class="activity-price">{{ activity.price }} $</div>
+        <button type="button" class="btn btn-outline-danger btn-sm btn-remove" (click)="removeActivity(activity.id); $event.stopPropagation();">Remove</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+
+
+<ng-template #journeyContent>
+  <div class="list-group mb-4">
+    <ng-container *ngFor="let item of sortedJourneyItems; trackBy: trackByItemId">
+      <ng-container [ngSwitch]="item.type">
+
+        <ng-container *ngSwitchCase="'flight'" [ngTemplateOutlet]="flightItem" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+        <ng-container *ngSwitchCase="'hotel'" [ngTemplateOutlet]="hotelItem" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+        <ng-container *ngSwitchCase="'activity'" [ngTemplateOutlet]="activityItem" [ngTemplateOutletContext]="{ $implicit: item }"></ng-container>
+
+      </ng-container>
+    </ng-container>
+  </div>
+</ng-template>
+
+
+  <app-flight-gallery *ngIf="showFlightSearch" (flightAdded)="toggleFlightSearch()"></app-flight-gallery>
+  <app-hotel-gallery *ngIf="showHotelSearch" (hotelAdded)="toggleHotelSearch()"></app-hotel-gallery>
+  <app-activity-gallery *ngIf="showActivitySearch" (activityAdded)="toggleActivitySearch()"></app-activity-gallery>
+</div>

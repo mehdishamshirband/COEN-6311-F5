@@ -1,0 +1,69 @@
+<div class="container mt-3">
+  <h2>Flight Search</h2>
+  <form [formGroup]="searchForm" (ngSubmit)="searchFlights()">
+    <div class="row mb-3">
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Departure city" formControlName="departure">
+      </div>
+      <div class="col">
+        <input type="text" class="form-control" placeholder="Arrival city" formControlName="arrival">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <input type="date" class="form-control" placeholder="Departure date" formControlName="departureDate">
+      </div>
+    </div>
+    <div class="row mb-3">
+      <div class="col">
+        <button type="submit" class="btn btn-custom-primary me-3">Search</button>
+        <button *ngIf="searchPerformed" type="reset" class="btn btn-custom-secondary" (click)="resetSearch()">Reset</button>
+      </div>
+    </div>
+  </form>
+
+ <div *ngIf="flightList.length > 0">
+    <h4 class="mb-3">Search Results</h4>
+    <div *ngFor="let flight of flightList" class="card mb-3">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-2 text-center">
+            <img [src]="flight.airlineLogo" alt="{{ flight.airline }}" class="airline-logo mb-2">
+            <div class="airline-name">{{ flight.airline }}</div>
+          </div>
+          <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-5 text-end">
+                <div class="flight-date-time">
+                  <div class="flight-date">{{ flight.departureDate | date: 'shortDate' }}</div>
+                  <div class="flight-time">{{ flight.departureDate | date: 'shortTime' }}</div>
+                  <div class="flight-city">{{ flight.departureCity }} ({{ flight.departureAirport }})</div>
+                </div>
+              </div>
+              <div class="col-md-2 text-center">
+                <div class="flight-duration-arrow">
+                  <i class="fas fa-arrow-right"></i>
+                  <div class="flight-duration">{{ MinToHoursMin(flight.duration) }}</div>
+                  <div class="direct-label">Direct</div>
+                </div>
+              </div>
+              <div class="col-md-5 text-start">
+                <div class="flight-date-time">
+                  <div class="flight-date">{{ flight.arrivalDate | date: 'shortDate' }}</div>
+                  <div class="flight-time">{{ flight.arrivalDate | date: 'shortTime' }}</div>
+                  <div class="flight-city">{{ flight.arrivalCity }} ({{ flight.arrivalAirport }})</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2 text-end">
+            <div class="flight-price mb-2">
+              <strong>{{ flight.price }} $</strong>
+            </div>
+            <button type="button" class="btn btn-custom-primary" (click)="addToJourney(flight); resetSearch()">Add to journey</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
