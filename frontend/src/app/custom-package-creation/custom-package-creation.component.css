@@ -39,7 +39,7 @@
 }
 
 /* Adjusts the price display for consistency */
-.flight-price, .activity-price {
+.flight-price, .activity-price, .hotel-price {
   font-size: 1.2rem;
   font-weight: bold;
 }

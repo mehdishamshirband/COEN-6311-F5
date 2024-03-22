@@ -58,12 +58,12 @@ export class TravelPackageGalleryComponent implements OnInit {
         activity.location?.toLowerCase().includes(filterValue.toLowerCase())
       ) ||
       packageData.hotels?.some(hotel =>
-        hotel.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        hotel.location?.toLowerCase().includes(filterValue.toLowerCase())
+        hotel.hotel.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
+        hotel.hotel.location?.toLowerCase().includes(filterValue.toLowerCase())
       ) ||
       packageData.flights?.some(flight =>
-        flight.departure?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        flight.arrival?.toLowerCase().includes(filterValue.toLowerCase()) ||
+        flight.departureCity?.toLowerCase().includes(filterValue.toLowerCase()) || //TODO: include country and airport too
+        flight.arrivalCity?.toLowerCase().includes(filterValue.toLowerCase()) ||
         flight.airline?.toLowerCase().includes(filterValue.toLowerCase())
       )
     );

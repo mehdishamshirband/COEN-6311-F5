@@ -114,11 +114,7 @@ import {
   zip2 as zip,
   zipAll,
   zipWith
-<<<<<<< HEAD
 } from "./chunk-ZDOIMVJD.js";
-=======
-} from "./chunk-LUMF3UN2.js";
->>>>>>> origin/master
 export {
   audit,
   auditTime,

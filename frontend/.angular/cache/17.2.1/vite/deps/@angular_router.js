@@ -1,10 +1,6 @@
 import {
   Title
-<<<<<<< HEAD
 } from "./chunk-H6XZIEJB.js";
-=======
-} from "./chunk-POWKQZCP.js";
->>>>>>> origin/master
 import {
   DOCUMENT,
   HashLocationStrategy,
@@ -13,11 +9,7 @@ import {
   LocationStrategy,
   PathLocationStrategy,
   ViewportScroller
-<<<<<<< HEAD
 } from "./chunk-EVZ7MBMK.js";
-=======
-} from "./chunk-B4W2HMKA.js";
->>>>>>> origin/master
 import {
   APP_BOOTSTRAP_LISTENER,
   APP_INITIALIZER,
@@ -85,16 +77,12 @@ import {
   ɵɵloadQuery,
   ɵɵqueryRefresh,
   ɵɵsanitizeUrlOrResourceUrl
-<<<<<<< HEAD
 } from "./chunk-QHIF2FQR.js";
 import {
   defer,
   isObservable
 } from "./chunk-V2DXGMIT.js";
 import "./chunk-UKEHM6V6.js";
-=======
-} from "./chunk-7HIWYTTE.js";
->>>>>>> origin/master
 import {
   BehaviorSubject,
   ConnectableObservable,
@@ -129,11 +117,7 @@ import {
   takeUntil,
   tap,
   throwError
-<<<<<<< HEAD
 } from "./chunk-ZDOIMVJD.js";
-=======
-} from "./chunk-LUMF3UN2.js";
->>>>>>> origin/master
 
 // node_modules/@angular/router/fesm2022/router.mjs
 var PRIMARY_OUTLET = "primary";

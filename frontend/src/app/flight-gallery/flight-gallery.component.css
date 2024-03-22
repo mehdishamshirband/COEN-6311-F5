@@ -1,5 +1,4 @@
 .card {
-  max-width: 980px;
   display: flex;
   flex-direction: row;
   align-items: center;
