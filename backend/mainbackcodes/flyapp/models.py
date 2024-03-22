@@ -17,6 +17,9 @@ class Flight(models.Model):
     class Meta:
         ordering = ["airlinename"]
 
+    def __str__(self):
+        return self.airlinename
+
 
 class Hotel(models.Model):
     hotelname = models.CharField(max_length=255)
@@ -32,6 +35,9 @@ class Hotel(models.Model):
     class Meta:
         ordering = ["hotelname"]
 
+    def __str__(self):
+        return self.hotelname
+
 
 class Activity(models.Model):
     type = models.CharField(max_length=255)
@@ -43,6 +49,9 @@ class Activity(models.Model):
     class Meta:
         ordering = ["name"]
 
+    def __str__(self):
+        return self.name
+
 
 class Package(models.Model):
     name = models.CharField(max_length=255)
@@ -50,8 +59,13 @@ class Package(models.Model):
     description = models.CharField(max_length=255)
     grade = models.CharField(max_length=255)
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.SET_NULL)
+    activity = models.ForeignKey(Activity, on_delete=models.SET_NULL, null=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    start = models.DateField()
+    end = models.DateField()
 
     class Meta:
         ordering = ["name"]
+
+    def __str__(self):
+        return self.name

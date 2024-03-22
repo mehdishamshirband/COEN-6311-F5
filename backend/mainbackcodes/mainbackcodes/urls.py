@@ -23,6 +23,7 @@ router = routers.DefaultRouter()
 router.register(r'Flight', views.Flights, basename='flights')
 router.register(r'Hotel', views.Hotels, basename='hotels')
 router.register(r'Activity', views.Activities, basename='activities')
+router.register(r'Packages', views.Packages, basename='packages')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
