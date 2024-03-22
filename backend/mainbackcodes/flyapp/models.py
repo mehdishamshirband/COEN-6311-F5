@@ -3,37 +3,43 @@ from django.db import models
 
 # Create your models here.
 
-class Flight(models.Model): #Flight information
-    airlineName = models.CharField(max_length=255)
-    flightId = models.IntegerField()
+class Flight(models.Model):
+    airlinename = models.CharField(max_length=255)
+    flightid = models.IntegerField()
     price = models.FloatField()
-    flightNumber = models.IntegerField()
-    originAirportCode = models.IntegerField()
-    destinationAirportCode = models.IntegerField()
-    availableSeats = models.IntegerField()
-    departureDateTime = models.DateField()
-    arrivalDateTime = models.DateField()
+    flightnumber = models.IntegerField()
+    originairport = models.CharField(max_length=255)
+    destinationairport = models.CharField(max_length=255)
+    availableseats = models.IntegerField()
+    departuredatetime = models.DateField()
+    arrivaldatetime = models.DateField()
 
     class Meta:
-        ordering = ["airlineName"]
+        ordering = ["airlinename"]
+
+    def __str__(self):
+        return self.airlinename
 
 
-class Hotel(models.Model): #Hotel information
-    hotelName = models.CharField(max_length=255)
-    hotelId = models.IntegerField()
+class Hotel(models.Model):
+    hotelname = models.CharField(max_length=255)
+    hotelid = models.IntegerField()
     address = models.CharField(max_length=255)
     phone = models.IntegerField()
     email = models.EmailField()
     stars = models.IntegerField()
-    pricePerDay = models.FloatField()
-    checkinTime = models.DateField()
-    checkoutTime = models.DateField()
+    priceperday = models.FloatField()
+    checkintime = models.DateField()
+    checkouttime = models.DateField()
 
     class Meta:
-        ordering = ["hotelName"]
+        ordering = ["hotelname"]
+
+    def __str__(self):
+        return self.hotelname
 
 
-class Activity(models.Model):   #Extra information or activities
+class Activity(models.Model):
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     price = models.FloatField()
@@ -42,3 +48,24 @@ class Activity(models.Model):   #Extra information or activities
 
     class Meta:
         ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class Package(models.Model):
+    name = models.CharField(max_length=255)
+    price = models.FloatField()
+    description = models.CharField(max_length=255)
+    grade = models.CharField(max_length=255)
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
+    activity = models.ManyToManyField(Activity, null=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    start = models.DateField()
+    end = models.DateField()
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name

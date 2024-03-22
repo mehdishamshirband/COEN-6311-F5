@@ -1,5 +1,5 @@
 """
-URL configuration for flyp project.
+URL configuration for mainbackcodes project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.0/topics/http/urls/
@@ -23,6 +23,7 @@ router = routers.DefaultRouter()
 router.register(r'Flight', views.Flights, basename='flights')
 router.register(r'Hotel', views.Hotels, basename='hotels')
 router.register(r'Activity', views.Activities, basename='activities')
+router.register(r'Packages', views.Packages, basename='packages')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
