@@ -59,7 +59,7 @@ class Package(models.Model):
     description = models.CharField(max_length=255)
     grade = models.CharField(max_length=255)
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
-    activity = models.ForeignKey(Activity, on_delete=models.SET_NULL, null=True)
+    activity = models.ManyToManyField(Activity, null=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
     start = models.DateField()
     end = models.DateField()
