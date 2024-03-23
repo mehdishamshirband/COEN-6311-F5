@@ -1,8 +1,7 @@
+from django.forms import ValidationError
 from rest_framework import viewsets
 from .models import Flight, Hotel, Activity, Package, Booking
 from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageSerializer, BookingSerializer
-
-
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
@@ -26,6 +25,8 @@ class Activities(viewsets.ModelViewSet):
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'], 'grade': ['icontains']}
 
+from datetime import datetime
+
 
 class Packages(viewsets.ModelViewSet):
     queryset = Package.objects.all()
@@ -35,6 +36,20 @@ class Packages(viewsets.ModelViewSet):
         # print("activity ",dict(request.POST).get("activity"))
         hotel = Hotel.objects.filter(id=int(request.data["hotel"])).first()
         flight = Flight.objects.filter(id=int(request.data["flight"])).first()
+        print(datetime.strptime(request.data.get("start"), "%Y-%m-%d").date(), hotel.checkintime, hotel.checkouttime,
+              datetime.strptime(request.data.get("end"), "%Y-%m-%d").date())
+        if datetime.strptime(request.data.get("start"),
+                             "%Y-%m-%d").date() <= hotel.checkintime <= hotel.checkouttime <= datetime.strptime(
+                request.data.get("end"), "%Y-%m-%d").date():
+            print("pass")
+        else:
+            raise ValidationError('check the date with hotel!!')
+        if datetime.strptime(request.data.get("start"),
+                             "%Y-%m-%d").date() <= flight.departuredatetime <= flight.arrivaldatetime <= datetime.strptime(
+                request.data.get("end"), "%Y-%m-%d").date():
+            print("pass")
+        else:
+            raise ValidationError('check the date with flight!!')
         inhabitancy = (hotel.checkouttime - hotel.checkintime).days
         if inhabitancy == 0:
             inhabitancy += 1
@@ -46,8 +61,11 @@ class Packages(viewsets.ModelViewSet):
                 request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
             request.data._mutable = False
         # print(request.data)
-        hotel.update(capacity=hotel.capacity - 1)
-        flight.update(availableseats=flight.availableseats - 1)
+
+        hotel.capacity -= 1
+        flight.availableseats -= 1
+        hotel.save()
+        flight.save()
         return super().create(request, *args, **kwargs)
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'grade': ['icontains']}
