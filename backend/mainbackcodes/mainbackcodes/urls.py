@@ -24,6 +24,7 @@ router.register(r'Flight', views.Flights, basename='flights')
 router.register(r'Hotel', views.Hotels, basename='hotels')
 router.register(r'Activity', views.Activities, basename='activities')
 router.register(r'Packages', views.Packages, basename='packages')
+router.register(r'Booking', views.BookingDetail, basename='booking')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
