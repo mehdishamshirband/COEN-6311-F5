@@ -29,6 +29,7 @@ class Hotel(models.Model):
     email = models.EmailField()
     stars = models.IntegerField()
     priceperday = models.FloatField()
+    capacity = models.IntegerField(default=5)
     checkintime = models.DateField()
     checkouttime = models.DateField()
 
