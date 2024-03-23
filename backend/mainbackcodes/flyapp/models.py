@@ -53,7 +53,15 @@ class Activity(models.Model):
         return self.name
 
 
+types = (
+    ('pre-made', 'PRE-MADE'),
+    ('custom', 'CUSTOM')
+)
+
+
 class Package(models.Model):
+    # ignore type field in ui (only used in backend)
+    type = models.CharField(max_length=255, choices=types, blank=True, default="CUSTOM")
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)
@@ -69,3 +77,25 @@ class Package(models.Model):
 
     def __str__(self):
         return self.name
+
+
+status = (
+    ('created', 'CREATED'),
+    ('pending', 'PENDING'),
+    ('checked', 'CHECKED')
+)
+
+
+class Booking(models.Model):
+    bookingid = models.IntegerField(unique=True)
+    customer = models.CharField(max_length=255)
+    totalcost = models.FloatField()
+    details = models.CharField(max_length=255)
+    status = models.CharField(max_length=255, choices=status, default='CREATED')
+    package = models.ManyToManyField(Package)
+
+    class Meta:
+        ordering = ["bookingid"]
+
+    def __str__(self):
+        return str(self.bookingid)
