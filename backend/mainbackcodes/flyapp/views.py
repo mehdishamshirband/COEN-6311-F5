@@ -34,18 +34,20 @@ class Packages(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # print("activity ",dict(request.POST).get("activity"))
         hotel = Hotel.objects.filter(id=int(request.data["hotel"])).first()
+        flight = Flight.objects.filter(id=int(request.data["flight"])).first()
         inhabitancy = (hotel.checkouttime - hotel.checkintime).days
         if inhabitancy == 0:
             inhabitancy += 1
         if request.data.get("type") == "custom":
             request.data._mutable = True
-            request.data["price"] = float(
-                (Hotel.objects.filter(id=int(request.data["hotel"])).first()).priceperday) * inhabitancy
-            request.data["price"] += float((Flight.objects.filter(id=int(request.data["flight"])).first()).price)
+            request.data["price"] = float(hotel.priceperday) * inhabitancy
+            request.data["price"] += float(flight.price)
             for i in dict(request.POST).get("activity"):
                 request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
             request.data._mutable = False
         # print(request.data)
+        hotel.update(capacity=hotel.capacity - 1)
+        flight.update(availableseats=flight.availableseats - 1)
         return super().create(request, *args, **kwargs)
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'grade': ['icontains']}
