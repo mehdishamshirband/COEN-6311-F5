@@ -1,3 +1,4 @@
+from django.core.mail import EmailMessage, get_connection
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpRequest, JsonResponse, QueryDict
@@ -119,10 +120,12 @@ class BookingDetail(viewsets.ModelViewSet):
             request.data["totalcost"] = str((Package.objects.filter(id=int(request.data["package"])).first()).price)
             request.data._mutable = False
 
-        email_send_booking_details("just test")
-
         # print("data:",request.data)
         return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        email_send_booking_details(self.get_object())
+        return super().update(request, *args, **kwargs)
 
 
 class PackagesModification(viewsets.ModelViewSet):
@@ -194,6 +197,7 @@ class PackagesModification(viewsets.ModelViewSet):
                 for package in updated_booking.package.iterator():
                     updated_booking.totalcost = package.price
                 updated_booking.save()
+                email_send_booking_details(updated_booking)
 
 
             else:
@@ -204,10 +208,46 @@ class PackagesModification(viewsets.ModelViewSet):
     filterset_fields = {'name': ['icontains'], 'state': ['icontains']}
 
 
-def email_send_booking_details(obj):  # user_email, object_details):
-    subject = 'Booking Details'
-    message = f"Here are the details of the Booking:\n\n{obj}"
-    from_email = settings.EMAIL_HOST_USER
-    recipient_list = ["studentnom47@gmail.com"]
+import mailtrap as mt
 
-    send_mail(subject, message, from_email, recipient_list)
+
+def email_send_booking_details(obj):
+    email_body = 'Dear Valued Customers,\n\nWe are writing to inform you of your current booking records and associated package details:\n\n'
+
+    packages = obj.package.all()
+    email_body += f'Booking ID: {obj.bookingid}\n'
+    email_body += f'Customer Name: {obj.customer}\n'
+    email_body += f'Total Cost: ${obj.totalcost}\n'
+    email_body += f'Booking Details: {obj.details}\n'
+    email_body += f'Booking Status: {obj.get_status_display()}\n'
+
+    for package in packages:
+        email_body += f'Package Name: {package.name}\n'
+        email_body += f'Package Description: {package.description}\n'
+        email_body += f'Package Price: ${package.price}\n'
+        email_body += f'Package Grade: {package.grade}\n'
+        email_body += f'Travel Period: {package.start} to {package.end}\n'
+        if package.flight:
+            email_body += f'Flight Information: {package.flight}\n'
+            email_body += f'Flight Price: {package.flight.price}\n'
+        if package.hotel:
+            email_body += f'Hotel Information: {package.hotel}\n'
+            email_body += f'Hotel Price per Days: {package.hotel.priceperday}\n'
+        if package.activity.all():
+            email_body += 'Activities Included:\n'
+            for activity in package.activity.all():
+                email_body += f'- {activity} - price : {activity.price}\n'
+        email_body += '\n'
+
+    email_body += 'Thank you for choosing us for your travel needs.\n\nBest regards,\nFlyApp'
+
+    mail = mt.Mail(
+        sender=mt.Address(email="mailtrap@demomailtrap.com", name="FlyApp Email"),
+        to=[mt.Address(email="studentnom47@gmail.com")],
+        subject="Your booking details!",
+        text=email_body,
+        category="Django Test",
+    )
+
+    client = mt.MailtrapClient(token=settings.MAILTRAP_TOKEN)
+    client.send(mail)

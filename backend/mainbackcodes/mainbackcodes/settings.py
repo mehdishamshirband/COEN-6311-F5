@@ -130,9 +130,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # email confs
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mailersend.net'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'MS_Zcjvhv@trial-v69oxl5wj02l785k.mlsender.net'
-EMAIL_HOST_PASSWORD = 'daRLpC1JNy9dRXmw'
+MAILTRAP_TOKEN="6a4e216f5041d2749db2cfcaa2dbf7b5"
