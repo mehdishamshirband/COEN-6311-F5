@@ -1,4 +1,4 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 from rest_framework import viewsets
 from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
 from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, PackageSerializer, BookingSerializer
@@ -87,6 +87,15 @@ class Packages(viewsets.ModelViewSet):
         hotel.save()
         flight.save()
         return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+
+    def partial_update(self, request, *args, **kwargs):
+        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+
+    def destroy(self, request, *args, **kwargs):
+        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'grade': ['icontains']}
 
