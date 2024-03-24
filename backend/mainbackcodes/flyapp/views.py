@@ -126,8 +126,15 @@ class BookingDetail(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
+        if self.get_object().status == "checked":
+            raise exceptions.MethodNotAllowed(detail="customer already paid!!", method=request.method)
         email_send_booking_details(self.get_object())
         return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        if self.get_object().status == "checked":
+            raise exceptions.MethodNotAllowed(detail="customer already paid!!", method=request.method)
+        return super().destroy(request, *args, **kwargs)
 
 
 class PackagesModification(viewsets.ModelViewSet):
