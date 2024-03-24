@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework import viewsets
-from .models import Flight, Hotel, Activity, Package, Booking
-from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageSerializer, BookingSerializer
+from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
+from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, PackageSerializer, BookingSerializer
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
@@ -63,9 +63,9 @@ def dynamicpricecalc(request, hotel, flight):
     # calc price dynamicly
     if request.data.get("type") == "custom":
         request.data._mutable = True
-        request.data["price"] = float(hotel.priceperday) * inhabitancy
+        request.data["price"] = float(hotel.priceperday)*inhabitancy
         request.data["price"] += float(flight.price)
-        for i in dict(request.POST).get("activity"):
+        for i in dict(request.POST).get("activity") :
             request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
         request.data._mutable = False
     # print(request.data)
@@ -103,3 +103,10 @@ class BookingDetail(viewsets.ModelViewSet):
 
         # print("data:",request.data)
         return super().create(request, *args, **kwargs)
+
+
+class PackagesModification(viewsets.ModelViewSet):
+    queryset = PackageModification.objects.all()
+    serializer_class = PackageModificationSerializer
+
+    filterset_fields = {'name': ['icontains'], 'state': ['icontains']}
