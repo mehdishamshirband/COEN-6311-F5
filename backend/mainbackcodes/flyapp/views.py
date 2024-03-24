@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.http import HttpRequest, JsonResponse, QueryDict
 from rest_framework import serializers, exceptions
 from rest_framework import viewsets
+from rest_framework.response import Response
 from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
 from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, \
     PackageSerializer, BookingSerializer
@@ -254,3 +255,27 @@ def email_send_booking_details(obj):
 
     client = mt.MailtrapClient(token=settings.MAILTRAP_TOKEN)
     client.send(mail)
+
+
+def revenueCalc(data):
+    revenue = 0
+    for records in data:
+        revenue += records.totalcost
+
+    return revenue
+
+
+class Reports(viewsets.ViewSet):
+
+    def list(self, request):
+        query = Booking.objects.filter(status="checked").all()
+        serializer = BookingSerializer(query, many=True)
+        print("fooo", serializer)
+        total = revenueCalc(query)
+        return Response({"records": serializer.data, "revenue": total})
+
+    def retrieve(self, request, pk=None):
+        queryset = Booking.objects.filter(status="checked").filter(customer=pk)
+        serializer = BookingSerializer(queryset, many=True)
+        total = revenueCalc(queryset)
+        return Response({"records": serializer.data, "revenue": total})
