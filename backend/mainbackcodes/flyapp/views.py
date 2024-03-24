@@ -1,3 +1,4 @@
+from django.http import HttpRequest, JsonResponse, QueryDict
 from rest_framework import serializers, exceptions
 from rest_framework import viewsets
 from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
@@ -61,13 +62,13 @@ def dynamicpricecalc(request, hotel, flight):
         inhabitancy += 1
 
     # calc price dynamicly
-    if request.data.get("type") == "custom":
-        request.data._mutable = True
-        request.data["price"] = float(hotel.priceperday)*inhabitancy
-        request.data["price"] += float(flight.price)
-        for i in dict(request.POST).get("activity") :
-            request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
-        request.data._mutable = False
+    # if request.data.get("type") == "custom":
+    request.data._mutable = True
+    request.data["price"] = float(hotel.priceperday)*inhabitancy
+    request.data["price"] += float(flight.price)
+    for i in dict(request.data).get("activity") :
+        request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
+    request.data._mutable = False
     # print(request.data)
     return request
 
@@ -117,5 +118,65 @@ class BookingDetail(viewsets.ModelViewSet):
 class PackagesModification(viewsets.ModelViewSet):
     queryset = PackageModification.objects.all()
     serializer_class = PackageModificationSerializer
+
+    def create(self, request, *args, **kwargs):
+        # print(request.data)
+        # print(PackageSerializer(data=request.data, partial=True).is_valid())
+        if Booking.objects.filter(package__id=request.data["package"]).first().status == "checked":
+            raise exceptions.MethodNotAllowed(
+                detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
+                method=request.method)
+
+        if PackageModification.objects.filter(package__id=request.data["package"]).first().state != "accepted":
+            raise exceptions.MethodNotAllowed(detail="you already have an active modifications request , please wait",
+                                              method=request.method)
+
+        # print("pckmod create user:",request.user)
+
+        request.data._mutable = True
+        request.data["state"] = "pending"
+        request.data["agent"] = str(request.user)
+        request.data._mutable = False
+        # print(request.data)
+        hotel, flight = packagevalidator(request)
+        request = dynamicpricecalc(request, hotel, flight)
+        print(request.data.get("price"))
+
+        # print(self.serializer_class(data=request.data).is_valid())
+        return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        # print(request.data,request.data["package"])
+        # print(Booking.objects.filter(package__id=request.data["package"]).first().status)
+        if Booking.objects.filter(package__id=request.data["package"]).first().status == "checked":
+            raise exceptions.MethodNotAllowed(
+                detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
+                method=request.method)
+
+        if self.get_object().state == "accepted":
+            raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
+        # print(self.get_object().state)
+
+        if request.data.get("state") == "rejected":
+            return super().update(request, *args, **kwargs)
+        elif request.data.get("state") == "accepted":
+
+            # print("herer",PackageSerializer(data=request.data, partial=True).is_valid())
+            updated_pck = PackageSerializer(Package.objects.filter(id=request.data.get("package")).first(),
+                                            data=request.data, partial=True)
+            updated_booking = Booking.objects.filter(package__id=1).first()
+            if updated_pck.is_valid():
+                updated_pck.save()
+                updated_booking.status = "modified"
+                # print("dada",(i for i in updated_booking.package.iterator()))
+                for package in updated_booking.package.iterator():
+                    updated_booking.totalcost = package.price
+                updated_booking.save()
+
+
+            else:
+                raise serializers.ValidationError("your package data is not valid")
+
+        return super().update(request, *args, **kwargs)
 
     filterset_fields = {'name': ['icontains'], 'state': ['icontains']}
