@@ -1,4 +1,4 @@
-from django.forms import ValidationError
+from rest_framework import serializers
 from rest_framework import viewsets
 from .models import Flight, Hotel, Activity, Package, Booking
 from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageSerializer, BookingSerializer
@@ -34,25 +34,36 @@ class Packages(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         # print("activity ",dict(request.POST).get("activity"))
-        hotel = Hotel.objects.filter(id=int(request.data["hotel"])).first()
-        flight = Flight.objects.filter(id=int(request.data["flight"])).first()
-        print(datetime.strptime(request.data.get("start"), "%Y-%m-%d").date(), hotel.checkintime, hotel.checkouttime,
-              datetime.strptime(request.data.get("end"), "%Y-%m-%d").date())
-        if datetime.strptime(request.data.get("start"),
-                             "%Y-%m-%d").date() <= hotel.checkintime <= hotel.checkouttime <= datetime.strptime(
-                request.data.get("end"), "%Y-%m-%d").date():
-            print("pass")
-        else:
-            raise ValidationError('check the date with hotel!!')
-        if datetime.strptime(request.data.get("start"),
-                             "%Y-%m-%d").date() <= flight.departuredatetime <= flight.arrivaldatetime <= datetime.strptime(
-                request.data.get("end"), "%Y-%m-%d").date():
-            print("pass")
-        else:
-            raise ValidationError('check the date with flight!!')
+        # print(request.data)
+        # print(not Hotel.objects.filter(id=request.data.get("hotel") or "0").first() and not Flight.objects.filter(id=request.data.get("flight") or "0").first() and not Activity.objects.filter(id=int(request.data.get("activity") or "0")))
+        if not Hotel.objects.filter(id=request.data.get("hotel") or "0").first() and not Flight.objects.filter(
+                id=request.data.get("flight") or "0").first() and not Activity.objects.filter(
+                id=int(request.data.get("activity") or "0")):
+            raise serializers.ValidationError('at least choose one service!!')
+
+        if request.data.get("hotel"):
+            hotel = Hotel.objects.filter(id=int(request.data["hotel"])).first()
+            if hotel.checkintime <= datetime.strptime(request.data.get("start"),
+                                                      "%Y-%m-%d").date() <= datetime.strptime(request.data.get("end"),
+                                                                                              "%Y-%m-%d").date() <= hotel.checkouttime:
+                print("pass")
+            else:
+                raise serializers.ValidationError('check the date with hotel!!')
+
+        if request.data.get("flight"):
+            flight = Flight.objects.filter(id=int(request.data["flight"])).first()
+            # print(datetime.strptime(request.data.get("start"), "%Y-%m-%d").date() , hotel.checkintime  ,hotel.checkouttime ,  datetime.strptime(request.data.get("end"), "%Y-%m-%d").date())
+            if datetime.strptime(request.data.get("start"),
+                                 "%Y-%m-%d").date() <= flight.departuredatetime <= flight.arrivaldatetime <= datetime.strptime(
+                    request.data.get("end"), "%Y-%m-%d").date():
+                print("pass")
+            else:
+                raise serializers.ValidationError('check the date with flight!!')
         inhabitancy = (hotel.checkouttime - hotel.checkintime).days
         if inhabitancy == 0:
             inhabitancy += 1
+
+        # calc price dynamicly
         if request.data.get("type") == "custom":
             request.data._mutable = True
             request.data["price"] = float(hotel.priceperday) * inhabitancy
