@@ -67,9 +67,9 @@ class Package(models.Model):
     price = models.FloatField()
     description = models.CharField(max_length=255)
     grade = models.CharField(max_length=255)
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE,null=True,blank=True)
     activity = models.ManyToManyField(Activity,null=True,blank=True)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,null=True,blank=True)
     start = models.DateField()
     end = models.DateField()
 
@@ -83,6 +83,8 @@ class Package(models.Model):
 status = (
     ('created', 'CREATED'),
     ('pending', 'PENDING'),
+    ('canceled', 'CANCELED'),
+    ('modified', 'MODIFIED'),
     ('checked', 'CHECKED')
 )
 
@@ -100,3 +102,28 @@ class Booking(models.Model):
 
     def __str__(self):
         return str(self.bookingid)
+
+state = (
+    ('pending', 'PENDING'),
+    ('rejected', 'REJECTED'),
+    ('accepted', 'ACCEPTED')
+)
+
+class PackageModification(models.Model):
+    name = models.CharField(max_length=255)
+    agent = models.CharField(max_length=255)
+    price = models.FloatField()
+    description = models.TextField()
+    state = models.CharField(max_length=255, choices=state, default='PENDING')
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, null=True, blank=True)
+    activity = models.ManyToManyField(Activity, blank=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, null=True, blank=True)
+    start = models.DateField()
+    end = models.DateField()
+    package = models.ForeignKey(Package, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
