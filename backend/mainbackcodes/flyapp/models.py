@@ -83,6 +83,8 @@ class Package(models.Model):
 status = (
     ('created', 'CREATED'),
     ('pending', 'PENDING'),
+    ('canceled', 'CANCELED'),
+    ('modified', 'MODIFIED'),
     ('checked', 'CHECKED')
 )
 
