@@ -11,8 +11,8 @@ class Flight(models.Model):
     originairport = models.CharField(max_length=255)
     destinationairport = models.CharField(max_length=255)
     availableseats = models.IntegerField()
-    departuredatetime = models.DateField()
-    arrivaldatetime = models.DateField()
+    departuredatetime = models.DateTimeField()
+    arrivaldatetime = models.DateTimeField()
 
     class Meta:
         ordering = ["airlinename"]
@@ -40,12 +40,19 @@ class Hotel(models.Model):
         return self.hotelname
 
 
+grade = (
+    ('a', 'A'),
+    ('b', 'B'),
+    ('c', 'C')
+)
+
+
 class Activity(models.Model):
     type = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)
-    grade = models.CharField(max_length=255)
+    grade = models.CharField(max_length=255, choices=grade)
 
     class Meta:
         ordering = ["name"]
@@ -66,10 +73,10 @@ class Package(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)
-    grade = models.CharField(max_length=255)
-    flight = models.ForeignKey(Flight, on_delete=models.CASCADE,null=True,blank=True)
-    activity = models.ManyToManyField(Activity,null=True,blank=True)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE,null=True,blank=True)
+    grade = models.CharField(max_length=255, choices=types)
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE, null=True, blank=True)
+    activity = models.ManyToManyField(Activity, null=True, blank=True)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, null=True, blank=True)
     start = models.DateField()
     end = models.DateField()
 
@@ -96,6 +103,7 @@ class Booking(models.Model):
     details = models.CharField(max_length=255)
     status = models.CharField(max_length=255, choices=status, default='CREATED')
     package = models.ManyToManyField(Package)
+    creationdate = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["bookingid"]
@@ -103,11 +111,13 @@ class Booking(models.Model):
     def __str__(self):
         return str(self.bookingid)
 
+
 state = (
     ('pending', 'PENDING'),
     ('rejected', 'REJECTED'),
     ('accepted', 'ACCEPTED')
 )
+
 
 class PackageModification(models.Model):
     name = models.CharField(max_length=255)
@@ -122,6 +132,7 @@ class PackageModification(models.Model):
     end = models.DateField()
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
     booking_cancellation = models.BooleanField(default=False, null=True, blank=True)
+
     class Meta:
         ordering = ["name"]
 

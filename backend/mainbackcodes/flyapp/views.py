@@ -92,6 +92,7 @@ class Packages(viewsets.ModelViewSet):
         hotel, flight = packagevalidator(request)
         request = dynamicpricecalc(request, hotel, flight)
 
+        # will move this part to post create - to do the sub after creating a booking record !! put if capacity==0 and raise error in creating booking record
         hotel.capacity -= 1
         flight.availableseats -= 1
         hotel.save()
@@ -177,6 +178,7 @@ class PackagesModification(viewsets.ModelViewSet):
         updated_booking = Booking.objects.filter(package__id=1).first()
         if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
             updated_booking.status = "canceled"
+            updated_booking.creationdate = datetime.now()
             updated_booking.save()
             return super().update(request, *args, **kwargs)
 
@@ -193,6 +195,7 @@ class PackagesModification(viewsets.ModelViewSet):
             if updated_pck.is_valid():
                 updated_pck.save()
                 updated_booking.status = "modified"
+                updated_booking.creationdate = datetime.now()
                 # print("dada",(i for i in updated_booking.package.iterator()))
                 for package in updated_booking.package.iterator():
                     updated_booking.totalcost = package.price
