@@ -121,7 +121,7 @@ class PackageModification(models.Model):
     start = models.DateField()
     end = models.DateField()
     package = models.ForeignKey(Package, on_delete=models.CASCADE)
-
+    booking_cancellation = models.BooleanField(default=False, null=True, blank=True)
     class Meta:
         ordering = ["name"]
 

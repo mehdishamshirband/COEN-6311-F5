@@ -153,18 +153,26 @@ class PackagesModification(viewsets.ModelViewSet):
                 detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
                 method=request.method)
 
-        if self.get_object().state == "accepted":
-            raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
-        # print(self.get_object().state)
+        # if self.get_object().state == "accepted":
+        #     raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
+        # # print(self.get_object().state)
+
+        updated_booking = Booking.objects.filter(package__id=1).first()
+        if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
+                updated_booking.status = "canceled"
+                updated_booking.save()
+                return super().update(request, *args, **kwargs)
 
         if request.data.get("state") == "rejected":
             return super().update(request, *args, **kwargs)
         elif request.data.get("state") == "accepted":
 
             # print("herer",PackageSerializer(data=request.data, partial=True).is_valid())
+            request.data._mutable = True
+            request.data["price"] = Package.objects.filter(id=request.data.get("package")).first().price
+            request.data._mutable = False
             updated_pck = PackageSerializer(Package.objects.filter(id=request.data.get("package")).first(),
                                             data=request.data, partial=True)
-            updated_booking = Booking.objects.filter(package__id=1).first()
             if updated_pck.is_valid():
                 updated_pck.save()
                 updated_booking.status = "modified"
