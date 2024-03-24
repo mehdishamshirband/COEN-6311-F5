@@ -1,8 +1,14 @@
+from django.core.mail import EmailMessage, get_connection
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpRequest, JsonResponse, QueryDict
 from rest_framework import serializers, exceptions
 from rest_framework import viewsets
 from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
-from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, PackageSerializer, BookingSerializer
+from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, \
+    PackageSerializer, BookingSerializer
+
+
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
@@ -25,6 +31,7 @@ class Activities(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'], 'grade': ['icontains']}
+
 
 from datetime import datetime
 
@@ -64,13 +71,14 @@ def dynamicpricecalc(request, hotel, flight):
     # calc price dynamicly
     # if request.data.get("type") == "custom":
     request.data._mutable = True
-    request.data["price"] = float(hotel.priceperday)*inhabitancy
+    request.data["price"] = float(hotel.priceperday) * inhabitancy
     request.data["price"] += float(flight.price)
-    for i in dict(request.data).get("activity") :
+    for i in dict(request.data).get("activity"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
     request.data._mutable = False
     # print(request.data)
     return request
+
 
 class Packages(viewsets.ModelViewSet):
     queryset = Package.objects.all()
@@ -80,9 +88,11 @@ class Packages(viewsets.ModelViewSet):
         # print("activity ",dict(request.POST).get("activity"))
         # print(request.data)
         # print(not Hotel.objects.filter(id=request.data.get("hotel") or "0").first() and not Flight.objects.filter(id=request.data.get("flight") or "0").first() and not Activity.objects.filter(id=int(request.data.get("activity") or "0")))
+
         hotel, flight = packagevalidator(request)
         request = dynamicpricecalc(request, hotel, flight)
 
+        # will move this part to post create - to do the sub after creating a booking record !! put if capacity==0 and raise error in creating booking record
         hotel.capacity -= 1
         flight.availableseats -= 1
         hotel.save()
@@ -113,6 +123,10 @@ class BookingDetail(viewsets.ModelViewSet):
 
         # print("data:",request.data)
         return super().create(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        email_send_booking_details(self.get_object())
+        return super().update(request, *args, **kwargs)
 
 
 class PackagesModification(viewsets.ModelViewSet):
@@ -159,13 +173,14 @@ class PackagesModification(viewsets.ModelViewSet):
 
         # if self.get_object().state == "accepted":
         #     raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
-        # # print(self.get_object().state)
+        # print(self.get_object().state)
 
         updated_booking = Booking.objects.filter(package__id=1).first()
         if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
-                updated_booking.status = "canceled"
-                updated_booking.save()
-                return super().update(request, *args, **kwargs)
+            updated_booking.status = "canceled"
+            updated_booking.creationdate = datetime.now()
+            updated_booking.save()
+            return super().update(request, *args, **kwargs)
 
         if request.data.get("state") == "rejected":
             return super().update(request, *args, **kwargs)
@@ -180,10 +195,12 @@ class PackagesModification(viewsets.ModelViewSet):
             if updated_pck.is_valid():
                 updated_pck.save()
                 updated_booking.status = "modified"
+                updated_booking.creationdate = datetime.now()
                 # print("dada",(i for i in updated_booking.package.iterator()))
                 for package in updated_booking.package.iterator():
                     updated_booking.totalcost = package.price
                 updated_booking.save()
+                email_send_booking_details(updated_booking)
 
 
             else:
@@ -192,3 +209,48 @@ class PackagesModification(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     filterset_fields = {'name': ['icontains'], 'state': ['icontains']}
+
+
+import mailtrap as mt
+
+
+def email_send_booking_details(obj):
+    email_body = 'Dear Valued Customers,\n\nWe are writing to inform you of your current booking records and associated package details:\n\n'
+
+    packages = obj.package.all()
+    email_body += f'Booking ID: {obj.bookingid}\n'
+    email_body += f'Customer Name: {obj.customer}\n'
+    email_body += f'Total Cost: ${obj.totalcost}\n'
+    email_body += f'Booking Details: {obj.details}\n'
+    email_body += f'Booking Status: {obj.get_status_display()}\n'
+
+    for package in packages:
+        email_body += f'Package Name: {package.name}\n'
+        email_body += f'Package Description: {package.description}\n'
+        email_body += f'Package Price: ${package.price}\n'
+        email_body += f'Package Grade: {package.grade}\n'
+        email_body += f'Travel Period: {package.start} to {package.end}\n'
+        if package.flight:
+            email_body += f'Flight Information: {package.flight}\n'
+            email_body += f'Flight Price: {package.flight.price}\n'
+        if package.hotel:
+            email_body += f'Hotel Information: {package.hotel}\n'
+            email_body += f'Hotel Price per Days: {package.hotel.priceperday}\n'
+        if package.activity.all():
+            email_body += 'Activities Included:\n'
+            for activity in package.activity.all():
+                email_body += f'- {activity} - price : {activity.price}\n'
+        email_body += '\n'
+
+    email_body += 'Thank you for choosing us for your travel needs.\n\nBest regards,\nFlyApp'
+
+    mail = mt.Mail(
+        sender=mt.Address(email="mailtrap@demomailtrap.com", name="FlyApp Email"),
+        to=[mt.Address(email="studentnom47@gmail.com")],
+        subject="Your booking details!",
+        text=email_body,
+        category="Django Test",
+    )
+
+    client = mt.MailtrapClient(token=settings.MAILTRAP_TOKEN)
+    client.send(mail)
