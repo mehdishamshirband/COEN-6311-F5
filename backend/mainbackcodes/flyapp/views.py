@@ -1,8 +1,13 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpRequest, JsonResponse, QueryDict
 from rest_framework import serializers, exceptions
 from rest_framework import viewsets
 from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
-from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, PackageSerializer, BookingSerializer
+from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, \
+    PackageSerializer, BookingSerializer
+
+
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
@@ -25,6 +30,7 @@ class Activities(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'], 'grade': ['icontains']}
+
 
 from datetime import datetime
 
@@ -64,13 +70,14 @@ def dynamicpricecalc(request, hotel, flight):
     # calc price dynamicly
     # if request.data.get("type") == "custom":
     request.data._mutable = True
-    request.data["price"] = float(hotel.priceperday)*inhabitancy
+    request.data["price"] = float(hotel.priceperday) * inhabitancy
     request.data["price"] += float(flight.price)
-    for i in dict(request.data).get("activity") :
+    for i in dict(request.data).get("activity"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
     request.data._mutable = False
     # print(request.data)
     return request
+
 
 class Packages(viewsets.ModelViewSet):
     queryset = Package.objects.all()
@@ -80,6 +87,7 @@ class Packages(viewsets.ModelViewSet):
         # print("activity ",dict(request.POST).get("activity"))
         # print(request.data)
         # print(not Hotel.objects.filter(id=request.data.get("hotel") or "0").first() and not Flight.objects.filter(id=request.data.get("flight") or "0").first() and not Activity.objects.filter(id=int(request.data.get("activity") or "0")))
+
         hotel, flight = packagevalidator(request)
         request = dynamicpricecalc(request, hotel, flight)
 
@@ -110,6 +118,8 @@ class BookingDetail(viewsets.ModelViewSet):
             request.data._mutable = True
             request.data["totalcost"] = str((Package.objects.filter(id=int(request.data["package"])).first()).price)
             request.data._mutable = False
+
+        email_send_booking_details("just test")
 
         # print("data:",request.data)
         return super().create(request, *args, **kwargs)
@@ -159,13 +169,13 @@ class PackagesModification(viewsets.ModelViewSet):
 
         # if self.get_object().state == "accepted":
         #     raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
-        # # print(self.get_object().state)
+        # print(self.get_object().state)
 
         updated_booking = Booking.objects.filter(package__id=1).first()
         if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
-                updated_booking.status = "canceled"
-                updated_booking.save()
-                return super().update(request, *args, **kwargs)
+            updated_booking.status = "canceled"
+            updated_booking.save()
+            return super().update(request, *args, **kwargs)
 
         if request.data.get("state") == "rejected":
             return super().update(request, *args, **kwargs)
@@ -192,3 +202,12 @@ class PackagesModification(viewsets.ModelViewSet):
         return super().update(request, *args, **kwargs)
 
     filterset_fields = {'name': ['icontains'], 'state': ['icontains']}
+
+
+def email_send_booking_details(obj):  # user_email, object_details):
+    subject = 'Booking Details'
+    message = f"Here are the details of the Booking:\n\n{obj}"
+    from_email = settings.EMAIL_HOST_USER
+    recipient_list = ["studentnom47@gmail.com"]
+
+    send_mail(subject, message, from_email, recipient_list)
