@@ -5,10 +5,12 @@ import { ActivatedRoute } from '@angular/router';
 import { TravelPackageService } from '../services/travel-package.service';
 import { TravelPackage, MergedItem } from '../interfaces/booking.interface';
 import {RouterModule} from '@angular/router';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, MatDatepickerModule, MatNativeDateModule],
   templateUrl: './package-details.component.html',
   styleUrl: './package-details.component.css'
 })

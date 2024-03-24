@@ -21,6 +21,7 @@ import { HotelGalleryComponent } from "./hotel-gallery/hotel-gallery.component";
 import { ActivityGalleryComponent } from "./activity-gallery/activity-gallery.component";
 import { CustomPackageCreationComponent } from "./custom-package-creation/custom-package-creation.component";
 import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 
 @NgModule({
@@ -46,7 +47,7 @@ import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
     CustomPackageCreationComponent,
     MinToHoursMinPipe,
   ],
-  providers: [BookingService, TravelPackageService, ScrollToTopService],
+  providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync()],
   exports: [
   ],
   bootstrap: [AppComponent]

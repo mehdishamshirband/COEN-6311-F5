@@ -12,6 +12,7 @@ import {CustomPackageCreationComponent} from "./custom-package-creation/custom-p
 import { UserLoginComponent } from './user-login/user-login.component';
 import { UserSignUpComponent } from "./user-sign-up/user-sign-up.component";
 import { ForgotPasswordComponent } from "./forgot-password/forgot-password.component";
+import { CartComponent} from "./cart/cart.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'bookings', component: UserBookingsListComponent},
   { path: 'search', component: TravelPackageGalleryComponent},
   { path: 'package-details/:id', component: TravelPackageDetailsComponent },
+  { path: 'cart', component: CartComponent },
   { path: 'custom-package/flights', component: FlightGalleryComponent },
   { path: 'custom-package/hotels', component: HotelGalleryComponent },
   { path: 'custom-package/activities', component: ActivityGalleryComponent },

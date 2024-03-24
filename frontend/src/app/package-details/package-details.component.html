@@ -5,14 +5,14 @@
       Travel Package
     </div>
     <div class="card-body">
-      <div class="d-flex">
+      <div class="d-flex flex-row">
         <!-- Image container -->
         <div *ngIf="travelPackage.photos && travelPackage.photos.length > 0; else noPhoto" class="flex-shrink-0 mr-3 me-4">
           <img [src]="photoUrl" class="img-fluid rounded-2" [alt]="photoCaption" style="object-fit: cover; width: 380px; height: 380px;">
         </div>
         <!-- Text content -->
 
-        <div class="d-flex align-items-center flex-row">
+        <div class="d-flex align-items-center flex-row p-2">
           <div class="flex-grow-1">
             <h4 class="card-title mb-3">{{ travelPackage!.name }}</h4>
             <p class="card-text">{{ travelPackage!.description }}</p>
@@ -20,12 +20,51 @@
             <p class="card-text"><b>Travel Dates: {{ travelPackage!.startingDate | date: 'short'}} - {{ travelPackage!.endingDate | date: 'short' }}</b></p>
           </div>
         </div>
-        <!-- Button to reserve the package -->
-        <div class="align-top">
-          <button class="btn btn-primary mb-3 " [routerLink]="['/bookings']" (click)="reservePackage()">Reserve</button>
+
+        <div class="d-flex flex-column">
+
+          <p class="card-text">
+            Start reservation :
+          </p>
+
+          <!---
+          <div class="p-0 align-items-center">
+            <p class="card-text">From :
+            <input matInput [matDatepicker]="picker" placeholder="MM/DD/YYYY">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            </p>
+          </div>
+
+          <div class="p-0 align-items-center">
+            <p class="card-text">To :
+            <input matInput [matDatepicker]="picker" placeholder="MM/DD/YYYY">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            </p>
+          </div>
+          --->
+          <div class="p-0 align-items-center">
+            <p class="card-text">Number of adult :
+            <input type="number" min="1" max="10" step="1" value="1">
+            </p>
+          </div>
+
+          <div class="p-0 align-items-center">
+            <p class="card-text">Number of children :
+            <input type="number" min="0" max="10" step="1" value="0">
+            </p>
+          </div>
+
+          <div class="p-2">
+            <button class="btn btn-primary mb-3 " [routerLink]="['/cart']" (click)="reservePackage()">Add to Cart</button>
+          </div>
+
         </div>
+
       </div>
     </div>
+
   </div>
 
    <div class="card mt-4">
