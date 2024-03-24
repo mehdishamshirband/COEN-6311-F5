@@ -127,6 +127,10 @@ class PackagesModification(viewsets.ModelViewSet):
                 detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
                 method=request.method)
 
+        updated_booking = Booking.objects.filter(package__id=1).first()
+        updated_booking.status = "pending"
+        updated_booking.save()
+
         if PackageModification.objects.filter(package__id=request.data["package"]).first().state != "accepted":
             raise exceptions.MethodNotAllowed(detail="you already have an active modifications request , please wait",
                                               method=request.method)
