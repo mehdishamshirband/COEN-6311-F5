@@ -1,0 +1,93 @@
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  padding-top: 20px;
+}
+
+.info-box {
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+  border-radius: 8px;
+
+}
+
+.text-sm-end {
+  padding-right: 50px;
+}
+
+.form-control {
+  border-radius: 5px;
+}
+
+.form-label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+button {
+  margin-top: 20px; /* Space between the form and buttons */
+  border-radius: 5px;
+}
+
+.btn {
+  margin-bottom: 10px; /* Space between buttons */
+}
+
+
+.floating-label {
+  position: relative;
+}
+
+.floating-label label {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  padding: 7px;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: transparent;
+  border-radius: 3px;
+  color: #777;
+}
+
+.floating-label input:focus + label,
+.floating-label input.has-value + label,
+.floating-label label.active {
+  top: -16px;
+  left: 7px;
+  font-size: 75%;
+  color: #777;
+  background: white;
+}
+
+.floating-label input {
+  border-radius: 5px;
+  margin-bottom: 20px;
+  min-height: 45px;
+}
+
+/* Styling the input field when it is in focus */
+.floating-label input:focus {
+  outline: none !important;
+  border-color: #000000;
+}
+
+/* This is to ensure the label has a background when the input is focused and label is floating */
+.floating-label input:focus + label {
+  padding: 2px 4px;
+}
+
+/* Adjust padding if necessary */
+.floating-label input::placeholder {
+  color: transparent;
+}
+
+textarea:focus, input:focus{
+  outline: none !important;
+}
+
+.high-input {
+  min-height: 50px;
+}
