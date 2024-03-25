@@ -38,9 +38,10 @@
     </div>
   </div>
 
+  <!-- TODO: add mandatory fields. Same for hotels and flights -->
   <!-- Edit or Add Activity Form -->
   <div *ngIf="editingActivity" class="card p-3 mb-3">
-    <h2 class="card-title mb-3">{{editingActivity.id ? 'Edit' : 'Add New'}} Activity</h2>
+    <h2 class="card-title mb-3">{{newActivity ? 'Add New' : 'Edit'}} Activity</h2>
     <form (ngSubmit)="saveActivity()" class="card-body custom-form">
       <div class="mb-3">
         <label for="activityName" class="form-label">Name:</label>
@@ -84,7 +85,7 @@
   </div>
 
   <!-- Button to add new activity, visible when not currently editing/adding -->
-  <div *ngIf="!editingActivity" class="mb-3">
+  <div *ngIf="!editingActivity" class="mb-0">
     <button (click)="initNewActivity()" class="btn btn-custom-primary">Add Activity</button>
   </div>
 </div>

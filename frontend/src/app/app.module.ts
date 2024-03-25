@@ -23,6 +23,10 @@ import { CustomPackageCreationComponent } from "./custom-package-creation/custom
 import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { HttpClientModule } from '@angular/common/http';
+import {AgentFlightManagementComponent} from "./agent-flight-management/agent-flight-management.component";
+import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
+import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
+import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
 
 @NgModule({
   declarations: [
@@ -47,6 +51,7 @@ import { HttpClientModule } from '@angular/common/http';
     ActivityGalleryComponent,
     CustomPackageCreationComponent,
     MinToHoursMinPipe,
+    UserAccountInformationComponent
   ],
   providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync()],
   exports: [

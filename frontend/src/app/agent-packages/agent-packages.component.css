@@ -8,50 +8,6 @@
   max-width: 1000px; /* Maximum width of the content, adjust as needed */
 }
 
-/* Spacing and styling for the list group */
-.list-group-item {
-  margin-bottom: 10px; /* Adds space between list items */
-  border-radius: 0.5rem; /* Rounds the corners of the list items */
-  transition: transform 0.2s; /* Smooth transition for hover effect */
-}
-
-.list-group-item:hover {
-  transform: scale(1.02); /* Slightly enlarges the item on hover */
-  background-color: #f8f9fa; /* Changes background color on hover */
-}
-
-.list-group-item:focus {
-  background-color: #e9ecef;
-}
-
-.icon-container {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Adjust the space between icons */
-}
-
-/* Styling for the pen icon to indicate editability */
-.fa-pen {
-  color: #0d6efd; /* Bootstrap primary color for consistency */
-  cursor: pointer; /* Indicates the icon is clickable */
-}
-.fa-trash {
-  color: #dc3545;
-  cursor: pointer;
-}
-
-.fa-chevron-down {
-  cursor: pointer;
-}
-
-.fa-chevron-up {
-  cursor: pointer;
-}
-
-.interactive-section h5 {
-  cursor: pointer;
-}
-
 .custom-form {
   box-shadow: none !important; /* Remove shadow */
   padding: 0 !important;
@@ -64,25 +20,6 @@ form {
   border-radius: 0.5rem; /* Rounds the corners of the form */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow to the form */
   margin-bottom: 20px; /* Adds space below the form */
-}
-
-input[type="text"], input[type="number"], .form-control {
-  margin-bottom: 15px; /* Adds space below input fields */
-}
-
-/* General button styling for consistency */
-button {
-  margin-right: 10px; /* Adds space to the right of buttons */
-}
-
-/* Add and Cancel button specific styling */
-.btn-primary, .btn-secondary {
-  border-radius: 20px; /* Makes buttons more pill-shaped */
-}
-
-/* Enhances visual feedback for clickable items */
-.btn:hover, .list-group-item-action:hover {
-  opacity: 0.9; /* Slightly reduces opacity on hover */
 }
 
 .airline-logo {
@@ -102,5 +39,8 @@ button {
 
 .flight-price strong {
   font-size: 1.5rem; /* Large text for price */
-  color: #333; /* Dark text for emphasis */
+}
+
+.card {
+  border-color: #6c757d;
 }

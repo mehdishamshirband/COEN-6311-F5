@@ -73,7 +73,7 @@ class Package(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)
-    grade = models.CharField(max_length=255, choices=types)
+    grade = models.CharField(max_length=255, choices=grade)
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE, null=True, blank=True)
     activity = models.ManyToManyField(Activity, null=True, blank=True)
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, null=True, blank=True)
@@ -138,3 +138,10 @@ class PackageModification(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Notification(models.Model):
+    sender = models.CharField(max_length=255)  # ForeignKey(User, related_name='sender', on_delete=models.CASCADE)
+    recipient = models.CharField(max_length=255)  # ForeignKey(User, related_name='recipient', on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)

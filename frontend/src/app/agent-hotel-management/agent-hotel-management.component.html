@@ -15,9 +15,11 @@
                   <h5 class="card-title">{{ booking.hotel.name }}</h5>
                   <p class="card-text"><small class="text-muted">{{ booking.hotel.location }}</small></p>
                   <p class="card-text">Check-in: {{ booking.checkIn | date: 'longDate' }} - Check-out: {{ booking.checkOut | date: 'longDate' }}</p>
-                  <p class="card-text"><strong>Total: ${{ booking.totalPrice }}</strong></p>
                 </div>
                 <div class="text-end">
+                  <div class="hotel-price mb-2">
+                    <strong>${{ booking.totalPrice }}</strong>
+                  </div>
                   <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEditingHotelBooking(booking.id, $event)">Edit</button>
                     <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteHotelBooking(i, $event)">Delete</button>
@@ -32,7 +34,7 @@
 
   <!-- Edit or Add Hotel Booking Form -->
     <div *ngIf="editingHotelBooking" class="card p-3 mb-3">
-      <h2 class="card-title mb-3">{{editingHotelBooking.id ? 'Edit' : 'Add New'}} Hotel Booking</h2>
+      <h2 class="card-title mb-3">{{newHotelBooking ? 'Add New' : 'Edit'}} Hotel Booking</h2>
       <form (ngSubmit)="saveHotelBooking()" class="card-body custom-form">
         <!-- Hotel Name -->
         <div class="mb-3">
@@ -79,7 +81,7 @@
     </div>
 
     <!-- Button to add new hotel booking, visible when not currently editing/adding -->
-    <div *ngIf="!editingHotelBooking" class="mb-3">
+    <div *ngIf="!editingHotelBooking" class="mb-0">
       <button (click)="initNewHotelBooking()" class="btn btn-custom-primary">Add Hotel Booking</button>
     </div>
   </div>
