@@ -99,7 +99,7 @@
           <label [class.active]="user.phone" for="phone">Phone</label>
         </div>
         <div class="title-location mt-4 mb-4"><h5>Location</h5></div>
-         <div class="form-group floating-label mb-3">
+        <div class="form-group floating-label mb-3">
           <input type="text" class="form-control" id="country" [(ngModel)]="user.country" name="country" #countryInput (blur)="checkIfEmpty(countryInput)">
           <label [class.active]="user.country" for="country">Country</label>
         </div>
@@ -118,6 +118,11 @@
         <button class="btn btn-custom-primary" style="margin-right: 4px" (click)="saveChanges()">Save Changes</button>
         <button class="btn btn-custom-secondary" style="margin-left: 4px" (click)="toggleEditMode()">Cancel</button>
       </form>
+    </div>
+    <div class="section-delete-account mt-5">
+      <hr>
+      <div class="title-delete-account"><h5>Account Deletion</h5></div>
+      <button class="btn btn-custom-primary" (click)="confirmAccountDeletion($event)">Delete account</button>
     </div>
   </div>
 </div>
