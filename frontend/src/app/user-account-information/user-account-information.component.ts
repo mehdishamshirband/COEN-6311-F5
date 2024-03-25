@@ -3,6 +3,7 @@ import {NavBarComponent} from "../navbar/navbar.component";
 import {User} from "../interfaces/user.interface";
 import { FormsModule } from "@angular/forms";
 import {CommonModule, DatePipe} from "@angular/common";
+import {UserService} from "../services/user.service";
 
 @Component({
   selector: 'app-user-account-information',
@@ -20,7 +21,7 @@ import {CommonModule, DatePipe} from "@angular/common";
 export class UserAccountInformationComponent implements OnInit {
   user: User = {
     id: 0,
-    emailAddress: 'benjamin.vauchel.51@gmail.com', //TODO: delete
+    emailAddress: '',
     firstName: '',
     lastName: '',
     birthDate: new Date(0),
@@ -31,11 +32,12 @@ export class UserAccountInformationComponent implements OnInit {
     zipcode: ''
   };
 
-    editMode = false;
+  editMode = false;
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit(): void {
+    this.user = this.userService.getUserSample();
   }
 
   toggleEditMode(): void {
@@ -53,5 +55,15 @@ export class UserAccountInformationComponent implements OnInit {
     } else {
       inputElement.classList.remove('has-value');
     }
+  }
+
+  confirmAccountDeletion(event: Event) {
+   event.stopPropagation();
+    if (confirm('Are you sure you want to delete your account? This operation is irreversible.')) {
+      this.deleteAccount();
+    }
+  }
+  deleteAccount() {
+    //TODO: backend to delete account
   }
 }

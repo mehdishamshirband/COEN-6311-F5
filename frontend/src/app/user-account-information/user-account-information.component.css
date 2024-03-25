@@ -74,18 +74,21 @@ button {
   border-color: #000000;
 }
 
-/* This is to ensure the label has a background when the input is focused and label is floating */
-.floating-label input:focus + label {
-  padding: 2px 4px;
+.form-control:focus {
+  outline: none !important;
+  border-color: #000000;
 }
 
-/* Adjust padding if necessary */
 .floating-label input::placeholder {
   color: transparent;
 }
 
 textarea:focus, input:focus{
   outline: none !important;
+}
+
+.form-control:focus {
+  box-shadow: none;
 }
 
 .high-input {
