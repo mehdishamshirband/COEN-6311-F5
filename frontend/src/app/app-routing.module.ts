@@ -12,6 +12,9 @@ import {CustomPackageCreationComponent} from "./custom-package-creation/custom-p
 import { UserLoginComponent } from './user-login/user-login.component';
 import { UserSignUpComponent } from "./user-sign-up/user-sign-up.component";
 import { ForgotPasswordComponent } from "./forgot-password/forgot-password.component";
+import { AgentActivityManagementComponent } from "./agent-activity-management/agent-activity-management.component";
+import { AgentFlightManagementComponent } from "./agent-flight-management/agent-flight-management.component";
+import { AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -19,13 +22,17 @@ const routes: Routes = [
   { path: 'bookings', component: UserBookingsListComponent},
   { path: 'search', component: TravelPackageGalleryComponent},
   { path: 'package-details/:id', component: TravelPackageDetailsComponent },
-  { path: 'custom-package/flights', component: FlightGalleryComponent },
-  { path: 'custom-package/hotels', component: HotelGalleryComponent },
-  { path: 'custom-package/activities', component: ActivityGalleryComponent },
+  { path: 'custom-package/flights', component: FlightGalleryComponent }, //TODO: delete
+  { path: 'custom-package/hotels', component: HotelGalleryComponent }, //TODO: delete
+  { path: 'custom-package/activities', component: ActivityGalleryComponent }, //TODO: delete
   { path: 'custom-package', component: CustomPackageCreationComponent },
   { path: 'login', component: UserLoginComponent },
   { path: 'signup', component: UserSignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'agent-packages/activities', component: AgentActivityManagementComponent },
+  { path: 'agent-packages/flights', component: AgentFlightManagementComponent },
+  { path: 'agent-packages/hotels', component: AgentHotelManagementComponent },
+
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];
 

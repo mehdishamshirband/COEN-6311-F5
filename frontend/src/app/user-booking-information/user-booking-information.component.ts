@@ -52,7 +52,7 @@ export class UserBookingInformationComponent implements OnInit {
       mergedItems.push({ ...hotel, sortDate: hotel.checkIn, type: 'Hotel' });
     });
 
-    activities.forEach(activity => {
+    activities?.forEach(activity => {
       mergedItems.push({ ...activity, sortDate: activity.date, type: 'Activity' });
     });
 

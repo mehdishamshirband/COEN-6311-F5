@@ -1,0 +1,95 @@
+<div class="content-container mt-3">
+  <!-- Flight cards display -->
+  <div class="row">
+    <div class="col-md-12" *ngFor="let flight of flights; let i = index">
+      <div class="card mb-3 shadow-sm">
+        <div class="row g-0 align-items-center">
+          <div class="col-md-2">
+            <img *ngIf="flight.airlineLogo" [src]="flight.airlineLogo" class="img-fluid rounded-start" alt="{{ flight.airline }}">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ flight.airline }}</h5>
+              <p class="card-text">{{ flight.departureCity }}, {{ flight.departureCountry }} ({{ flight.departureAirport }}) - {{ flight.arrivalCity }}, {{ flight.arrivalCountry }} ({{ flight.arrivalAirport }})</p>
+              <p class="card-text">Departure Date: {{ flight.departureDate | date:'mediumDate' }} - Arrival Date: {{ flight.arrivalDate | date:'mediumDate' }}</p>
+              <p class="card-text">Duration: {{ flight.duration }} min</p>
+            </div>
+          </div>
+          <div class="col-md-2 text-end">
+            <div class="card-body">
+              <p class="card-text"><strong>${{ flight.price }}</strong></p>
+                <div class="btn-group">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="startEditingFlight(flight.id, $event)">Edit</button>
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteFlight(i, $event)">Delete</button>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit or Add Flight Form -->
+  <div *ngIf="editingFlight" class="card p-3 mb-3">
+    <h2 class="card-title mb-3">{{editingFlight.id ? 'Edit Flight' : 'Add New Flight'}}</h2>
+    <form (ngSubmit)="saveFlight()" class="card-body custom-form">
+      <div class="mb-3">
+        <label for="airline" class="form-label">Airline:</label>
+        <input type="text" class="form-control" id="airline" [(ngModel)]="editingFlight.airline" name="airline" required>
+      </div>
+      <div class="mb-3">
+        <label for="airlineLogo" class="form-label">Airline Logo URL:</label>
+        <input type="text" class="form-control" id="airlineLogo" [(ngModel)]="editingFlight.airlineLogo" name="airlineLogo">
+      </div>
+      <!-- Add input fields for the rest of the flight attributes -->
+      <div class="mb-3">
+        <label for="departureAirport" class="form-label">Departure Airport:</label>
+        <input type="text" class="form-control" id="departureAirport" [(ngModel)]="editingFlight.departureAirport" name="departureAirport" required>
+      </div>
+      <div class="mb-3">
+        <label for="departureCity" class="form-label">Departure City:</label>
+        <input type="text" class="form-control" id="departureCity" [(ngModel)]="editingFlight.departureCity" name="departureCity" required>
+      </div>
+      <div class="mb-3">
+        <label for="departureCountry" class="form-label">Departure Country:</label>
+        <input type="text" class="form-control" id="departureCountry" [(ngModel)]="editingFlight.departureCountry" name="departureCountry" required>
+      </div>
+      <div class="mb-3">
+        <label for="departureDate" class="form-label">Departure Date:</label>
+        <input type="date" class="form-control" id="departureDate" [(ngModel)]="editingFlight.departureDate" name="departureDate" required> <!-- TODO: SET THE TIME AS WELL -->
+      </div>
+      <div class="mb-3">
+        <label for="arrivalAirport" class="form-label">Arrival Airport:</label>
+        <input type="text" class="form-control" id="arrivalAirport" [(ngModel)]="editingFlight.arrivalAirport" name="arrivalAirport" required>
+      </div>
+      <div class="mb-3">
+        <label for="arrivalCity" class="form-label">Arrival City:</label>
+        <input type="text" class="form-control" id="arrivalCity" [(ngModel)]="editingFlight.arrivalCity" name="arrivalCity" required>
+      </div>
+      <div class="mb-3">
+        <label for="arrivalCountry" class="form-label">Arrival Country:</label>
+        <input type="text" class="form-control" id="arrivalCountry" [(ngModel)]="editingFlight.arrivalCountry" name="arrivalCountry" required>
+      </div>
+      <div class="mb-3">
+        <label for="arrivalDate" class="form-label">Arrival Date:</label>
+        <input type="date" class="form-control" id="arrivalDate" [(ngModel)]="editingFlight.arrivalDate" name="arrivalDate" required> <!-- TODO: SET THE TIME AS WELL-->
+      </div>
+      <div class="mb-3">
+        <label for="duration" class="form-label">Duration (min):</label>
+        <input type="number" class="form-control" id="duration" [(ngModel)]="editingFlight.duration" name="duration" required>
+      </div>
+      <div class="mb-3">
+        <label for="price" class="form-label">Price:</label>
+        <input type="number" class="form-control" id="price" [(ngModel)]="editingFlight.price" name="price" required>
+      </div>
+      <div class="text-end">
+        <button type="submit" class="btn btn-custom-primary me-2">Save Flight</button>
+        <button type="button" class="btn btn-custom-secondary" (click)="cancelEditingFlight()">Cancel</button>
+      </div>
+    </form>
+  </div>
+  <!-- Button to add new flight, visible when not currently editing/adding -->
+  <div *ngIf="!editingFlight" class="mb-3">
+    <button (click)="initNewFlight()" class="btn btn-custom-primary">Add Flight</button>
+  </div>
+</div>

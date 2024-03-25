@@ -32,6 +32,11 @@ body {
   background-color: darkgreen !important; /* Active link background color */
 }
 
+.btn-remove {
+  margin-top: 10px;
+  border-radius: 100px;
+}
+
 .btn-custom-primary {
   padding: 5px 25px; /* Increase padding for larger button size */
   font-size: 1rem; /* Increase font size for larger text */
@@ -43,7 +48,8 @@ body {
 }
 
 .btn-custom-primary:hover {
-  background-color: #333333;
+  background-color: #333333 !important;
+  color: white !important;
 }
 
 .btn-custom-primary:focus {

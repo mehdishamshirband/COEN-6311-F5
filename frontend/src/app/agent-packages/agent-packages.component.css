@@ -54,7 +54,7 @@
 
 .custom-form {
   box-shadow: none !important; /* Remove shadow */
-  padding: 0 !important; /* Optional: Remove padding if desired */
+  padding: 0 !important;
 }
 
 /* Styling for forms and their elements */
@@ -83,4 +83,24 @@ button {
 /* Enhances visual feedback for clickable items */
 .btn:hover, .list-group-item-action:hover {
   opacity: 0.9; /* Slightly reduces opacity on hover */
+}
+
+.airline-logo {
+  max-width: 80px !important; /* Adjust size as needed */
+}
+
+.flight-times {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 0.9rem; /* Adjust as needed */
+}
+
+.flight-times .arrow {
+  font-size: 2rem; /* Adjust size as needed */
+}
+
+.flight-price strong {
+  font-size: 1.5rem; /* Large text for price */
+  color: #333; /* Dark text for emphasis */
 }
