@@ -15,6 +15,7 @@ import { ForgotPasswordComponent } from "./forgot-password/forgot-password.compo
 import { AgentActivityManagementComponent } from "./agent-activity-management/agent-activity-management.component";
 import { AgentFlightManagementComponent } from "./agent-flight-management/agent-flight-management.component";
 import { AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
+import {UserAccountInformationComponent} from "./user-account-information/user-account-information.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -29,9 +30,10 @@ const routes: Routes = [
   { path: 'login', component: UserLoginComponent },
   { path: 'signup', component: UserSignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'agent-packages/activities', component: AgentActivityManagementComponent },
-  { path: 'agent-packages/flights', component: AgentFlightManagementComponent },
-  { path: 'agent-packages/hotels', component: AgentHotelManagementComponent },
+  { path: 'agent-packages/activities', component: AgentActivityManagementComponent }, //TODO: delete
+  { path: 'agent-packages/flights', component: AgentFlightManagementComponent }, //TODO: delete
+  { path: 'agent-packages/hotels', component: AgentHotelManagementComponent }, //TODO: delete
+  { path: 'account', component: UserAccountInformationComponent},
 
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];
