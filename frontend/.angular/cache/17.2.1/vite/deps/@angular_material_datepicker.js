@@ -1,12 +1,4 @@
 import {
-  animate,
-  keyframes,
-  state,
-  style,
-  transition,
-  trigger
-} from "./chunk-RZDQJ2KT.js";
-import {
   A11yModule,
   BACKSPACE,
   BidiModule,
@@ -50,6 +42,14 @@ import {
   normalizePassiveListenerOptions,
   supportsScrollBehavior
 } from "./chunk-SI2ZXQG6.js";
+import {
+  animate,
+  keyframes,
+  state,
+  style,
+  transition,
+  trigger
+} from "./chunk-RZDQJ2KT.js";
 import {
   ControlContainer,
   FormGroupDirective,

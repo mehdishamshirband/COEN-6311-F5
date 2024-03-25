@@ -69,4 +69,6 @@ export class TravelPackageGalleryComponent implements OnInit {
     );
     this.not_filtered = false;
   }
+
+
 }

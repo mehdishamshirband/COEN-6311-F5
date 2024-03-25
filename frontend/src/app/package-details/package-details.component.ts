@@ -7,21 +7,28 @@ import { TravelPackage, MergedItem } from '../interfaces/booking.interface';
 import {RouterModule} from '@angular/router';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterModule, MatDatepickerModule, MatNativeDateModule],
+  imports: [CommonModule, RouterModule, MatDatepickerModule, MatNativeDateModule, FormsModule],
   templateUrl: './package-details.component.html',
   styleUrl: './package-details.component.css'
 })
+
 export class TravelPackageDetailsComponent implements OnInit {
   private _travelPackage?: TravelPackage;
+  private temp_travelPackage?: TravelPackage;
   sortedItems: MergedItem[] = [];
+  nbr_adult: number = 2;
+  nbr_child: number = 0;
+  temp!: any
+  removeFromCart: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private travelPackageService: TravelPackageService,
-    private location: Location
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -42,6 +49,19 @@ export class TravelPackageDetailsComponent implements OnInit {
       console.error('Travel package not found');
     }
     this.sortedItems = this.mergeAndSortItems();
+
+    packageId && this.travelPackageService.onePackageById(packageId).subscribe((result: TravelPackage) => {
+        this.temp_travelPackage = result;
+        let cartData = localStorage.getItem('localCart');
+        if(this.temp_travelPackage && cartData){
+          let cartItems = JSON.parse(cartData);
+          cartItems = cartItems.filter((item: any) => packageId === item.id);
+          this.removeFromCart = cartItems.length > 0;
+        }
+
+      },
+    );
+
   }
 
 
@@ -61,8 +81,19 @@ export class TravelPackageDetailsComponent implements OnInit {
     this.location.back();
   }
 
-  reservePackage(): void {
-    // To implement
+  addToCart(): void {
+    if(this._travelPackage){
+      if(!localStorage.getItem('user')){
+        this.travelPackageService.localAddToCart(this._travelPackage);
+        this.removeFromCart = true;
+      }
+    }
+  }
+
+
+  removeToCart(id: number): void {
+    this.travelPackageService.localRemoveToCart(id);
+    this.removeFromCart = false;
   }
 
   mergeAndSortItems(): MergedItem[] {

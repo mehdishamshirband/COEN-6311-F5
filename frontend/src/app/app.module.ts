@@ -22,7 +22,7 @@ import { ActivityGalleryComponent } from "./activity-gallery/activity-gallery.co
 import { CustomPackageCreationComponent } from "./custom-package-creation/custom-package-creation.component";
 import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -36,6 +36,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    HttpClientModule,
     RouterModule,
     NavBarComponent,
     TravelPackageItemComponent,

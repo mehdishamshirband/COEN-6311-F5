@@ -21,7 +21,7 @@
           </div>
         </div>
 
-        <div class="d-flex flex-column">
+        <div class="d-flex flex-column" *ngIf="!removeFromCart">
 
           <p class="card-text">
             Start reservation :
@@ -46,21 +46,45 @@
           --->
           <div class="p-0 align-items-center">
             <p class="card-text">Number of adult :
-            <input type="number" min="1" max="10" step="1" value="1">
+            <input type="number" min="1" max="10" step="1" [(ngModel)]="travelPackage.nbr_adult">
             </p>
           </div>
 
           <div class="p-0 align-items-center">
             <p class="card-text">Number of children :
-            <input type="number" min="0" max="10" step="1" value="0">
+            <input type="number" min="0" max="10" step="1" [(ngModel)]="travelPackage.nbr_child">
             </p>
           </div>
 
           <div class="p-2">
-            <button class="btn btn-primary mb-3 " [routerLink]="['/cart']" (click)="reservePackage()">Add to Cart</button>
+            <button class="btn btn-primary mb-3 " [routerLink]="" (click)="addToCart()">Add to Cart</button>
           </div>
 
         </div>
+
+        <div class="d-flex flex-column" *ngIf="removeFromCart">
+
+          <p class="card-text">
+            Your pending reservation :
+          </p>
+
+          <div class="p-0 align-items-center">
+            <p class="card-text">Number of adult : {{travelPackage.nbr_adult}}</p>
+          </div>
+
+          <div class="p-0 align-items-center">
+            <p class="card-text">Number of children : {{travelPackage.nbr_child}}
+            </p>
+          </div>
+
+          <div class="p-2">
+            <button class="btn btn-primary mb-3 " [routerLink]="" (click)="removeToCart(travelPackage.id)">Remove to Cart</button>
+          </div>
+
+        </div>
+
+
+
 
       </div>
     </div>

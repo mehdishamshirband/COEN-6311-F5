@@ -36,6 +36,8 @@ export class BookingService {
         price: 2500,
         startingDate: new Date('2024-04-20'),
         endingDate: new Date('2024-04-27'),
+        nbr_adult: 2,
+        nbr_child: 0,
         photos: [{url: 'assets/images/travel-packages/rome.jpg'}],
         flights: [
           {
@@ -139,6 +141,8 @@ export class BookingService {
       price: 2953,
       startingDate: new Date(2024, 4, 30),
       endingDate: new Date(2024, 5, 10),
+      nbr_adult: 3,
+      nbr_child: 1,
       photos: [{url: 'assets/images/travel-packages/madrid.jpg'}],
       flights: [
         {
@@ -256,6 +260,8 @@ export class BookingService {
       price: 12979,
       startingDate: new Date('2024-12-11'),
       endingDate: new Date('2024-12-19'),
+      nbr_adult: 10,
+      nbr_child: 10,
       photos: [{url: 'assets/images/travel-packages/alps_winter.jpg'}],
       flights: [
         {

@@ -81,6 +81,8 @@ export interface TravelPackage {
   endingDate: Date;
   photos?: Photo[];
   showDetails?: boolean;
+  nbr_adult: number;
+  nbr_child: number;
 }
 
 export interface Billing {
