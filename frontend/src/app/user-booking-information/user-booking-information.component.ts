@@ -61,5 +61,13 @@ export class UserBookingInformationComponent implements OnInit {
 
     return mergedItems;
   }
+
+  cancelBooking(id: number): void {
+
+  }
+
+  modifyBooking(id: number): void {
+
+  }
 }
 

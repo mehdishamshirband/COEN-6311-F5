@@ -31,3 +31,33 @@ body {
 .navbar {
   background-color: transparent;
 }
+
+.btn-primary-modify{
+  background-color: black;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 40px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.btn-primary-modify:hover{
+  opacity: 0.9;
+}
+
+.btn-primary-cancel{
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+.btn-primary-cancel:hover{
+  opacity: 0.9;
+}
+
+
+

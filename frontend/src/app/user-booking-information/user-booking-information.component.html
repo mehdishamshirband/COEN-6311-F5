@@ -17,9 +17,19 @@
       Booking Information
     </div>
     <div class="card-body">
-      <p class="card-title" style="font-weight: bold;">{{ booking.bookingNo }} - {{ booking.bookingState }}</p>
-      <p class="card-text" >Total cost: ${{ booking.cost }}</p>
-      <p class="card-text">Purchase Date: {{ booking.purchaseDate | date }}</p>
+      <div class="d-flex flex-row align-items-center">
+        <div class="p-2">
+          <p class="card-title" style="font-weight: bold;">{{ booking.bookingNo }} - {{ booking.bookingState }}</p>
+          <p class="card-text" >Total cost: ${{ booking.cost }}</p>
+          <p class="card-text">Purchase Date: {{ booking.purchaseDate | date }}</p>
+        </div>
+        <div class="ms-auto p-2">
+          <div class="d-flex flex-column">
+            <button class="btn btn-primary-modify" (click)="modifyBooking(booking.id)">Modify Booking</button>
+            <button class="btn btn-primary-cancel" [routerLink]="['cancelled-booking/booking.id']" (click)="cancelBooking(booking.id)">Cancel Booking</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
