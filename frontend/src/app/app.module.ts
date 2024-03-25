@@ -24,6 +24,7 @@ import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
 import {AgentFlightManagementComponent} from "./agent-flight-management/agent-flight-management.component";
 import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
 import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
+import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
 
 
 @NgModule({
@@ -51,6 +52,7 @@ import {AgentActivityManagementComponent} from "./agent-activity-management/agen
     ActivityGalleryComponent,
     CustomPackageCreationComponent,
     MinToHoursMinPipe,
+    UserAccountInformationComponent
   ],
   providers: [BookingService, TravelPackageService, ScrollToTopService],
   exports: [
