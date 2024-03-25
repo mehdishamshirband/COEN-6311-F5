@@ -1,315 +1,113 @@
 import { Component, OnInit } from '@angular/core';
-
-interface Flight {
-  id: number;
-  departure: string;
-  arrival: string;
-  departureDate: Date;
-  arrivalDate: Date;
-  airline: string;
-  price: number;
-  showDetails?: boolean;
-}
-
-interface Hotel {
-  id: number;
-  name: string;
-  location: string;
-  checkIn: Date;
-  checkOut: Date;
-  pricePerNight: number;
-  totalPrice: number;
-  showDetails?: boolean;
-}
-
-interface Activity {
-  id: number;
-  name: string;
-  type: string; // e.g. "Guided Tour", "Food Experience"
-  description: string;
-  location: string;
-  date: Date;
-  price: number;
-  showDetails?: boolean;
-}
-interface TravelPackage {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  flights?: Flight[]; // Optional
-  hotels?: Hotel[]; // Optional
-  activities: Activity[]; // A package can have multiple activities
-  showDetails?: boolean;
-}
+import { TravelPackage, Flight, HotelBooking, Activity, Photo } from "../interfaces/booking.interface";
+import {TravelPackageService} from "../services/travel-package.service";
 
 @Component({
   selector: 'app-agent-packages',
   templateUrl: './agent-packages.component.html',
-  styleUrls: ['./agent-packages.component.css']
 })
-
 export class AgentPackagesComponent implements OnInit {
-  packages: TravelPackage[] = [{
-    id: 1,
-    name: 'Adventure in Italy',
-    description: 'Experience the beauty and history of Italy with this comprehensive package.',
-    price: 2500,
-    flights: [
-      {
-        id: 101,
-        departure: 'JFK',
-        arrival: 'FCO',
-        departureDate: new Date('2024-04-20'),
-        arrivalDate: new Date('2024-04-21'),
-        airline: 'United Airlines',
-        price: 449
-      }
-    ],
-    hotels: [
-      {
-        id: 201,
-        name: 'Hotel Roma',
-        location: 'Rome, Italy',
-        checkIn: new Date('2024-04-21'),
-        checkOut: new Date('2024-04-25'),
-        pricePerNight: 80,
-        totalPrice: 320
-      }
-    ],
-    activities: [
-      {
-        id: 301,
-        name: 'Colosseum Guided Tour',
-        type: 'Guided Tour',
-        description: 'This guided tour of the Colosseum...',
-        location: 'Rome, Italy',
-        date: new Date('2024-04-22'),
-        price: 19
-      },
-      {
-        id: 302,
-        name: 'Venice Food Experience',
-        type: 'Food Experience',
-        description: 'other description here',
-        location: 'Venice, Italy',
-        date: new Date('2024-04-24'),
-        price: 49
-      },
-  ]
-}
-  ];
-  selectedPackage?: TravelPackage;
+  travelPackages: TravelPackage[] = [];
+  editingPackage?: TravelPackage;
+  selectedPackageId?: number;
 
-  // New package model for binding form inputs
-  newPackage: TravelPackage = { id: 0, name: '', description: '', price: 0, activities:[] };
-  showAddPackageForm = false;
-  editingPackageId?: number; // Tracks the ID of the package being edited
-  editedPackage: TravelPackage = { id: 0, name: '', description: '', price: 0, flights:[], hotels:[], activities:[], showDetails: false }; // For binding form inputs
-
-  constructor() { }
+  constructor(private travelingPackageService: TravelPackageService) { }
 
   ngOnInit(): void {
+    this.travelPackages = this.travelingPackageService.getAllTravelPackages();
   }
 
-  selectPackage(packageToSelect: TravelPackage): void {
-    this.selectedPackage = { ...packageToSelect };
-  }
-
-  toggleAddPackageForm(): void {
-    this.showAddPackageForm = !this.showAddPackageForm;
-    // Optionally reset newPackage if you want the form to be empty when reopened
-    /***
-    if (this.showAddPackageForm) {
-      this.newPackage = { id: 0, name: '', description: '', price: 0 };
-    }***/
-  }
-
-  addPackage(): void {
-    if (this.newPackage.name && this.newPackage.description && this.newPackage.price > 0) {
-      const newId = this.packages.length > 0 ? Math.max(...this.packages.map(pkg => pkg.id)) + 1 : 1;
-      this.packages.push({ ...this.newPackage, id: newId });
-      this.showAddPackageForm = false; // Hide the form again after adding a package
-      this.newPackage = { id: 0, name: '', description: '', price: 0, flights: [], hotels: [], activities: [] }; // Reset the form
-    }
-  }
-
-   cancelAddPackage(): void {
-    this.showAddPackageForm = false;
-    this.newPackage = { id: 0, name: '', description: '', price: 0, activities: [] };
-  }
-
-  deletePackage(packageId: number): void {
-    this.packages = this.packages.filter(pkg => pkg.id !== packageId);
-   this.editingPackageId = undefined;
-  }
-
-  deletePackageWithConfirmation(packageId: number, event: MouseEvent): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    const confirmation = window.confirm('Are you sure you want to delete this package?');
-
-    if (confirmation) {
-      this.deletePackage(packageId);
-    }
+  initNewPackage(): void {
+    this.editingPackage = {
+      id: Date.now(),
+      name: '',
+      description: '',
+      price: 0,
+      flights: [],
+      hotels: [],
+      activities: [],
+      startingDate: new Date(),
+      endingDate: new Date(),
+      photos: [],
+      nbr_adult: 1,
+      nbr_child: 0
+    };
   }
 
   savePackage(): void {
-    if (this.selectedPackage) {
-      const index = this.packages.findIndex(pkg => pkg.id === this.selectedPackage!.id);
-      if (index !== -1) {
-        this.packages[index] = this.selectedPackage!;
-      }
-      this.selectedPackage = undefined;
+    if (!this.editingPackage) return;
+    const index = this.travelPackages.findIndex(p => p.id === this.editingPackage!.id);
+    if (index > -1) {
+      this.travelPackages[index] = this.editingPackage;
+    } else {
+      this.travelPackages.push(this.editingPackage);
+    }
+    this.editingPackage = undefined;
+  }
+
+  startEditingPackage(packageId: number): void {
+    const travelPackage = this.travelPackages.find(p => p.id === packageId);
+    if (travelPackage) {
+      travelPackage.flights = travelPackage.flights || [];
+      travelPackage.hotels = travelPackage.hotels || [];
+      this.editingPackage = JSON.parse(JSON.stringify(travelPackage)); // Deep clone
     }
   }
 
-   startEditing(packageId: number, event: MouseEvent): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
+  confirmPackageDeletion(index: number, event: Event) {
+    event.stopPropagation();
+    if (confirm('Are you sure you want to delete this travel package?')) {
+      this.deletePackage(index);
     }
-    const pkg = this.packages.find(p => p.id === packageId);
-    if (pkg) {
-        this.editingPackageId = packageId;
-        this.editedPackage = {
-          ...pkg,
-          flights: pkg.flights || [],
-          hotels: pkg.hotels || [],
-          activities: pkg.activities || []
-        }
-      }
+  }
+  deletePackage(index: number): void {
+    this.travelPackages.splice(index, 1);
   }
 
-  saveEditedPackage(event: MouseEvent): void {
-    if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    if (this.editingPackageId) {
-      const index = this.packages.findIndex(pkg => pkg.id === this.editingPackageId);
-      if (index !== -1) {
-        this.packages[index] = { ...this.editedPackage };
-        this.editingPackageId = undefined; // Reset editing state
-      }
-    }
-    // Assume backend save happens here
-  }
-  cancelEditingPackage(event: MouseEvent): void {
-   if (event) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    this.editingPackageId = undefined; // Reset editing state
+  cancelEditingPackage(): void {
+    this.editingPackage = undefined;
   }
 
-  addFlight(targetPackage: TravelPackage): void {
-    if (!targetPackage.flights) targetPackage.flights = []; // Extra precaution
-    targetPackage.flights.push({
-      id: targetPackage.flights.length + 1,
-      departure: '',
-      arrival: '',
-      airline: '',
-      departureDate: new Date(),
-      arrivalDate: new Date(),
-      price: 0,
-      showDetails: true
-    });
-  }
-
-  deleteFlight(targetPackage: TravelPackage, index: number): void {
-    if (targetPackage.flights) {
-      targetPackage.flights.splice(index, 1);
+    handleFileInput(event: any): void {
+    if (!this.editingPackage) return;
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const photo: Photo = { url: e.target.result, caption: '' };
+        this.editingPackage!.photos = [photo];
+      };
+      reader.readAsDataURL(file);
     }
   }
 
-  deleteFlightWithConfirmation(targetPackage: TravelPackage, flightId: number): void {
-    const confirmation = window.confirm('Are you sure you want to delete this flight booking?');
-    if (confirmation) {
-      this.deleteFlight(targetPackage, flightId);
-    }
+  get sortedJourneyItems(): any[] {
+    if (!this.selectedPackageId) return [];
+
+    const selectedPackage = this.travelPackages.find(p => p.id === this.selectedPackageId);
+    if (!selectedPackage) return [];
+
+    const flights = selectedPackage.flights?.map(item => ({ ...item, itemType: 'flight', sortDate: item.departureDate })) || [];
+    const hotels = selectedPackage.hotels?.map(item => ({ ...item, itemType: 'hotel', sortDate: item.checkIn })) || [];
+    const activities = selectedPackage.activities?.map(item => ({ ...item, itemType: 'activity', sortDate: item.date })) || [];
+
+    const allItems = [...flights, ...hotels, ...activities];
+    allItems.sort((a, b) => new Date(a.sortDate).getTime() - new Date(b.sortDate).getTime());
+
+    return allItems;
   }
 
-  addHotel(targetPackage: TravelPackage): void {
-  if (!targetPackage.hotels) targetPackage.hotels = [];
-  targetPackage.hotels.push({
-    id: targetPackage.hotels.length + 1,
-    name: '',
-    location: '',
-    checkIn: new Date(),
-    checkOut: new Date(),
-    pricePerNight: 0,
-    totalPrice: 0,
-    showDetails: true
-  });
+  selectPackage(id: number): void {
+    this.selectedPackageId = id;
+  }
+
+  clearSelection(): void {
+    this.selectedPackageId = undefined;
+  }
+
+    MinToHoursMin(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return `${hours}h${mins}`;
+  }
 }
-
-  deleteHotel(targetPackage: TravelPackage, index: number): void {
-    if (targetPackage.hotels) {
-      targetPackage.hotels.splice(index, 1);
-    }
-  }
-
-  deleteHotelWithConfirmation(targetPackage: TravelPackage, index: number): void {
-    const confirmation = window.confirm('Are you sure you want to delete this hotel booking?');
-    if (confirmation) {
-      this.deleteHotel(targetPackage, index);
-    }
-  }
-
-  addActivity(targetPackage: TravelPackage): void {
-    if (!targetPackage.activities) targetPackage.activities = [];
-    targetPackage.activities.push({
-      id: targetPackage.activities.length + 1,
-      name: '',
-      description: '',
-      type: '',
-      location: '',
-      date: new Date(),
-      price: 0,
-      showDetails: true
-    });
-  }
-
-  deleteActivity(targetPackage: TravelPackage, index: number): void {
-    if (targetPackage.activities) {
-      targetPackage.activities.splice(index, 1);
-    }
-  }
-
-  deleteActivityWithConfirmation(targetPackage: TravelPackage, index: number): void {
-    const confirmation = window.confirm('Are you sure you want to delete this activity booking?');
-    if (confirmation) {
-      this.deleteActivity(targetPackage, index);
-    }
-  }
-
-  toggleFlightDetails(targetPackage: TravelPackage, flightIndex: number): void {
-    if (targetPackage.flights) {
-      const flight = targetPackage.flights[flightIndex];
-      flight.showDetails = !flight.showDetails;
-    }
-  }
-
-  toggleHotelDetails(targetPackage: TravelPackage, flightIndex: number): void {
-    if (targetPackage.hotels) {
-      const hotel = targetPackage.hotels[flightIndex];
-      hotel.showDetails = !hotel.showDetails;
-    }
-  }
-
-  toggleActivityDetails(targetPackage: TravelPackage, flightIndex: number): void {
-    if (targetPackage.activities) {
-      const activity = targetPackage.activities[flightIndex];
-      activity.showDetails = !activity.showDetails;
-    }
-  }
-
-
-
-
-
-}
-

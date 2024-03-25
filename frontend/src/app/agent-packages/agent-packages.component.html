@@ -1,284 +1,213 @@
-<div class="content-container">
 
-<!-- List of existing packages using Bootstrap list group -->
-<div class="list-group mb-3">
-  <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" *ngFor="let travelPackage of packages" (click)="startEditing(travelPackage.id, $event)">
-    <div>
-      <h5 class="mb-1">{{ travelPackage.name }}</h5>
-      <small>${{ travelPackage.price }}</small>
+<div class="container mt-3">
+  <div class="mb-3" style="margin-left: 12px"><h2>Travel Packages Management</h2></div>
+  <button *ngIf="!editingPackage" class="btn btn-custom-primary" style="margin-left: 12px; margin-bottom: 30px" (click)="initNewPackage()">Add New Package</button>
+  <div class="container mt-3">
+    <h4>List of travel packages</h4>
+  <div *ngFor="let package of travelPackages; let packageIndex = index" class="card mb-3">
+    <div class="card-body">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-2" style="height: 140px;">
+          <ng-container *ngIf="package.photos && package.photos.length; else noPhoto">
+            <img [src]="package.photos[0].url" class="img-fluid rounded" alt="{{ package.name }}" style="object-fit: cover; width: 100%; height: 100%;">
+          </ng-container>
+          <ng-template #noPhoto>
+            <img src="assets/images/placeholder/placeholder_default.png" class="img-fluid rounded" alt="Placeholder" style="object-fit: cover; width: 100%; height: 100%;">
+          </ng-template>
+        </div>
+        <div class="col-md-8">
+          <h5 class="card-title"><strong>{{ package.name }}</strong></h5>
+          <p class="card-text">{{ package.description }}</p>
+          <p class="card-text"><small class="text-muted">{{ package.startingDate | date: 'longDate' }} - {{ package.endingDate | date: 'longDate' }}</small></p>
+        </div>
+        <div class="col-md-2 text-end">
+          <div class="package-price mb-2"><strong>${{ package.price }}</strong></div>
+          <button class="btn btn-custom-primary" (click)="startEditingPackage(package.id)">Edit</button>
+          <button class="btn btn-outline-danger btn-remove" style="margin-top: 0; margin-bottom: 10px; margin-left: 4px;" (click)="confirmPackageDeletion(packageIndex, $event)">Delete</button>
+          <button *ngIf="selectedPackageId !== package.id" class="btn btn-custom-primary" style="margin-right: 2px;" (click)="selectPackage(package.id)">Show Journey</button>
+          <button *ngIf="selectedPackageId === package.id" class="btn btn-custom-primary" style="margin-right: 2px;" (click)="clearSelection()">Hide Journey</button>
+        </div>
+      </div>
     </div>
-    <div class="icon-container">
-      <i class="fas fa-pen" *ngIf="editingPackageId !== travelPackage.id" aria-hidden="true"></i>
-      <i class="fas fa-check" *ngIf="editingPackageId == travelPackage.id" aria-hidden="true" (click)="saveEditedPackage($event); $event.stopPropagation()"></i>
-      <i class="fas fa-xmark" *ngIf="editingPackageId == travelPackage.id" aria-hidden="true" (click)="cancelEditingPackage($event); $event.stopPropagation()"></i>
-      <i class="fas fa-trash" aria-hidden="true" (click)="deletePackageWithConfirmation(travelPackage.id, $event); $event.stopPropagation();"></i>
+    <!-- Journey details section -->
+    <div *ngIf="selectedPackageId === package.id" class="journey-details">
+
+     <div class="card">
+       <div class="align-content-center">
+         <h3>Journey Details</h3>
+         <hr>
+       </div>
+      <ng-container *ngFor="let item of sortedJourneyItems; let itemIndex = index">
+        <div class="list-group-item">
+          <div class="row g-0 align-items-center">
+
+            <!-- For Hotels -->
+            <ng-container *ngIf="item.itemType === 'hotel'">
+              <div class="card-body d-flex flex-column">
+                <div class="hotel-banner d-flex align-items-center mb-2">
+                  <span class="badge bg-success me-2">HOTEL</span>
+                  <span>{{ item.checkIn | date:'mediumDate' }}</span>
+                </div>
+                <div class="d-flex flex-grow-1">
+                  <div class="d-flex align-items-center justify-content-center p-2" style="flex-basis: 20%;">
+                    <img *ngIf="item.hotel.photo?.url" [src]="item.hotel.photo.url" alt="{{ item.hotel.name }}" class="img-fluid" style="max-width: 180px;">
+                  </div>
+                  <div class="d-flex flex-column justify-content-between p-3" style="flex-basis: 65%;">
+                    <h5 class="card-title">{{ item.hotel.name }}</h5>
+                    <p class="card-text">{{ item.hotel.location }}</p>
+                    <p class="card-text mb-0">Check-in: {{ item.checkIn | date: 'mediumDate' }}</p>
+                    <p class="card-text mb-0">Check-out: {{ item.checkOut | date: 'mediumDate' }}</p>
+                    <p *ngIf="item.hotel.website">Website: <a href="{{item.hotel.website}}" target="_blank">{{item.hotel.website}}</a></p>
+                  </div>
+                  <div class="d-flex align-items-start justify-content-end pr-3" style="flex-basis: 15%;">
+                    <div class="item-price">
+                      <strong>${{ item.totalPrice }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+
+            <!-- For Flights -->
+            <ng-container *ngIf="item.itemType === 'flight'">
+              <div class="card-body">
+                <div class="flight-banner d-flex align-items-center mb-2">
+                  <span class="badge bg-primary me-2">FLIGHT</span>
+                  <span>{{ item.departureDate | date:'mediumDate' }}</span>
+                </div>
+                <div class="d-flex flex-wrap justify-content-between align-items-start">
+                  <!-- Airline Logo and Name -->
+                  <div class="d-flex flex-column align-items-center flex-shrink-0" style="flex: 0 0 15%;">
+                    <img [src]="item.airlineLogo" alt="{{ item.airline }}" class="airline-logo mb-2" style="max-width: 160px;">
+                    <div class="airline-name">{{ item.airline }}</div>
+                  </div>
+
+                  <!-- Departure Information -->
+                  <div class="d-flex justify-content-end" style="flex: 1 1 35%;">
+                    <div class="item-date-time text-end">
+                      <div class="item-date">{{ item.departureDate | date: 'shortDate' }}</div>
+                      <div class="item-time">{{ item.departureDate | date: 'shortTime' }}</div>
+                      <div class="item-city">{{ item.departureCity }} ({{ item.departureAirport }})</div>
+                    </div>
+                  </div>
+
+                  <!-- Arrow and Flight Duration -->
+                  <div class="d-flex flex-column align-items-center flex-shrink-0" style="flex: 0 0 10%;">
+                    <i class="fas fa-arrow-right"></i>
+                    <div class="flight-duration">{{ MinToHoursMin(item.duration) }}</div>
+                    <div class="direct-label">Direct</div>
+                  </div>
+
+                  <!-- Arrival Information -->
+                  <div class="d-flex justify-content-start" style="flex: 1 1 35%;">
+                    <div class="item-date-time text-start">
+                      <div class="item-date">{{ item.arrivalDate | date: 'shortDate' }}</div>
+                      <div class="item-time">{{ item.arrivalDate | date: 'shortTime' }}</div>
+                      <div class="item-city">{{ item.arrivalCity }} ({{ item.arrivalAirport }})</div>
+                    </div>
+                  </div>
+
+                  <!-- Price -->
+                  <div class="ms-auto" style="flex: 0 1 auto;">
+                    <div class="item-price">
+                      <strong>${{ item.price }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+
+
+
+
+
+            <!-- For Activities -->
+            <ng-container *ngIf="item.itemType === 'activity'">
+              <div class="card-body d-flex flex-column">
+                <div class="item-banner d-flex align-items-center mb-2">
+                  <span class="badge bg-secondary me-2">ACTIVITY</span>
+                  <span>{{ item.date | date:'mediumDate' }}</span>
+                </div>
+                <div class="d-flex flex-grow-1">
+                  <div class="d-flex flex-grow-1 align-items-center justify-content-center p-2" style="flex-basis: 20%;">
+                    <img *ngIf="item.photos?.[0]?.url" [src]="item.photos[0].url" alt="{{ item.name }}" class="img-fluid" style="max-width: 180px;">
+                  </div>
+                  <div class="d-flex flex-column justify-content-between p-3" style="flex-basis: 60%;">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">{{ item.type }}</p>
+                    <p class="card-text">{{ item.description }}</p>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-end pr-3" style="flex-basis: 20%;">
+                    <div class="item-price">
+                      <strong>${{ item.price }}</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+
+          </div>
+          <hr *ngIf="itemIndex < sortedJourneyItems.length - 1">
+        </div>
+      </ng-container>
+       </div>
     </div>
-  </a>
+
+  </div>
 </div>
 
-<!-- Edit travelPackage form  -->
-<div *ngIf="editingPackageId" class="card p-3 mb-3">
-  <h2 class="card-title mb-3">Edit Package</h2>
-  <form (ngSubmit)="saveEditedPackage($event)" class="card-body custom-form">
 
-    <!-- Section for overall travelPackage information -->
-    <h3>Global Package Information</h3>
-    <div class="mb-3">
-      <label for="editPackageName" class="form-label">Name:</label>
-      <input type="text" class="form-control" id="editPackageName" [(ngModel)]="editedPackage.name" name="editPackageName" required>
-    </div>
-    <div class="mb-3">
-      <label for="editPackageDescription" class="form-label">Description:</label>
-      <input type="text" class="form-control" id="editPackageDescription" [(ngModel)]="editedPackage.description" name="editPackageDescription" required>
-    </div>
-    <div class="mb-3">
-      <label for="editPackagePrice" class="form-label">Price:</label>
-      <input type="number" class="form-control" id="editPackagePrice" [(ngModel)]="editedPackage.price" name="editPackagePrice" required>
-    </div>
-    <hr>
+  <!-- Button to add new package -->
+  <button *ngIf="!editingPackage" class="btn btn-custom-primary" style="margin-left: 12px; margin-bottom: 30px" (click)="initNewPackage()">Add New Package</button>
 
-     <!-- Section for Flights -->
-    <div class="mb-3">
-      <h3>Flights</h3>
-      <div *ngFor="let flight of editedPackage.flights; let i = index" class="mb-3">
-        <div class="d-flex align-items-center">
-          <h5 class="mb-0 me-2" (click)="toggleFlightDetails(editedPackage, i)">Flight #{{i + 1}}</h5>
-          <div>
-            <i class="fas me-2" [class.fa-chevron-down]="!flight.showDetails" [class.fa-chevron-up]="flight.showDetails" (click)="toggleFlightDetails(editedPackage, i)"></i>
-            <i class="fas fa-trash me-2" aria-hidden="true" (click)="deleteFlightWithConfirmation(editedPackage, i)"></i>
-          </div>
+  <!-- Package editing/adding form -->
+  <div *ngIf="editingPackage" class="card p-3 mb-3">
+    <h2 class="card-title">{{editingPackage.id ? 'Edit' : 'Add New'}} Package</h2>
+    <div class="card-body">
+      <!-- Basic package information -->
+      <div class="mb-3">
+        <label for="packageName" class="form-label">Name:</label>
+        <input type="text" class="form-control" id="packageName" [(ngModel)]="editingPackage.name" name="packageName" required>
+      </div>
+      <div class="mb-3">
+        <label for="packageDescription" class="form-label">Description:</label>
+        <textarea class="form-control" id="packageDescription" [(ngModel)]="editingPackage.description" name="packageDescription" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="packagePrice" class="form-label">Price:</label>
+        <input type="number" class="form-control" id="packagePrice" [(ngModel)]="editingPackage.price" name="packagePrice" required>
+      </div>
+
+      <!-- Date range -->
+      <div class="mb-3 row">
+        <div class="col">
+          <label for="startingDate" class="form-label">Starting Date:</label>
+          <input type="date" class="form-control" id="startingDate" [(ngModel)]="editingPackage.startingDate" name="startingDate" required>
         </div>
-        <div *ngIf="flight.showDetails">
-          <label for="editFlightID" class="form-label">Flight ID:</label>
-          <input type="number" class="form-control" id="editFlightID" [(ngModel)]="flight.id" name="editFlightID" required>
-          <label for="editFlightDeparture" class="form-label">Departure:</label>
-          <input type="text" class="form-control" id="editFlightDeparture" [(ngModel)]="flight.departure" name="editFlightDeparture" required>
-          <label for="editFlightDepartureDate" class="form-label">Departure Date:</label>
-          <input type="date" class="form-control" id="editFlightDepartureDate" [(ngModel)]="flight.departureDate" name="editFlightDepartureDate" required>
-          <label for="editFlightArrival" class="form-label">Arrival:</label>
-          <input type="text" class="form-control" id="editFlightArrival" [(ngModel)]="flight.arrival" name="editFlightArrival" required>
-          <label for="editFlightArrivalDate" class="form-label">Arrival Date:</label>
-          <input type="date" class="form-control" id="editFlightArrivalDate" [(ngModel)]="flight.arrivalDate" name="editFlightArrivalDate" required>
+        <div class="col">
+          <label for="endingDate" class="form-label">Ending Date:</label>
+          <input type="date" class="form-control" id="endingDate" [(ngModel)]="editingPackage.endingDate" name="endingDate" required>
         </div>
       </div>
-      <button type="button" class="btn btn-primary mb-3" (click)="addFlight(editedPackage)">Add Flight</button>
-    </div>
-    <hr>
 
-    <!-- Section for Hotels -->
-    <div class="mb-3">
-      <h3>Hotels</h3>
-      <div *ngFor="let hotel of editedPackage.hotels; let i = index" class="mb-3">
-        <div class="d-flex align-items-center">
-          <h5 class="mb-0 me-2" (click)="toggleHotelDetails(editedPackage, i)">Hotel #{{i + 1}}</h5>
-          <div>
-            <i class="fas me-2" [class.fa-chevron-down]="!hotel.showDetails" [class.fa-chevron-up]="hotel.showDetails" (click)="toggleHotelDetails(editedPackage, i)"></i>
-            <i class="fas fa-trash me-2" aria-hidden="true" (click)="deleteHotelWithConfirmation(editedPackage, i)"></i>
-          </div>
-        </div>
-        <div *ngIf="hotel.showDetails">
-          <label for="editHotelId" class="form-label">Hotel ID:</label>
-          <input type="number" class="form-control" id="editHotelId" [(ngModel)]="hotel.id" name="editHotelId" required>
-          <label for="editHotelName" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="editHotelName" [(ngModel)]="hotel.name" name="editHotelName" required>
-          <label for="editHotelLocation" class="form-label">Location:</label>
-          <input type="text" class="form-control" id="editHotelLocation" [(ngModel)]="hotel.location" name="editHotelLocation" required>
-          <label for="editHotelCheckIn" class="form-label">Check in:</label>
-          <input type="date" class="form-control" id="editHotelCheckIn" [(ngModel)]="hotel.checkIn" name="editHotelCheckIn" required>
-          <label for="editHotelCheckOut" class="form-label">Check out:</label>
-          <input type="date" class="form-control" id="editHotelCheckOut" [(ngModel)]="hotel.checkOut" name="editHotelCheckIn" required>
-          <label for="editHotelPricePerNight" class="form-label">Price per night:</label>
-          <input type="number" class="form-control" id="editHotelPricePerNight" [(ngModel)]="hotel.pricePerNight" name="editHotelPricePerNight" required>
-          <label for="editHotelTotalPrice" class="form-label">Total price:</label>
-          <input type="number" class="form-control" id="editHotelTotalPrice" [(ngModel)]="hotel.totalPrice" name="editHotelTotalPrice" required>
-        </div>
+      <!-- Photo upload input -->
+      <div class="mb-3">
+        <label for="packagePhoto" class="form-label">Upload Photo:</label>
+        <input type="file" id="packagePhoto" (change)="handleFileInput($event)" accept="image/*" class="form-control">
       </div>
-     <button type="button" class="btn btn-primary mb-3" (click)="addHotel(editedPackage)">Add Hotel</button>
-    </div>
-    <hr>
 
-    <!-- Section for Activities -->
-    <div class="mb-3">
-      <h3>Activities</h3>
-      <div *ngFor="let activity of editedPackage.activities; let i = index" class="mb-3">
-        <div class="d-flex align-items-center">
-          <h5 class="mb-0 me-2 interactive-section" (click)="toggleActivityDetails(editedPackage, i)">Activity #{{i + 1}}</h5>
-          <div>
-            <i class="fas me-2" [class.fa-chevron-down]="!activity.showDetails" [class.fa-chevron-up]="activity.showDetails" (click)="toggleActivityDetails(editedPackage, i)"></i>
-            <i class="fas fa-trash me-2" aria-hidden="true" (click)="deleteActivityWithConfirmation(editedPackage, i)"></i>
-          </div>
-        </div>
-        <div *ngIf="activity.showDetails">
-          <label for="editActivityId" class="form-label">Activity ID:</label>
-          <input type="number" class="form-control" id="editActivityId" [(ngModel)]="activity.id" name="editActivityId" required>
-          <label for="editActivityName" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="editActivityName" [(ngModel)]="activity.name" name="editActivityName" required>
-          <label for="editActivityType" class="form-label">Type:</label>
-          <input type="text" class="form-control" id="editActivityType" [(ngModel)]="activity.type" name="editActivityType" required>
-          <label for="editActivityDescription" class="form-label">Description:</label>
-          <input type="text" class="form-control" id="editActivityDescription" [(ngModel)]="activity.description" name="editActivityDescription" required>
-          <label for="editActivityLocation" class="form-label">Location:</label>
-          <input type="text" class="form-control" id="editActivityLocation" [(ngModel)]="activity.location" name="editActivityLocation" required>
-          <label for="editActivityDate" class="form-label">Date:</label>
-          <input type="date" class="form-control" id="editActivityDate" [(ngModel)]="activity.date" name="editActivityDate" required>
-          <label for="editActivityPrice" class="form-label">Price:</label>
-          <input type="number" class="form-control" id="editActivityPrice" [(ngModel)]="activity.price" name="editActivityPrice" required>
-        </div>
+      <!-- Embedded Components for Hotels, Flights, and Activities -->
+      <app-agent-hotel-management [(hotelBookings)]="editingPackage.hotels!"></app-agent-hotel-management>
+      <app-agent-flight-management [(flights)]="editingPackage.flights!"></app-agent-flight-management>
+      <app-agent-activity-management [(activities)]="editingPackage.activities!"></app-agent-activity-management>
+
+      <!-- Package actions -->
+      <div class="mt-3 text-end">
+        <button class="btn btn-custom-primary" style="margin-right: 8px" (click)="savePackage()">Save Package</button>
+        <button class="btn btn-custom-secondary" (click)="cancelEditingPackage()">Cancel</button>
       </div>
-     <button type="button" class="btn btn-primary mb-3" (click)="addActivity(editedPackage)">Add Activity</button>
     </div>
-    <hr>
-
-    <div>
-      <button type="submit" class="btn btn-success" (click)="saveEditedPackage($event)">Save Changes</button>
-      <button type="button" class="btn btn-secondary" (click)="cancelEditingPackage($event)">Cancel</button>
-      <button type="button" class="btn btn-danger" (click)="deletePackageWithConfirmation(editingPackageId, $event); $event.stopPropagation();">Delete</button>
-    </div>
-  </form>
-</div>
-
-<!-- Add travelPackage form with Bootstrap styling -->
-  <!--
-<div *ngIf="showAddPackageForm" class="card p-3">
-  <h2 class="card-title">Add New Package</h2>
-  <form (ngSubmit)="addPackage()" class="card-body">
-    <div class="mb-3">
-      <label for="newPackageName" class="form-label">Name:</label>
-      <input type="text" class="form-control" id="newPackageName" [(ngModel)]="newPackage.name" name="newPackageName" required>
-    </div>
-    <div class="mb-3">
-      <label for="newPackageDescription" class="form-label">Description:</label>
-      <input type="text" class="form-control" id="newPackageDescription" [(ngModel)]="newPackage.description" name="newPackageDescription" required>
-    </div>
-    <div class="mb-3">
-      <label for="newPackagePrice" class="form-label">Price:</label>
-      <input type="number" class="form-control" id="newPackagePrice" [(ngModel)]="newPackage.price" name="newPackagePrice" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Create Package</button>
-    <button type="button" class="btn btn-secondary" (click)="cancelAddPackage()">Cancel</button>
-  </form>
-</div>
---->
-
-<div *ngIf="showAddPackageForm" class="card p-3 mb-3">
-  <h2 class="card-title">Add New Package</h2>
-  <form (ngSubmit)="addPackage()" class="card-body custom-form">
-
-    <!-- Section for overall travelPackage information -->
-    <h3>Global Package Information</h3>
-    <div class="mb-3">
-      <label for="addPackageName" class="form-label">Name:</label>
-      <input type="text" class="form-control" id="addPackageName" [(ngModel)]="newPackage.name" name="addPackageName" required>
-    </div>
-    <div class="mb-3">
-      <label for="addPackageDescription" class="form-label">Description:</label>
-      <input type="text" class="form-control" id="addPackageDescription" [(ngModel)]="newPackage.description" name="addPackageDescription" required>
-    </div>
-    <div class="mb-3">
-      <label for="addPackagePrice" class="form-label">Price:</label>
-      <input type="number" class="form-control" id="addPackagePrice" [(ngModel)]="newPackage.price" name="addPackagePrice" required>
-    </div>
-    <hr>
-
-     <!-- Section for Flights -->
-    <div class="mb-3">
-      <h3>Flights</h3>
-      <div *ngFor="let flight of newPackage.flights; let i = index" class="mb-3">
-        <div class="d-flex align-items-center">
-          <h5 class="mb-0 me-2" (click)="toggleFlightDetails(newPackage, i)">Flight #{{i + 1}}</h5>
-          <div>
-            <i class="fas me-2" [class.fa-chevron-down]="!flight.showDetails" [class.fa-chevron-up]="flight.showDetails" (click)="toggleFlightDetails(newPackage, i)"></i>
-            <i class="fas fa-trash me-2" aria-hidden="true" (click)="deleteFlightWithConfirmation(newPackage, i)"></i>
-          </div>
-        </div>
-        <div *ngIf="flight.showDetails">
-          <label for="addFlightID" class="form-label">Flight ID:</label>
-          <input type="number" class="form-control" id="addFlightID" [(ngModel)]="flight.id" name="addFlightID" required>
-          <label for="addFlightDeparture" class="form-label">Departure:</label>
-          <input type="text" class="form-control" id="addFlightDeparture" [(ngModel)]="flight.departure" name="addFlightDeparture" required>
-          <label for="addFlightDepartureDate" class="form-label">Departure Date:</label>
-          <input type="date" class="form-control" id="addFlightDepartureDate" [(ngModel)]="flight.departureDate" name="addFlightDepartureDate" required>
-          <label for="addFlightArrival" class="form-label">Arrival:</label>
-          <input type="text" class="form-control" id="addFlightArrival" [(ngModel)]="flight.arrival" name="addFlightArrival" required>
-          <label for="addFlightArrivalDate" class="form-label">Arrival Date:</label>
-          <input type="date" class="form-control" id="addFlightArrivalDate" [(ngModel)]="flight.arrivalDate" name="addFlightArrivalDate" required>
-        </div>
-      </div>
-      <button type="button" class="btn btn-primary mb-3" (click)="addFlight(newPackage)">Add Flight</button>
-    </div>
-    <hr>
-
-    <!-- Section for Hotels -->
-    <div class="mb-3">
-      <h3>Hotels</h3>
-      <div *ngFor="let hotel of newPackage.hotels; let i = index" class="mb-3">
-        <div class="d-flex align-items-center">
-          <h5 class="mb-0 me-2" (click)="toggleHotelDetails(newPackage, i)">Hotel #{{i + 1}}</h5>
-          <div>
-            <i class="fas me-2" [class.fa-chevron-down]="!hotel.showDetails" [class.fa-chevron-up]="hotel.showDetails" (click)="toggleHotelDetails(newPackage, i)"></i>
-            <i class="fas fa-trash me-2" aria-hidden="true" (click)="deleteHotelWithConfirmation(newPackage, i)"></i>
-          </div>
-        </div>
-        <div *ngIf="hotel.showDetails">
-          <label for="addHotelId" class="form-label">Hotel ID:</label>
-          <input type="number" class="form-control" id="addHotelId" [(ngModel)]="hotel.id" name="addHotelId" required>
-          <label for="addHotelName" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="addHotelName" [(ngModel)]="hotel.name" name="addHotelName" required>
-          <label for="addHotelLocation" class="form-label">Location:</label>
-          <input type="text" class="form-control" id="addHotelLocation" [(ngModel)]="hotel.location" name="addHotelLocation" required>
-          <label for="addHotelCheckIn" class="form-label">Check in:</label>
-          <input type="date" class="form-control" id="addHotelCheckIn" [(ngModel)]="hotel.checkIn" name="addHotelCheckIn" required>
-          <label for="addHotelCheckOut" class="form-label">Check out:</label>
-          <input type="date" class="form-control" id="addHotelCheckOut" [(ngModel)]="hotel.checkOut" name="addHotelCheckIn" required>
-          <label for="addHotelPricePerNight" class="form-label">Price per night:</label>
-          <input type="number" class="form-control" id="addHotelPricePerNight" [(ngModel)]="hotel.pricePerNight" name="addHotelPricePerNight" required>
-          <label for="addHotelTotalPrice" class="form-label">Total price:</label>
-          <input type="number" class="form-control" id="addHotelTotalPrice" [(ngModel)]="hotel.totalPrice" name="addHotelTotalPrice" required>
-        </div>
-      </div>
-     <button type="button" class="btn btn-primary mb-3" (click)="addHotel(newPackage)">Add Hotel</button>
-    </div>
-    <hr>
-
-    <!-- Section for Activities -->
-    <div class="mb-3">
-      <h3>Activities</h3>
-      <div *ngFor="let activity of newPackage.activities; let i = index" class="mb-3">
-        <div class="d-flex align-items-center">
-          <h5 class="mb-0 me-2 interactive-section" (click)="toggleActivityDetails(newPackage, i)">Activity #{{i + 1}}</h5>
-          <div>
-            <i class="fas me-2" [class.fa-chevron-down]="!activity.showDetails" [class.fa-chevron-up]="activity.showDetails" (click)="toggleActivityDetails(newPackage, i)"></i>
-            <i class="fas fa-trash me-2" aria-hidden="true" (click)="deleteActivityWithConfirmation(newPackage, i)"></i>
-          </div>
-        </div>
-        <div *ngIf="activity.showDetails">
-          <label for="addActivityId" class="form-label">Activity ID:</label>
-          <input type="number" class="form-control" id="addActivityId" [(ngModel)]="activity.id" name="addActivityId" required>
-          <label for="addActivityName" class="form-label">Name:</label>
-          <input type="text" class="form-control" id="addActivityName" [(ngModel)]="activity.name" name="addActivityName" required>
-          <label for="addActivityType" class="form-label">Type:</label>
-          <input type="text" class="form-control" id="addActivityType" [(ngModel)]="activity.type" name="addActivityType" required>
-          <label for="addActivityDescription" class="form-label">Description:</label>
-          <input type="text" class="form-control" id="addActivityDescription" [(ngModel)]="activity.description" name="addActivityDescription" required>
-          <label for="addActivityLocation" class="form-label">Location:</label>
-          <input type="text" class="form-control" id="addActivityLocation" [(ngModel)]="activity.location" name="addActivityLocation" required>
-          <label for="addActivityDate" class="form-label">Date:</label>
-          <input type="date" class="form-control" id="addActivityDate" [(ngModel)]="activity.date" name="addActivityDate" required>
-          <label for="addActivityPrice" class="form-label">Price:</label>
-          <input type="number" class="form-control" id="addActivityPrice" [(ngModel)]="activity.price" name="addActivityPrice" required>
-        </div>
-      </div>
-     <button type="button" class="btn btn-primary mb-3" (click)="addActivity(newPackage)">Add Activity</button>
-    </div>
-    <hr>
-    <button type="submit" class="btn btn-primary" (click)="savePackage()">Create Package</button>
-    <button type="button" class="btn btn-secondary" (click)="cancelAddPackage()">Cancel</button>
-  </form>
-</div>
-
-<!-- Button to toggle add travelPackage form, initially visible -->
-<div *ngIf="!showAddPackageForm" class="mb-3">
-  <button (click)="toggleAddPackageForm()" class="btn btn-primary">Add Package</button>
-</div>
-
+  </div>
 </div>
