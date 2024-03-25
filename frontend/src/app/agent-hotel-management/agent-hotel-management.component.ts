@@ -4,15 +4,18 @@ import { HotelBooking, Hotel, Photo } from "../interfaces/booking.interface";
 @Component({
   selector: 'app-agent-hotel-management',
   templateUrl: './agent-hotel-management.component.html',
+  styleUrl: './agent-hotel-management.component.css'
 })
 export class AgentHotelManagementComponent {
   @Input() hotelBookings: HotelBooking[] = [];
   @Output() hotelBookingsChange = new EventEmitter<HotelBooking[]>();
   editingHotelBooking?: HotelBooking;
+  newHotelBooking?: boolean;
 
   constructor() { }
 
   initNewHotelBooking(): void {
+    this.newHotelBooking = true;
     this.editingHotelBooking = {
       id: Date.now(),
       hotel: {
@@ -30,6 +33,7 @@ export class AgentHotelManagementComponent {
 
   startEditingHotelBooking(hotelBookingId: number, event: MouseEvent): void {
     event.preventDefault();
+    this.newHotelBooking = false;
     const hotelBooking = this.hotelBookings.find(hb => hb.id === hotelBookingId);
     if (hotelBooking) {
       this.editingHotelBooking = JSON.parse(JSON.stringify(hotelBooking));
