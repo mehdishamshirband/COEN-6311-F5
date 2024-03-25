@@ -152,10 +152,12 @@ class PackagesModification(viewsets.ModelViewSet):
         updated_booking = Booking.objects.filter(package__id=1).first()
         updated_booking.status = "pending"
         updated_booking.save()
-
-        if PackageModification.objects.filter(package__id=request.data["package"]).first().state != "accepted":
-            raise exceptions.MethodNotAllowed(detail="you already have an active modifications request , please wait",
-                                              method=request.method)
+        try:        #Temporary exception handling and it will be updated in the Sprint 3 (Mehdi while solving)
+            if PackageModification.objects.filter(package__id=request.data["package"]).first().state != "accepted":
+                raise exceptions.MethodNotAllowed(detail="you already have an active modifications request , please wait",
+                                                method=request.method)
+        except Exception as e:
+            print(e)
 
         # print("pckmod create user:",request.user)
 
@@ -254,7 +256,7 @@ def email_send_booking_details(obj):
 
     mail = mt.Mail(
         sender=mt.Address(email="mailtrap@demomailtrap.com", name="FlyApp Email"),
-        to=[mt.Address(email="mehdi.shamshirband@mail.concordia.ca")],    #changing the personal email to the academic one!
+        to=[mt.Address(email="mehdi.shamshirband@mail.concordia.ca")],    #Changing to the academic email address
         subject="Your booking details!",
         text=email_body,
         category="Django Test",
