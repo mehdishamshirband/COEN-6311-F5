@@ -21,27 +21,26 @@ import { HotelGalleryComponent } from "./hotel-gallery/hotel-gallery.component";
 import { ActivityGalleryComponent } from "./activity-gallery/activity-gallery.component";
 import { CustomPackageCreationComponent } from "./custom-package-creation/custom-package-creation.component";
 import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { HttpClientModule } from '@angular/common/http';
 import {AgentFlightManagementComponent} from "./agent-flight-management/agent-flight-management.component";
 import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
 import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
 import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
-
 
 @NgModule({
   declarations: [
     AppComponent,
     AgentPackagesComponent,
     UserBookingInformationComponent,
-    UserBookingsListComponent,
-    AgentFlightManagementComponent,
-    AgentHotelManagementComponent,
-    AgentActivityManagementComponent,
+    UserBookingsListComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     AppRoutingModule,
+    HttpClientModule,
     RouterModule,
     NavBarComponent,
     TravelPackageItemComponent,
@@ -54,7 +53,7 @@ import { UserAccountInformationComponent } from "./user-account-information/user
     MinToHoursMinPipe,
     UserAccountInformationComponent
   ],
-  providers: [BookingService, TravelPackageService, ScrollToTopService],
+  providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync()],
   exports: [
   ],
   bootstrap: [AppComponent]

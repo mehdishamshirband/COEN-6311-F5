@@ -6,6 +6,13 @@
   cursor: pointer;
 }
 
+.badge{
+  position: relative;
+  font-size: 10px;
+  top: -14px;
+  right: 9px;
+}
+
 .cart-icon-wrapper .bi {
   position: absolute;
 }
