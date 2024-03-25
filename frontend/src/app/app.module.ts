@@ -21,6 +21,9 @@ import { HotelGalleryComponent } from "./hotel-gallery/hotel-gallery.component";
 import { ActivityGalleryComponent } from "./activity-gallery/activity-gallery.component";
 import { CustomPackageCreationComponent } from "./custom-package-creation/custom-package-creation.component";
 import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
+import {AgentFlightManagementComponent} from "./agent-flight-management/agent-flight-management.component";
+import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
+import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
 
 
 @NgModule({
@@ -28,7 +31,10 @@ import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
     AppComponent,
     AgentPackagesComponent,
     UserBookingInformationComponent,
-    UserBookingsListComponent
+    UserBookingsListComponent,
+    AgentFlightManagementComponent,
+    AgentHotelManagementComponent,
+    AgentActivityManagementComponent,
   ],
   imports: [
     BrowserModule,

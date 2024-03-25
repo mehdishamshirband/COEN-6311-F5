@@ -76,7 +76,7 @@ export interface TravelPackage {
   price: number;
   flights?: Flight[];
   hotels?: HotelBooking[];
-  activities: Activity[];
+  activities?: Activity[];
   startingDate: Date;
   endingDate: Date;
   photos?: Photo[];

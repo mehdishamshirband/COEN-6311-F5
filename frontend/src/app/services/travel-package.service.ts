@@ -179,6 +179,7 @@ export class TravelPackageService {
         arrivalDate: new Date(2024, 6, 15, 20, 46),
         airline: 'Danish Air',
         price: 400,
+        airlineLogo: 'https://upload.wikimedia.org/wikipedia/fr/b/b3/Danish_Air_Transport_logo.png',
         duration: 471
       },
     ],
@@ -187,13 +188,13 @@ export class TravelPackageService {
         id: 2,
         hotel: {
           id: 52,
-          name: "Hotel D'Angleterre *****",
+          name: "Hotel D'Angleterre",
           location: "Copenhagen, Denmark",
           photo: {
-            url: 'https://example.com/hotel-copenhagen.jpg',
+            url: 'assets/images/hotels/hotel-d-angleterre-copenhague.jpg',
             caption: 'Hotel D\'Angleterre, Copenhagen',
           },
-          website: "https://dangleterre.com",
+          website: "https://www.dangleterre.com",
         },
         checkIn: new Date(2024, 6, 15),
         checkOut: new Date(2024, 6, 20),
@@ -211,7 +212,7 @@ export class TravelPackageService {
         price: 120,
         photos: [
           {
-            url: 'https://example.com/opera-house-copenhagen.jpg',
+            url: 'assets/images/activities/operaen-sommer.jpg',
             caption: 'The Royal Danish Opera House',
           },
         ],
