@@ -4,15 +4,18 @@ import { Activity, Photo } from "../interfaces/booking.interface";
 @Component({
   selector: 'app-agent-activity-management',
   templateUrl: './agent-activity-management.component.html',
+  styleUrl: './agent-activity-management.component.css'
 })
 export class AgentActivityManagementComponent {
   @Input() activities: Activity[] = [];
   @Output() activitiesChange = new EventEmitter<Activity[]>();
   editingActivity?: Activity;
+  newActivity?: boolean;
 
   constructor() { }
 
   initNewActivity(): void {
+    this.newActivity = true;
     this.editingActivity = {
       id: Date.now(),
       name: '',
@@ -26,6 +29,7 @@ export class AgentActivityManagementComponent {
   }
 
   startEditingActivity(activityId: number, event: MouseEvent): void {
+    this.newActivity = false;
     event.preventDefault();
     const activity = this.activities.find(a => a.id === activityId);
     if (activity) {

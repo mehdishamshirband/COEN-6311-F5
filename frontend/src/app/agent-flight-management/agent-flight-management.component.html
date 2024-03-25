@@ -31,7 +31,7 @@
 
   <!-- Edit or Add Flight Form -->
   <div *ngIf="editingFlight" class="card p-3 mb-3">
-    <h2 class="card-title mb-3">{{editingFlight.id ? 'Edit Flight' : 'Add New Flight'}}</h2>
+    <h2 class="card-title mb-3">{{newFlight ? 'Add New Flight' : 'Edit Flight'}}</h2>
     <form (ngSubmit)="saveFlight()" class="card-body custom-form">
       <div class="mb-3">
         <label for="airline" class="form-label">Airline:</label>
@@ -89,7 +89,7 @@
     </form>
   </div>
   <!-- Button to add new flight, visible when not currently editing/adding -->
-  <div *ngIf="!editingFlight" class="mb-3">
+  <div *ngIf="!editingFlight" class="mb-0">
     <button (click)="initNewFlight()" class="btn btn-custom-primary">Add Flight</button>
   </div>
 </div>

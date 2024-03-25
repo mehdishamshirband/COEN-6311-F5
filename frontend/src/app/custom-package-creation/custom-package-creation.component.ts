@@ -65,64 +65,9 @@ export class CustomPackageCreationComponent {
     this.showActivitySearch = !this.showActivitySearch;
   }
 
-    trackByFlightId(index: number, flight: Flight): number {
-    return flight.id; // Use the unique ID for tracking
-  }
-
-  trackByHotelId(index: number, hotelBooking: HotelBooking): number {
-    return hotelBooking.id; // Use the unique ID for tracking
-  }
-
-  trackByActivityId(index: number, activity: Activity): number {
-    return activity.id; // Use the unique ID for tracking
-  }
-
   trackByItemId(index: number, item: any): number {
     return item.id;
   }
-
-/**
-get sortedJourneyItems(): JourneyItem[] {
-  const flights: JourneyItem[] = this.journeyService.flights.map(item => ({ ...item, type: 'flight' }));
-  const hotels: JourneyItem[] = this.journeyService.hotels.map(item => ({ ...item, type: 'hotel' }));
-  const activities: JourneyItem[] = this.journeyService.activities.map(item => ({ ...item, type: 'activity' }));
-
-  const allItems: JourneyItem[] = [...flights, ...hotels, ...activities];
-
-  allItems.sort((a, b) => {
-    let dateA: Date;
-    let dateB: Date;
-
-    switch (a.type) {
-      case 'flight':
-        dateA = a.departureDate;
-        break;
-      case 'hotel':
-        dateA = a.checkIn;
-        break;
-      case 'activity':
-        dateA = a.date;
-        break;
-    }
-
-    switch (b.type) {
-      case 'flight':
-        dateB = b.departureDate;
-        break;
-      case 'hotel':
-        dateB = b.checkIn;
-        break;
-      case 'activity':
-        dateB = b.date;
-        break;
-    }
-
-    return new Date(dateA).getTime() - new Date(dateB).getTime();
-  });
-
-  return allItems;
-}
-*/
 
 get sortedJourneyItems() {
   const flights = this.journeyService.flights.map(item => ({ ...item, type: 'flight', sortDate: item.departureDate }));
