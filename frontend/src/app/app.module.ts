@@ -32,6 +32,9 @@ import { UserAccountInformationComponent } from "./user-account-information/user
   declarations: [
     AppComponent,
     AgentPackagesComponent,
+    AgentActivityManagementComponent,
+    AgentHotelManagementComponent,
+    AgentFlightManagementComponent,
     UserBookingInformationComponent,
     UserBookingsListComponent
   ],
