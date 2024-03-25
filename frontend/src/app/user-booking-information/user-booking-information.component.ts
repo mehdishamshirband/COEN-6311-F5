@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BookingService } from '../services/booking.service';
 import { PaymentType, PaymentState, Booking, Flight, Hotel, Activity, Billing, BookingState, MergedItem } from '../interfaces/booking.interface';
 
@@ -14,7 +14,8 @@ export class UserBookingInformationComponent implements OnInit {
 
   constructor(
     private bookingService: BookingService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +64,8 @@ export class UserBookingInformationComponent implements OnInit {
   }
 
   cancelBooking(id: number): void {
-
+    this.router.navigate(['/cancelled-booking', this.booking!.bookingNo],
+      { state: { booking: this.booking } });
   }
 
   modifyBooking(id: number): void {

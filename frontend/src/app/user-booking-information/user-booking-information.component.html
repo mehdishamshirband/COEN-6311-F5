@@ -26,7 +26,7 @@
         <div class="ms-auto p-2">
           <div class="d-flex flex-column">
             <button class="btn btn-primary-modify" (click)="modifyBooking(booking.id)">Modify Booking</button>
-            <button class="btn btn-primary-cancel" [routerLink]="['cancelled-booking/booking.id']" (click)="cancelBooking(booking.id)">Cancel Booking</button>
+            <button class="btn btn-primary-cancel" (click)="cancelBooking(booking.id)">Cancel Booking</button>
           </div>
         </div>
       </div>
