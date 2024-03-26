@@ -15,15 +15,9 @@ import { ForgotPasswordComponent } from "./forgot-password/forgot-password.compo
 import { CartComponent } from "./cart/cart.component";
 import { AgentActivityManagementComponent } from "./agent-activity-management/agent-activity-management.component";
 import { AgentFlightManagementComponent } from "./agent-flight-management/agent-flight-management.component";
-<<<<<<< HEAD
 import { AgentHotelManagementComponent } from "./agent-hotel-management/agent-hotel-management.component";
 import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
-=======
-import { AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
-import {UserAccountInformationComponent} from "./user-account-information/user-account-information.component";
 import { CancelledBookingComponent} from "./cancelled-booking/cancelled-booking.component";
-
->>>>>>> cancellation_request
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
