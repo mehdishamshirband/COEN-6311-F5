@@ -22,7 +22,7 @@ export class TravelPackageGalleryComponent implements OnInit {
   constructor(private travelingPackageService: TravelPackageService) {}
 
   ngOnInit() {
-    this.travelPackageList = this.travelingPackageService.getAllTravelPackages();
+    //this.travelPackageList = this.travelingPackageService.getAllTravelPackages();
     this.filteredTravelPackageList = this.travelPackageList;
 
     const placeholders = ["I want to go to...", "I want to do..."];
