@@ -81,6 +81,8 @@ export interface TravelPackage {
   endingDate: Date;
   photos?: Photo[];
   showDetails?: boolean;
+  nbr_adult: number;
+  nbr_child: number;
 }
 
 export interface Billing {
@@ -127,3 +129,17 @@ export type JourneyItem =
   | (Flight & { type: 'flight' })
   | (HotelBooking & { type: 'hotel' })
   | (Activity & { type: 'activity' });
+
+
+export interface login {
+  email: string;
+  password: string;
+}
+
+export interface signUp {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}

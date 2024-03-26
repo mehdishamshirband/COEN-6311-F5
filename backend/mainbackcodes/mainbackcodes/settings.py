@@ -130,4 +130,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # email confs
-MAILTRAP_TOKEN="6a4e216f5041d2749db2cfcaa2dbf7b5"
+MAILTRAP_TOKEN="ed9fa34d275956738a29ae2355b3833f"

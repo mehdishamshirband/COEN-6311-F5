@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NavBarComponent} from "../navbar/navbar.component";
 import {User} from "../interfaces/user.interface";
-import { FormsModule } from "@angular/forms";
+import {FormBuilder, FormGroup, FormsModule, Validators} from "@angular/forms";
 import {CommonModule, DatePipe} from "@angular/common";
 import {UserService} from "../services/user.service";
 
@@ -34,11 +34,12 @@ export class UserAccountInformationComponent implements OnInit {
 
   editMode = false;
 
-  constructor(private userService: UserService) { }
+  constructor(private fb: FormBuilder, private userService: UserService) { }
 
   ngOnInit(): void {
     this.user = this.userService.getUserSample();
   }
+
 
   toggleEditMode(): void {
     this.editMode = !this.editMode;

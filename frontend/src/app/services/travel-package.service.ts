@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import { TravelPackage } from '../interfaces/booking.interface';
+import { HttpClient } from '@angular/common/http';
+import {Observable, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +16,8 @@ export class TravelPackageService {
         price: 1500,
         startingDate: new Date(2024, 3, 10), // Dates are in format: year, monthIndex (0-based), day
         endingDate: new Date(2024, 3, 15),
+        nbr_adult: 2,
+        nbr_child: 0,
         photos: [
           {
             url: 'assets/images/travel-packages/terville.jpg',
@@ -79,6 +83,8 @@ export class TravelPackageService {
     price: 2500,
     startingDate: new Date(2024, 4, 20),
     endingDate: new Date(2024, 4, 25),
+    nbr_adult: 2,
+    nbr_child: 0,
     photos: [
       {
         url: 'assets/images/travel-packages/budapest.jpg',
@@ -160,6 +166,8 @@ export class TravelPackageService {
     price: 3000,
     startingDate: new Date(2024, 6, 15),
     endingDate: new Date(2024, 6, 20),
+    nbr_adult: 2,
+    nbr_child: 0,
     photos: [
       {
         url: 'assets/images/travel-packages/copenhagen.jpg',
@@ -257,6 +265,8 @@ export class TravelPackageService {
       price: 4000,
       startingDate: new Date(2024, 6, 20),
       endingDate: new Date(2024, 6, 25),
+      nbr_adult: 2,
+      nbr_child: 0,
       photos: [
         {
         url: 'assets/images/travel-packages/paris.jpg',
@@ -338,6 +348,8 @@ export class TravelPackageService {
       price: 4000,
       startingDate: new Date(2024, 6, 20),
       endingDate: new Date(2024, 6, 25),
+      nbr_adult: 2,
+      nbr_child: 0,
       photos: [
         {
         url: 'assets/images/travel-packages/paris.jpg',
@@ -413,13 +425,46 @@ hotels: [
       showDetails: false,
     }
     ];
-  constructor() { }
+  constructor(private http: HttpClient) { }
   getAllTravelPackages(): TravelPackage[] {
     return this.travelPackages;
   }
 
   getTravelPackageById(id: number): TravelPackage | undefined {
     return this.travelPackages.find(travelPackage => travelPackage.id === id);
+  }
+
+  onePackageByIdCartData = new EventEmitter<TravelPackage>();
+  onePackageById(id: number): Observable<TravelPackage> {
+    let Package = this.getTravelPackageById(id);
+    return of(Package!);
+  }
+
+  localRemoveToCart(id: number): void {
+    let cartData = [];
+    let localCart = localStorage.getItem('localCart');
+    if (localCart) {
+      cartData = JSON.parse(localCart);
+      cartData = cartData.filter((item: TravelPackage) => item.id !== id);
+      localStorage.setItem('localCart', JSON.stringify(cartData));
+      this.cartData.emit(cartData);
+    }
+  }
+
+  cartData = new EventEmitter<TravelPackage[]|[]>(); // Event emitter to emit the cart data
+  localAddToCart(data: TravelPackage): void {
+    let cartData = [];
+    let localCart = localStorage.getItem('localCart');
+    if (!localCart) {
+      localStorage.setItem('localCart', JSON.stringify([data]));
+    }
+    else{
+      cartData = JSON.parse(localCart);
+      cartData.push(data);
+      localStorage.setItem('localCart', JSON.stringify(cartData));
+      this.cartData.emit(cartData);
+    }
+
   }
 
 }

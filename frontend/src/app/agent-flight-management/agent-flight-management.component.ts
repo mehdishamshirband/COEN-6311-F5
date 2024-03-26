@@ -9,10 +9,12 @@ export class AgentFlightManagementComponent {
   @Input() flights: Flight[] = [];
   @Output() flightsChange = new EventEmitter<Flight[]>();
   editingFlight?: Flight;
+  newFlight?: boolean;
 
   constructor() { }
 
   initNewFlight(): void {
+    this.newFlight = true;
     this.editingFlight = {
       id: Date.now(),
       departureAirport: '',
@@ -30,6 +32,7 @@ export class AgentFlightManagementComponent {
   }
 
   startEditingFlight(flightId: number, event: MouseEvent): void {
+    this.newFlight = false;
     event.preventDefault();
     const flight = this.flights.find(f => f.id === flightId);
     if (flight) {

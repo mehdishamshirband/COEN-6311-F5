@@ -3,11 +3,11 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpRequest, JsonResponse, QueryDict
 from rest_framework import serializers, exceptions
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.response import Response
-from .models import Flight, Hotel, Activity, Package, Booking, PackageModification
-from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, PackageModificationSerializer, \
-    PackageSerializer, BookingSerializer
+from .models import Flight, Hotel, Activity, Notification, Package, Booking, PackageModification
+from .serializers import ActivitySerializer, HotelSerializer, FlightSerializer, NotifSerializer, \
+    PackageModificationSerializer, PackageSerializer, BookingSerializer
 
 
 # Create your views here.
@@ -56,7 +56,7 @@ def packagevalidator(request):
     if request.data.get("flight"):
         # print(datetime.strptime(request.data.get("start"), "%Y-%m-%d").date() , hotel.checkintime  ,hotel.checkouttime ,  datetime.strptime(request.data.get("end"), "%Y-%m-%d").date())
         if datetime.strptime(request.data.get("start"),
-                             "%Y-%m-%d").date() <= flight.departuredatetime <= flight.arrivaldatetime <= datetime.strptime(
+                             "%Y-%m-%d").date() <= flight.departuredatetime.date() <= flight.arrivaldatetime.date() <= datetime.strptime(
                 request.data.get("end"), "%Y-%m-%d").date():
             print("pass")
         else:
@@ -152,10 +152,12 @@ class PackagesModification(viewsets.ModelViewSet):
         updated_booking = Booking.objects.filter(package__id=1).first()
         updated_booking.status = "pending"
         updated_booking.save()
-
-        if PackageModification.objects.filter(package__id=request.data["package"]).first().state != "accepted":
-            raise exceptions.MethodNotAllowed(detail="you already have an active modifications request , please wait",
-                                              method=request.method)
+        try:        #Temporary exception handling and it will be updated in the Sprint 3 (Mehdi while solving)
+            if PackageModification.objects.filter(package__id=request.data["package"]).first().state != "accepted":
+                raise exceptions.MethodNotAllowed(detail="you already have an active modifications request , please wait",
+                                                method=request.method)
+        except Exception as e:
+            print(e)
 
         # print("pckmod create user:",request.user)
 
@@ -254,7 +256,7 @@ def email_send_booking_details(obj):
 
     mail = mt.Mail(
         sender=mt.Address(email="mailtrap@demomailtrap.com", name="FlyApp Email"),
-        to=[mt.Address(email="studentnom47@gmail.com")],
+        to=[mt.Address(email="mehdi.shamshirband@mail.concordia.ca")],    #Changing to the academic email address
         subject="Your booking details!",
         text=email_body,
         category="Django Test",
@@ -286,3 +288,20 @@ class Reports(viewsets.ViewSet):
         serializer = BookingSerializer(queryset, many=True)
         total = revenueCalc(queryset)
         return Response({"records": serializer.data, "revenue": total})
+
+
+class Notifs(viewsets.ViewSet, mixins.CreateModelMixin):
+
+    def create(self, request, *args, **kwargs):
+        if request.data.get("message") == None:
+            return Response({"msg": "your message is empty"})
+        if request.data.get("recipient") == None:
+            return Response({"msg": "please specify a recipient"})
+        Notification.objects.create(sender=request.user, recipient=request.data.get("recipient"),
+                                    message=request.data.get("message"))
+        return Response({"msg": "message succesfully send"})
+
+    def retrieve(self, request, pk=None, *args, **kwargs):
+        notifs = Notification.objects.filter(recipient=pk)
+        serializer = NotifSerializer(notifs, many=True)
+        return Response(serializer.data)

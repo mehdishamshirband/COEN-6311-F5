@@ -59,13 +59,15 @@ button {
   left: 7px;
   font-size: 75%;
   color: #777;
-  background: white;
+  background-color: white;
 }
+
+.floating-label label
 
 .floating-label input {
   border-radius: 5px;
   margin-bottom: 20px;
-  min-height: 45px;
+  min-height: 50px;
 }
 
 /* Styling the input field when it is in focus */
@@ -92,5 +94,5 @@ textarea:focus, input:focus{
 }
 
 .high-input {
-  min-height: 50px;
+  min-height: 60px;
 }

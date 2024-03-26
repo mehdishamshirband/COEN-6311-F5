@@ -68,3 +68,6 @@ body {
 .btn-custom-secondary:hover {
   border: 1px solid black !important; /* Border color changes to black on hover */
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

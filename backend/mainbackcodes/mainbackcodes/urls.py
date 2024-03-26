@@ -27,6 +27,7 @@ router.register(r'Packages', views.Packages, basename='packages')
 router.register(r'Booking', views.BookingDetail, basename='booking')
 router.register(r'PackagesModifications', views.PackagesModification, basename='packagesmodification')
 router.register(r'Report', views.Reports, basename='report')
+router.register(r'Notifs', views.Notifs, basename='notifs')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),

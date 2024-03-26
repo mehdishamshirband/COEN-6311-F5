@@ -5,19 +5,23 @@ import {TravelPackageService} from "../services/travel-package.service";
 @Component({
   selector: 'app-agent-packages',
   templateUrl: './agent-packages.component.html',
+  styleUrl: './agent-packages.component.css'
 })
 export class AgentPackagesComponent implements OnInit {
   travelPackages: TravelPackage[] = [];
   editingPackage?: TravelPackage;
   selectedPackageId?: number;
+  newPackage?: boolean;
 
   constructor(private travelingPackageService: TravelPackageService) { }
 
   ngOnInit(): void {
     this.travelPackages = this.travelingPackageService.getAllTravelPackages();
+    this.newPackage = false;
   }
 
   initNewPackage(): void {
+    this.newPackage = true;
     this.editingPackage = {
       id: Date.now(),
       name: '',
@@ -28,7 +32,9 @@ export class AgentPackagesComponent implements OnInit {
       activities: [],
       startingDate: new Date(),
       endingDate: new Date(),
-      photos: []
+      photos: [],
+      nbr_adult: 1,
+      nbr_child: 0
     };
   }
 
@@ -44,6 +50,7 @@ export class AgentPackagesComponent implements OnInit {
   }
 
   startEditingPackage(packageId: number): void {
+    this.newPackage = false;
     const travelPackage = this.travelPackages.find(p => p.id === packageId);
     if (travelPackage) {
       travelPackage.flights = travelPackage.flights || [];
@@ -108,4 +115,6 @@ export class AgentPackagesComponent implements OnInit {
     const mins = minutes % 60;
     return `${hours}h${mins}`;
   }
+
+  protected readonly Date = Date;
 }
