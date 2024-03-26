@@ -14,16 +14,8 @@ export class UserLoginComponent {
   email!: string;
   password!: string;
 
-<<<<<<< HEAD
-  Login(data: login) {
-    console.warn(data);
-=======
-  email!: string;
-  password!: string;
-
   Login(userLogin: any) {
     console.warn(userLogin);
->>>>>>> reserve_premade_pckg
   }
 }
 
