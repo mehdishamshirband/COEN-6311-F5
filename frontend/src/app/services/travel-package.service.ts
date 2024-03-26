@@ -7,6 +7,7 @@ import {Observable, of} from "rxjs";
   providedIn: 'root'
 })
 export class TravelPackageService {
+    private baseUrl = 'http://localhost:8000/Packages/';
 
     private travelPackages: TravelPackage[] = [
       {
@@ -426,8 +427,9 @@ hotels: [
     }
     ];
   constructor(private http: HttpClient) { }
-  getAllTravelPackages(): TravelPackage[] {
-    return this.travelPackages;
+  getAllTravelPackages(): Observable<TravelPackage[]> {
+    //return this.travelPackages;
+    return this.http.get<TravelPackage[]>(this.baseUrl);
   }
 
   getTravelPackageById(id: number): TravelPackage | undefined {

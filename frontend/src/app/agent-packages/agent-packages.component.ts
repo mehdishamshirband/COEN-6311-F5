@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TravelPackage, Flight, HotelBooking, Activity, Photo } from "../interfaces/booking.interface";
 import {TravelPackageService} from "../services/travel-package.service";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-agent-packages',
@@ -16,7 +17,10 @@ export class AgentPackagesComponent implements OnInit {
   constructor(private travelingPackageService: TravelPackageService) { }
 
   ngOnInit(): void {
-    this.travelPackages = this.travelingPackageService.getAllTravelPackages();
+    this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
+    this.travelPackages = data;
+    });
+    console.log(this.travelPackages);
     this.newPackage = false;
   }
 
