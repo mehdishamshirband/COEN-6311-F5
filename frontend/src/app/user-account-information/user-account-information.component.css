@@ -62,7 +62,9 @@ button {
   background-color: white;
 }
 
-.floating-label label
+.floating-label label {
+  background-size: 4px;
+}
 
 .floating-label input {
   border-radius: 5px;
