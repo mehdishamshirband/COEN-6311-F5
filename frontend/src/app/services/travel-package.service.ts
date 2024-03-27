@@ -373,7 +373,7 @@ export class TravelPackageService {
           duration: 467
         },
       ],
-hotels: [
+      hotels: [
         {
           id: 4,
           hotel: {
