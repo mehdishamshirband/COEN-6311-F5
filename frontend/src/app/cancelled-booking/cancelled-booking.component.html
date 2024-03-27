@@ -1,9 +1,10 @@
 <title>Booking Canceled</title>
 <body>
   <div class="container">
-    <h1>Booking Canceled</h1>
-    <p>Your travel package booking number : {{ booking!.bookingNo }} has been canceled successfully.</p>
-    <p>We hope to serve you again in the future!</p>
+    <h1>Cancellation of a booking in progress</h1>
+    <p>Your cancellation request number : {{ booking!.bookingNo }} has been forwarded.</p>
+    <p>Our team will process your request and get back to you by e-mail as soon as possible.</p>
+    <p>Thank you for choosing us!</p>
     <button class="btn btn-custom-primary" [routerLink]="['/bookings']">Go Back</button>
   </div>
 </body>

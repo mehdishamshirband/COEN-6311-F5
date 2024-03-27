@@ -17,9 +17,9 @@ export class AgentPackagesComponent implements OnInit {
   constructor(private travelingPackageService: TravelPackageService) { }
 
   ngOnInit(): void {
-    this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
+    this.travelingPackageService.getAllTravelPackages() /*.subscribe((data: TravelPackage[]) => {
     this.travelPackages = data;
-    });
+    });*/
     console.log(this.travelPackages);
     this.newPackage = false;
   }
@@ -77,7 +77,7 @@ export class AgentPackagesComponent implements OnInit {
     this.editingPackage = undefined;
   }
 
-    handleFileInput(event: any): void {
+  handleFileInput(event: any): void {
     if (!this.editingPackage) return;
     const file = event.target.files[0];
     if (file) {

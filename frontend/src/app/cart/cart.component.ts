@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import {NgForOf} from "@angular/common";
+import {CommonModule} from '@angular/common';
+import {NgForOf, NgIf} from "@angular/common";
 import {TravelPackageItemComponent} from "../travel-package-item/travel-package-item.component";
 
 @Component({
@@ -7,7 +8,8 @@ import {TravelPackageItemComponent} from "../travel-package-item/travel-package-
   standalone: true,
     imports: [
         NgForOf,
-        TravelPackageItemComponent
+        TravelPackageItemComponent,
+        NgIf
     ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.css'

@@ -60,7 +60,7 @@ export class UserAccountInformationComponent implements OnInit {
 
   confirmAccountDeletion(event: Event) {
    event.stopPropagation();
-    if (confirm('Are you sure you want to delete your account? This operation is irreversible.')) {
+    if (confirm('Are you sure you want to delete your account? This operation is irreversible!')) {
       this.deleteAccount();
     }
   }

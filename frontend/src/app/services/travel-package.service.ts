@@ -427,9 +427,9 @@ export class TravelPackageService {
     }
     ];
   constructor(private http: HttpClient) { }
-  getAllTravelPackages(): Observable<TravelPackage[]> {
-    //return this.travelPackages;
-    return this.http.get<TravelPackage[]>(this.baseUrl);
+  getAllTravelPackages(): TravelPackage[] { //Observable<TravelPackage[]> {
+    return this.travelPackages;
+    //return this.http.get<TravelPackage[]>(this.baseUrl);
   }
 
   getTravelPackageById(id: number): TravelPackage | undefined {
