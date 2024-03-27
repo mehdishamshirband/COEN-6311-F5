@@ -1,8 +1,9 @@
 <!-- user-booking-information.component.html -->
 <app-navbar></app-navbar>
+
 <div class="container">
   <hr>
-    <!-- Title -->
+  <!-- Title -->
   <div class="row">
     <div class="col-12">
       <h2 class="my-1">Bookings</h2>
@@ -25,8 +26,8 @@
         </div>
         <div class="ms-auto p-2">
           <div class="d-flex flex-column">
-            <button class="btn btn-primary-modify" (click)="modifyBooking(booking.id)">Modify Booking</button>
-            <button class="btn btn-primary-cancel" (click)="cancelBooking(booking.id)">Cancel Booking</button>
+            <button class="btn btn-custom-primary" (click)="modifyBooking(booking.id)">Modify Booking</button>
+            <button class="btn btn-outline-danger btn-remove" (click)="cancelBooking(booking.id)">Cancel Booking</button>
           </div>
         </div>
       </div>
@@ -196,7 +197,6 @@
       <p class="card-text">Purchase Date: {{ booking.purchaseDate | date }}</p>
     </div>
   </div>
-
 
 
 </div>

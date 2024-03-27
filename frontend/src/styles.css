@@ -20,16 +20,18 @@ body {
 
 .navbar-brand {
   font-weight: bold;
-  color: darkgreen !important;
+  color: #0A2550 !important;
 }
 
 .nav-link {
   font-weight: bold;
+  border-radius: 10px;
 }
 
 .navbar-light .navbar-nav .nav-link.active {
   color: #fff !important;
-  background-color: darkgreen !important; /* Active link background color */
+  background-color: #0A2550 !important; /* Active link background color */
+  border-radius: 10px;
 }
 
 .btn-remove {

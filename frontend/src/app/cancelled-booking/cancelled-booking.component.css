@@ -22,16 +22,3 @@ h1 {
 p {
   margin-bottom: 20px;
 }
-
-.btn {
-  background-color: black;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 40px;
-  cursor: pointer;
-}
-
-.btn:hover {
-  opacity: 0.8;
-}
