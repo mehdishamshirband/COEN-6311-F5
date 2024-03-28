@@ -6,9 +6,9 @@ from rest_framework import serializers, exceptions
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, \
-    TravelPackage
+    TravelPackage, Photo
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
-    FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer
+    FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, PhotoSerializer
 
 
 # Create your views here.
@@ -299,3 +299,8 @@ class Notifs(viewsets.ViewSet, mixins.CreateModelMixin):
         notifs = Notification.objects.filter(recipient=pk)
         serializer = NotifSerializer(notifs, many=True)
         return Response(serializer.data)
+
+
+class Photos(viewsets.ModelViewSet):
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
