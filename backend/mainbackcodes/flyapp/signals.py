@@ -1,9 +1,9 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Booking, Package, Notification
+from .models import Booking, TravelPackage, Notification
 from django.contrib.auth.models import User
 
-@receiver(post_save, sender=Package)
+@receiver(post_save, sender=TravelPackage)
 def package_created(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(
@@ -17,8 +17,8 @@ def booking_created(sender, instance, created, **kwargs):
     if created:
         Notification.objects.create(
             sender='System',
-            recipient=instance.customer,
-            message=f'Your booking with ID {instance.bookingid} has been created.'
+            recipient=instance.firstName,
+            message=f'Your booking with ID {instance.bookingNo} has been created.'
         )
 
 # after updating records
@@ -27,6 +27,6 @@ def booking_updated(sender, instance, created, **kwargs):
     if not created:
         Notification.objects.create(
             sender='System',
-            recipient=instance.customer,
-            message=f'Your booking with ID {instance.bookingid} has been updated.'
+            recipient=instance.firstName,
+            message=f'Your booking with ID {instance.bookingNo} has been updated.'
         )
