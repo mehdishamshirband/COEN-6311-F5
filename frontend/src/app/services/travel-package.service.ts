@@ -76,7 +76,6 @@ export class TravelPackageService {
             ],
           }
         ],
-        showDetails: false,
       },{
     id: 1,
     name: 'Budapest Getaway',
@@ -158,7 +157,6 @@ export class TravelPackageService {
         ],
       }
     ],
-    showDetails: false,
   },
       {
     id: 2,
@@ -257,7 +255,6 @@ export class TravelPackageService {
         ],
       }
     ],
-    showDetails: false,
     },
     {
       id: 3,
@@ -340,7 +337,6 @@ export class TravelPackageService {
           ],
         },
       ],
-      showDetails: false,
     },
       {
       id: 4,
@@ -423,13 +419,15 @@ export class TravelPackageService {
           ],
         }
       ],
-      showDetails: false,
     }
     ];
   constructor(private http: HttpClient) { }
   getAllTravelPackages(): Observable<TravelPackage[]> {
-    //return this.travelPackages;
     return this.http.get<TravelPackage[]>(this.baseUrl);
+  }
+
+  getAllTravelPackagesFront(): TravelPackage[] {
+    return this.travelPackages;
   }
 
   getTravelPackageById(id: number): TravelPackage | undefined {

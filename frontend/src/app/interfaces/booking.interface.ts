@@ -54,7 +54,6 @@ export interface HotelBooking {
   checkIn: Date;
   checkOut: Date;
   totalPrice: number;
-  showDetails?: boolean;
 }
 
 export interface Activity {
@@ -66,7 +65,6 @@ export interface Activity {
   date: Date;
   price: number;
   photos?: Photo[];
-  showDetails?: boolean;
 }
 
 export interface TravelPackage {
@@ -80,7 +78,6 @@ export interface TravelPackage {
   startingDate: Date;
   endingDate: Date;
   photos?: Photo[];
-  showDetails?: boolean;
   nbr_adult: number;
   nbr_child: number;
 }

@@ -17,10 +17,13 @@ export class AgentPackagesComponent implements OnInit {
   constructor(private travelingPackageService: TravelPackageService) { }
 
   ngOnInit(): void {
+    /*
     this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
     this.travelPackages = data;
     });
     console.log(this.travelPackages);
+    */
+    this.travelPackages = this.travelingPackageService.getAllTravelPackagesFront(); //Comment to remove the frontend placeholder
     this.newPackage = false;
   }
 
@@ -90,21 +93,21 @@ export class AgentPackagesComponent implements OnInit {
     }
   }
 
-  get sortedJourneyItems(): any[] {
-    if (!this.selectedPackageId) return [];
+get sortedJourneyItems(): any[] {
+  if (!this.selectedPackageId) return [];
 
-    const selectedPackage = this.travelPackages.find(p => p.id === this.selectedPackageId);
-    if (!selectedPackage) return [];
+  const selectedPackage = this.travelPackages.find(p => p.id === this.selectedPackageId);
+  if (!selectedPackage) return [];
 
-    const flights = selectedPackage.flights?.map(item => ({ ...item, itemType: 'flight', sortDate: item.departureDate })) || [];
-    const hotels = selectedPackage.hotels?.map(item => ({ ...item, itemType: 'hotel', sortDate: item.checkIn })) || [];
-    const activities = selectedPackage.activities?.map(item => ({ ...item, itemType: 'activity', sortDate: item.date })) || [];
+  const flights = Array.isArray(selectedPackage.flights) ? selectedPackage.flights.map(item => ({ ...item, itemType: 'flight', sortDate: item.departureDate })) : [];
+  const hotels = Array.isArray(selectedPackage.hotels) ? selectedPackage.hotels.map(item => ({ ...item, itemType: 'hotel', sortDate: item.checkIn })) : [];
+  const activities = Array.isArray(selectedPackage.activities) ? selectedPackage.activities.map(item => ({ ...item, itemType: 'activity', sortDate: item.date })) : [];
 
-    const allItems = [...flights, ...hotels, ...activities];
-    allItems.sort((a, b) => new Date(a.sortDate).getTime() - new Date(b.sortDate).getTime());
+  const allItems = [...flights, ...hotels, ...activities];
+  allItems.sort((a, b) => new Date(a.sortDate).getTime() - new Date(b.sortDate).getTime());
 
-    return allItems;
-  }
+  return allItems;
+}
 
   selectPackage(id: number): void {
     this.selectedPackageId = id;

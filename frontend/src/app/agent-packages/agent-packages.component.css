@@ -23,18 +23,18 @@ form {
 }
 
 .airline-logo {
-  max-width: 80px !important; /* Adjust size as needed */
+  max-width: 160px !important;
 }
 
 .flight-times {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  font-size: 0.9rem; /* Adjust as needed */
+  font-size: 0.9rem;
 }
 
 .flight-times .arrow {
-  font-size: 2rem; /* Adjust size as needed */
+  font-size: 2rem;
 }
 
 .flight-price strong {
