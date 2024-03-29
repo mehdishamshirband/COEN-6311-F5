@@ -28,7 +28,13 @@
     }
 
     ngOnInit() {
-      this.hotelList = this.hotelService.getAllHotels(); //TODO: remove this init
+      this.hotelService.getAllHotels().subscribe({ next: (hotels) => {
+        this.hotelList = hotels;
+      },
+      error: (error) => {
+        console.error('Error fetching hotels:', error);
+      }
+    });
     }
 
     searchHotels() {

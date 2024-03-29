@@ -10,6 +10,7 @@ from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
     FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, PhotoSerializer
 
+from datetime import datetime
 
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
@@ -19,6 +20,17 @@ class Flights(viewsets.ModelViewSet):
     filterset_fields = {'airline': ['icontains'], 'price': ['lte', 'gte'], 'arrivalAirport': ['icontains'],
                         'departureAirport': ['icontains'], 'departureDate': ['lte', 'gte'],
                         'arrivalDate': ['lte', 'gte'], 'showDetails': ['exact']}
+
+
+def searchFlights(request):
+    if not request.GET["departure"] or not request.GET["arrival"] or not request.GET["departureDate"]:
+        return JsonResponse(FlightSerializer(Flight.objects.all(), many=True).data, safe=False)
+    departure, arrival, departureDate = request.GET["departure"], request.GET["arrival"], datetime.strptime(request.GET["departureDate"], '%Y-%m-%d').date()
+    # Check the date because it causes error
+    flights = Flight.objects.filter(departureCity=departure, arrivalCity=arrival) #, departureDate=departureDate)
+    #print(flights)
+    return JsonResponse(FlightSerializer(flights, many=True).data, safe=False)
+
 
 
 class Hotels(viewsets.ModelViewSet):

@@ -23,6 +23,7 @@ export class AppComponent {
   title = 'Concordia Travel';
   cartItems = 0;
   private _travelPackage?: TravelPackageService;
+  public baseUrl = "http://127.0.0.1:8000/"
 
   ngOnInit(): void {
     let cartData = localStorage.getItem('localCart');

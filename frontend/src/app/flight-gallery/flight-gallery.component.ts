@@ -1,5 +1,5 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { Flight } from '../interfaces/booking.interface';
 import { FlightService } from "../services/flight.service";
 import { JourneyService } from "../services/journey.service";
@@ -22,7 +22,8 @@ export class FlightGalleryComponent implements OnInit {
   @Output() flightAdded = new EventEmitter<boolean>();
 
     constructor(private fb: FormBuilder, private flightService: FlightService, private journeyService: JourneyService) {
-    this.searchForm = this.fb.group({
+
+      this.searchForm = this.fb.group({
       departure: [''],
       arrival: [''],
       departureDate: [''],
@@ -30,7 +31,23 @@ export class FlightGalleryComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.flightList = this.flightService.getAllFlights();
+    this.flightService.getAllFlights().subscribe({ next: (flights) => {
+        this.flightList = flights;
+        console.warn('Flights:', flights);
+      },
+      error: (error) => {
+        console.error('Error fetching flights:', error);
+      }
+    });
+
+  }
+
+  formInit() {
+    this.searchForm = new FormGroup({
+      departure: new FormControl(''),
+      arrival: new FormControl(''),
+      departureDate: new FormControl(''),
+    });
   }
 
   searchFlights() {
@@ -39,6 +56,7 @@ export class FlightGalleryComponent implements OnInit {
     this.flightService.searchFlights(formValue.departure, formValue.arrival, formValue.departureDate).subscribe({
       next: (results) => {
         this.flightList = results;
+        console.warn('Results:', results);
       },
       error: (error) => {
         console.error('Error fetching flights:', error);
@@ -49,7 +67,9 @@ export class FlightGalleryComponent implements OnInit {
 
   resetSearch() {
     this.searchForm.reset();
-    this.flightList = [];
+    this.formInit();
+    this.searchFlights();
+    // this.flightList = [];
     this.searchPerformed = false;
   }
 

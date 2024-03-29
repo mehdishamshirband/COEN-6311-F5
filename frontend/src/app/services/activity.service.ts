@@ -1,7 +1,8 @@
 // activity.service.ts
 import { Injectable } from '@angular/core';
-import { Activity } from '../interfaces/booking.interface';
+import {Activity, Flight} from '../interfaces/booking.interface';
 import { Observable, of } from 'rxjs';
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -33,11 +34,14 @@ export class ActivityService {
     }
   ];
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
+  private baseUrl = 'http://127.0.0.1:8000/';
   getAllActivities(): Observable<Activity[]> {
-    return of(this.activities);
+      return this.http.get<Activity[]>(this.baseUrl + 'Activity/');
+    //return this.flights;
   }
+
 
 searchActivities(location: string, date: Date | string | null): Observable<Activity[]> {
   const normalizedLocation = location.toLowerCase().trim();
