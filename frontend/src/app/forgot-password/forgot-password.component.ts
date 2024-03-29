@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule} from '@angular/router';
 import { FormsModule }   from '@angular/forms';
+import { UserForgetPassword } from '../interfaces/user.interface';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -11,9 +13,14 @@ import { FormsModule }   from '@angular/forms';
   styleUrl: './forgot-password.component.css'
 })
 export class ForgotPasswordComponent {
+  userForgetPassword : UserForgetPassword = {
+    emailAddress: ''
+  }
 
-  email!: string;
-  ForgetPassword(data: any) {
-    console.warn(data);
+constructor(private userService: UserService) { }
+
+  ForgetPassword() {
+    console.warn(this.userService.validateEmail(this.userForgetPassword.emailAddress));
+    console.warn(this.userForgetPassword);
   }
 }

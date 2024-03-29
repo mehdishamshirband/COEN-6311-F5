@@ -129,17 +129,3 @@ export type JourneyItem =
   | (Flight & { type: 'flight' })
   | (HotelBooking & { type: 'hotel' })
   | (Activity & { type: 'activity' });
-
-
-export interface login {
-  email: string;
-  password: string;
-}
-
-export interface signUp {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}

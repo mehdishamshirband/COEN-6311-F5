@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import {RouterModule} from '@angular/router';
 import { FormsModule }   from '@angular/forms';
-import { signUp } from '../interfaces/booking.interface';
+import { UserRegister } from '../interfaces/user.interface';
+import { UserService } from '../services/user.service';
 
 @Component({
   selector: 'app-user-sign-up',
@@ -11,13 +12,21 @@ import { signUp } from '../interfaces/booking.interface';
   styleUrl: './user-sign-up.component.css'
 })
 export class UserSignUpComponent {
-  firstName!: string;
-  lastName!: string;
-  email!: string;
-  password!: string;
-  confirmPassword!: string;
 
-  signUp(data: signUp) {
-    console.warn(data);
+  userRegister: UserRegister = {
+    firstName: '',
+    lastName: '',
+    emailAddress: '',
+    password: '',
+    confirmPassword: ''
+  };
+
+  constructor(private userService: UserService) {}
+
+  signUp() {
+    console.warn(this.userService.validateEmail(this.userRegister.emailAddress));
+    console.warn(this.userService.validatePassword(this.userRegister.password));
+    console.warn(this.userService.validatePasswordMatch(this.userRegister.password, this.userRegister.confirmPassword));
+    console.warn(this.userRegister);
   }
 }
