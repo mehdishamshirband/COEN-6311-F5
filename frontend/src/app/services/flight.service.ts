@@ -21,7 +21,8 @@ export class FlightService {
   }
 
   searchFlights(departure: string, arrival: string, departureDate: Date): Observable<Flight[]> {
-    return this.http.get<Flight[]>(this.baseUrl + 'searchFlights/', {params: {departure: departure, arrival: arrival, departureDate: departureDate.toString()||''}});
+    return this.http.get<Flight[]>(this.baseUrl + 'Flight/', {params: {departureCity: departure, arrivalCity: arrival, departureDate: departureDate.toString()||''}});
+    //return this.http.get<Flight[]>(this.baseUrl + 'searchFlights/', {params: {departure: departure, arrival: arrival, departureDate: departureDate.toString()||''}});
     /*.pipe(
       map((flights:any) => {
         flights.departureDate = new Date(flights.departureDate);

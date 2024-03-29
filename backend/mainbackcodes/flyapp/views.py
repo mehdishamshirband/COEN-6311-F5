@@ -21,7 +21,17 @@ class Flights(viewsets.ModelViewSet):
                         'departureAirport': ['icontains'], 'departureDate': ['lte', 'gte'],
                         'arrivalDate': ['lte', 'gte'], 'showDetails': ['exact']}
 
+    def get_queryset(self):
+        results = super(Flights, self).get_queryset()
+        for key, value in self.request.query_params.items():
+            if "date" in str(key).lower() or value == "":
+                continue
 
+            results = results.filter(**{key: value})
+        return results
+
+
+'''
 def searchFlights(request):
     if not request.GET["departure"] or not request.GET["arrival"] or not request.GET["departureDate"]:
         return JsonResponse(FlightSerializer(Flight.objects.all(), many=True).data, safe=False)
@@ -30,7 +40,7 @@ def searchFlights(request):
     flights = Flight.objects.filter(departureCity=departure, arrivalCity=arrival) #, departureDate=departureDate)
     #print(flights)
     return JsonResponse(FlightSerializer(flights, many=True).data, safe=False)
-
+'''
 
 
 class Hotels(viewsets.ModelViewSet):

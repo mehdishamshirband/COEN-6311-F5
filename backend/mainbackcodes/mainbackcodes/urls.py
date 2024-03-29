@@ -36,6 +36,5 @@ router.register(r'Photos', views.Photos, basename='photos')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('searchFlights/', views.searchFlights, name='searchFlights'),
 ]
 urlpatterns += router.urls
