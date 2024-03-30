@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -87,15 +88,15 @@ class TravelPackage(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)
-    flight = models.ManyToManyField(Flight, blank=True)
-    activity = models.ManyToManyField(Activity, blank=True)
-    hotel = models.ManyToManyField(HotelBooking, blank=True)
+    flights = models.ManyToManyField(Flight, blank=True)
+    activities = models.ManyToManyField(Activity, blank=True)
+    hotels = models.ManyToManyField(HotelBooking, blank=True)
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
     showDetails = models.BooleanField(default=True, blank=True)
-    nbr_adult = models.IntegerField()
-    nbr_child = models.IntegerField()
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -185,9 +186,9 @@ class PackageModification(models.Model):
     price = models.FloatField()
     description = models.TextField()
     state = models.CharField(max_length=255, choices=state, default='PENDING')
-    flight = models.ManyToManyField(Flight, blank=True)
-    activity = models.ManyToManyField(Activity, blank=True)
-    hotel = models.ManyToManyField(HotelBooking, blank=True)
+    flights = models.ManyToManyField(Flight, blank=True)
+    activities = models.ManyToManyField(Activity, blank=True)
+    hotels = models.ManyToManyField(HotelBooking, blank=True)
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)

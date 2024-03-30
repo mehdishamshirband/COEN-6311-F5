@@ -85,9 +85,9 @@ from datetime import datetime
 
 
 def dynamicpricecalc(request):
-    if not HotelBooking.objects.filter(id=request.data.get("hotel") or "0").first() and not Flight.objects.filter(
-            id=request.data.get("flight") or "0").first() and not Activity.objects.filter(
-            id=int(request.data.get("activity") or "0")):
+    if not HotelBooking.objects.filter(id=request.data.get("hotels") or "0").first() and not Flight.objects.filter(
+            id=request.data.get("flights") or "0").first() and not Activity.objects.filter(
+            id=int(request.data.get("activities") or "0")):
         raise serializers.ValidationError('at least choose one service!!')
 
     # calc price dynamicly
@@ -98,7 +98,7 @@ def dynamicpricecalc(request):
         request.data["price"] += float(HotelBooking.objects.filter(id=int(i)).first().totalPrice)
     for i in dict(request.data).get("flight"):
         request.data["price"] += float(Flight.objects.filter(id=int(i)).first().price)
-    for i in dict(request.data).get("activity"):
+    for i in dict(request.data).get("activities"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
     request.data._mutable = False
     # print(request.data)
@@ -137,7 +137,6 @@ class TravelPackages(viewsets.ModelViewSet):
             if all_package.filter(**{key: filtervalue}).exists():
                 results = results | all_package.filter(**{key: filtervalue})
 
-        print(results)
         return results
 
 
@@ -280,19 +279,19 @@ def email_send_booking_details(obj):
         email_body += f'Package Description: {package.description}\n'
         email_body += f'Package Price: ${package.price}\n'
         email_body += f'Travel Period: {package.startingDate} to {package.endingDate}\n'
-        if package.flight.all():
+        if package.flights.all():
             email_body += 'Flights Included:\n'
             for flight in package.flight.all():
                 email_body += f'Flight Information: {flight}\n'
                 email_body += f'Flight Price: {flight.price}\n'
-        if package.hotel.all():
+        if package.hotels.all():
             email_body += 'Hotels Included:\n'
             for hotel in package.hotel.all():
                 email_body += f'Hotel Information: {hotel}\n'
                 email_body += f'Hotel Price: {hotel.totalPrice}\n'
-        if package.activity.all():
+        if package.activities.all():
             email_body += 'Activities Included:\n'
-            for activity in package.activity.all():
+            for activity in package.activities.all():
                 email_body += f'- {activity} - price : {activity.price}\n'
         email_body += '\n'
 

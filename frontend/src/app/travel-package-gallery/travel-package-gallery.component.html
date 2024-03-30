@@ -24,6 +24,10 @@
   </form>
 </section>
 
+  <div class="h-100 d-flex align-items-center justify-content-center">
+    <h2 class="my-2" *ngIf="filteredTravelPackageList.length === 0">No travel packages were found</h2>
+</div>
+
   <!-- Search results with cards -->
   <section class="results">
     <div class="container mt-4">

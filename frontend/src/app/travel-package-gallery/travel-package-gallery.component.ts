@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { TravelPackage } from '../interfaces/booking.interface';
 import { TravelPackageItemComponent } from '../travel-package-item/travel-package-item.component';
 import { TravelPackageService } from '../services/travel-package.service';
-import {NgForOf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-travel-package-gallery',
   standalone: true,
-  imports: [TravelPackageItemComponent, NgForOf],
+  imports: [TravelPackageItemComponent, NgForOf, NgIf],
   templateUrl: './travel-package-gallery.component.html',
   styleUrls: ['./travel-package-gallery.component.css']
 })
