@@ -51,7 +51,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    travelpackage = TravelPackageSerializer(many=True, read_only=True)
+    travelPackage = TravelPackageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Booking

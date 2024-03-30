@@ -47,8 +47,9 @@ export class TravelPackageDetailsComponent implements OnInit {
       return;
     }
 
-    // Asynchronous function, need to await the result using async/await
+    // Subscribe is an asynchronous function, need to await the result using async/await
     this._travelPackage = await this.travelPackageService.getTravelPackageByIdSynchronous(packageIdString);
+    console.warn('Travel Package:', this._travelPackage);
 
     if (!this._travelPackage) {
       console.error('Travel package not found');
@@ -109,8 +110,6 @@ export class TravelPackageDetailsComponent implements OnInit {
 
     const { flights, hotels, activities } = this._travelPackage;
 
-    console.warn('flights', flights);
-
     flights?.forEach(flight => {
       mergedItems.push({ ...flight, sortDate: new Date(flight.departureDate), type: 'Flight'});
     });
@@ -121,7 +120,6 @@ export class TravelPackageDetailsComponent implements OnInit {
 
     activities?.forEach(activity => {
       mergedItems.push({ ...activity, sortDate: new Date(activity.date), type: 'Activity' });
-      console.warn('mergedItems', activity.date);
     });
 
     // Sort by sortDate
