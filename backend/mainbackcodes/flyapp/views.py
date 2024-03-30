@@ -12,6 +12,17 @@ from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSeri
 
 from datetime import datetime
 
+
+def filter_queryset_custom_package(request, results):
+    for key, value in request.query_params.items():
+        if "date" in str(key).lower() or value == "":
+            # TODO : Fix the date filter
+            continue
+
+        key = f'{key}__icontains'
+        results = results.filter(**{key: value})
+    return results
+
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
@@ -23,12 +34,7 @@ class Flights(viewsets.ModelViewSet):
 
     def get_queryset(self):
         results = super(Flights, self).get_queryset()
-        for key, value in self.request.query_params.items():
-            if "date" in str(key).lower() or value == "":
-                continue
-
-            results = results.filter(**{key: value})
-        return results
+        return filter_queryset_custom_package(self.request, results)
 
 
 '''
@@ -49,6 +55,11 @@ class Hotels(viewsets.ModelViewSet):
 
     filterset_fields = {'name': ['icontains'], 'location': ['icontains']}
 
+    def get_queryset(self):
+        results = super(Hotels, self).get_queryset()
+        return filter_queryset_custom_package(self.request, results)
+
+
 
 class HotelsBooking(viewsets.ModelViewSet):
     queryset = HotelBooking.objects.all()
@@ -64,6 +75,10 @@ class Activities(viewsets.ModelViewSet):
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'],
                         'location': ['icontains'], 'date': ['lte', 'gte'], 'showDetails': ['exact']}
+
+    def get_queryset(self):
+        results = super(Activities, self).get_queryset()
+        return filter_queryset_custom_package(self.request, results)
 
 
 from datetime import datetime
@@ -109,6 +124,21 @@ class TravelPackages(viewsets.ModelViewSet):
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'], 'showDetails': ['exact'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
+
+    def get_queryset(self):
+        all_package = super(TravelPackages, self).get_queryset()
+        results = TravelPackage.objects.none()
+        filtervalue = self.request.query_params.get('filterValue')
+        if filtervalue is None:
+            return all_package
+
+        for key in list(all_package[0].__dict__)[1:]:  # Get all fields names except the first one which is private
+            key = f'{key}__icontains'
+            if all_package.filter(**{key: filtervalue}).exists():
+                results = results | all_package.filter(**{key: filtervalue})
+
+        print(results)
+        return results
 
 
 class BillingDetail(viewsets.ModelViewSet):

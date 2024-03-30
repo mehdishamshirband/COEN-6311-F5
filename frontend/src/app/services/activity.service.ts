@@ -43,7 +43,11 @@ export class ActivityService {
   }
 
 
-searchActivities(location: string, date: Date | string | null): Observable<Activity[]> {
+searchActivities(location: string, date: Date): Observable<Activity[]> {
+    return this.http.get<Activity[]>(this.baseUrl + 'Activity/', {params: {location: location, date: date.toString()||''}});
+}
+
+  /*
   const normalizedLocation = location.toLowerCase().trim();
 
   let searchDate: Date | null = null;
@@ -66,6 +70,8 @@ searchActivities(location: string, date: Date | string | null): Observable<Activ
 
   return of(results);
 }
+
+    */
 
 
 }

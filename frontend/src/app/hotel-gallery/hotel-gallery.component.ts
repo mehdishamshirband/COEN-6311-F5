@@ -1,5 +1,5 @@
   import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-  import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+  import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
   import { Hotel, HotelBooking } from '../interfaces/booking.interface';
   import { HotelService } from "../services/hotel.service";
   import { CommonModule } from "@angular/common";
@@ -30,6 +30,7 @@
     ngOnInit() {
       this.hotelService.getAllHotels().subscribe({ next: (hotels) => {
         this.hotelList = hotels;
+        console.warn('Hotels:', hotels);
       },
       error: (error) => {
         console.error('Error fetching hotels:', error);
@@ -37,12 +38,15 @@
     });
     }
 
+
+
     searchHotels() {
       this.searchPerformed = true;
       const formValue = this.searchForm.value;
       this.hotelService.searchHotels(formValue.location).subscribe({
         next: (results) => {
           this.hotelList = results;
+          console.warn('Results:', results);
           this.searchPerformed = true;
         },
         error: (error) => {
@@ -68,7 +72,7 @@
 
     resetSearch() {
       this.searchForm.reset();
-      this.hotelList = [];
+      this.ngOnInit();
       this.searchPerformed = false;
     }
 

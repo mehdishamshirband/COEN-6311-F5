@@ -81,8 +81,8 @@ export interface TravelPackage {
   endingDate: Date;
   photos?: Photo[];
   showDetails?: boolean;
-  nbr_adult: number;
-  nbr_child: number;
+  nbr_adult?: number;
+  nbr_child?: number;
 }
 
 export interface Billing {
@@ -92,7 +92,7 @@ export interface Billing {
   firstName: string;
   lastName: string;
   firstLineAddress: string;
-  secondLineAddress: string;
+  secondLineAddress?: string;
   zipCode: string;
   city: string;
   state_area: string;
@@ -110,13 +110,13 @@ export interface Booking {
   firstName: string;
   lastName: string;
   firstLineAddress: string;
-  secondLineAddress: string;
+  secondLineAddress?: string;
   zipCode: string;
   city: string;
   state_area: string;
   country: string;
   email: string;
-  phone: string;
+  phone?: string;
 }
 
 export interface MergedItem {

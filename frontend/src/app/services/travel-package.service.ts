@@ -7,7 +7,6 @@ import {Observable, of} from "rxjs";
   providedIn: 'root'
 })
 export class TravelPackageService {
-    private baseUrl = 'http://localhost:8000/Packages/';
 
     private travelPackages: TravelPackage[] = [
       {
@@ -427,9 +426,16 @@ export class TravelPackageService {
     }
     ];
   constructor(private http: HttpClient) { }
-  getAllTravelPackages(): TravelPackage[] { //Observable<TravelPackage[]> {
-    return this.travelPackages;
-    //return this.http.get<TravelPackage[]>(this.baseUrl);
+
+  private baseUrl = 'http://localhost:8000/';
+
+  getAllTravelPackages(): Observable<TravelPackage[]> { //Observable<TravelPackage[]> {
+    //return this.travelPackages;
+    return this.http.get<TravelPackage[]>(this.baseUrl + 'Packages/');
+  }
+
+  filterTravelPackages(filterValue: string): Observable<TravelPackage[]> {
+    return this.http.get<TravelPackage[]>(this.baseUrl + 'Packages/', {params: {filterValue: filterValue}});
   }
 
   getTravelPackageById(id: number): TravelPackage | undefined {

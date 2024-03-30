@@ -42,13 +42,6 @@ export class FlightGalleryComponent implements OnInit {
 
   }
 
-  formInit() {
-    this.searchForm = new FormGroup({
-      departure: new FormControl(''),
-      arrival: new FormControl(''),
-      departureDate: new FormControl(''),
-    });
-  }
 
   searchFlights() {
     this.searchPerformed = true;
@@ -67,8 +60,7 @@ export class FlightGalleryComponent implements OnInit {
 
   resetSearch() {
     this.searchForm.reset();
-    this.formInit();
-    this.searchFlights();
+    this.ngOnInit();
     // this.flightList = [];
     this.searchPerformed = false;
   }

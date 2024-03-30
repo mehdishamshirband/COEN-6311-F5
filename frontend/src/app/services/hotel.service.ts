@@ -35,7 +35,9 @@ export class HotelService {
 
 
   searchHotels(location: string): Observable<Hotel[]> {
-    const results = this.hotels.filter(hotel => hotel.location.toLowerCase().includes(location.toLowerCase()));
-    return of(results);
+    return this.http.get<Hotel[]>(this.baseUrl + 'Hotel/', {params: {departureCity: location}});
+
+    //const results = this.hotels.filter(hotel => hotel.location.toLowerCase().includes(location.toLowerCase()));
+    //return of(results);
   }
 }

@@ -122,7 +122,7 @@ class Billing(models.Model):
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     firstLineAddress = models.CharField(max_length=255)
-    secondLineAddress = models.CharField(max_length=255)
+    secondLineAddress = models.CharField(max_length=255, blank=True, default='') # optional field
     zipCode = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state_area = models.CharField(max_length=255)
@@ -149,7 +149,7 @@ status = (
 class Booking(models.Model):
     bookingNo = models.IntegerField(unique=True)
     cost = models.FloatField()
-    details = models.CharField(max_length=255)
+    # details = models.CharField(max_length=255)
     billing = models.ForeignKey(Billing, on_delete=models.CASCADE)
     bookingState = models.CharField(max_length=255, choices=status, default='CREATED')
     travelPackage = models.ManyToManyField(TravelPackage)
@@ -157,13 +157,13 @@ class Booking(models.Model):
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     firstLineAddress = models.CharField(max_length=255)
-    secondLineAddress = models.CharField(max_length=255)
+    secondLineAddress = models.CharField(max_length=255, blank=True, default='') # optional field
     zipCode = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state_area = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, blank=True, default='') # optional field
 
     class Meta:
         ordering = ["bookingNo"]
