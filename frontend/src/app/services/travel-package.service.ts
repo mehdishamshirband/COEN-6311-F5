@@ -1,15 +1,14 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import { TravelPackage } from '../interfaces/booking.interface';
 import { HttpClient } from '@angular/common/http';
-import {Observable, of} from "rxjs";
+import {lastValueFrom, Observable, of} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class TravelPackageService {
-    private baseUrl = 'http://localhost:8000/Packages/';
 
-    private travelPackages: TravelPackage[] = [
+    private travelPackages_front: TravelPackage[] = [
       {
         id: 10,
         name: 'Discover Terville',
@@ -427,19 +426,40 @@ export class TravelPackageService {
     }
     ];
   constructor(private http: HttpClient) { }
-  getAllTravelPackages(): TravelPackage[] { //Observable<TravelPackage[]> {
-    return this.travelPackages;
-    //return this.http.get<TravelPackage[]>(this.baseUrl);
+
+  private baseUrl = 'http://localhost:8000/';
+  private Package?: TravelPackage
+
+  getAllTravelPackages(): Observable<TravelPackage[]> { //Observable<TravelPackage[]> {
+    //return this.travelPackages_front;
+    return this.http.get<TravelPackage[]>(this.baseUrl + 'Packages/');
   }
 
-  getTravelPackageById(id: number): TravelPackage | undefined {
-    return this.travelPackages.find(travelPackage => travelPackage.id === id);
+  filterTravelPackages(filterValue: string): Observable<TravelPackage[]> {
+    return this.http.get<TravelPackage[]>(this.baseUrl + 'Packages/', {params: {filterValue: filterValue}});
   }
 
-  onePackageByIdCartData = new EventEmitter<TravelPackage>();
+  getTravelPackageById(id: number): Observable<TravelPackage | undefined> {
+    return this.http.get<TravelPackage>(`${this.baseUrl}Packages/${id}/`)
+  }
+
+  async getTravelPackageByIdSynchronous(id: number) {
+    return await lastValueFrom(this.getTravelPackageById(id)).then((data) => {
+      return data;
+    });
+  }
+
+  compareKeys(a:any, b:any) {
+      let aKeys = Object.keys(a).sort();
+      let bKeys = Object.keys(b).sort();
+      return JSON.stringify(aKeys) === JSON.stringify(bKeys);
+    }
+
   onePackageById(id: number): Observable<TravelPackage> {
-    let Package = this.getTravelPackageById(id);
-    return of(Package!);
+    this.getTravelPackageById(id)?.subscribe({next: (travelPackage) => {
+        this.Package = travelPackage;
+      }});
+    return of(this.Package!);
   }
 
   localRemoveToCart(id: number): void {

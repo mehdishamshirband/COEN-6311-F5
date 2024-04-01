@@ -35,6 +35,7 @@ export class ActivityGalleryComponent implements OnInit {
     this.activityService.getAllActivities().subscribe({
       next: (activities) => {
         this.activityList = activities;
+        console.warn('Activities:', activities);
       },
       error: (error) => {
         console.error('Error fetching activities:', error);
@@ -43,7 +44,8 @@ export class ActivityGalleryComponent implements OnInit {
   }
 
 searchActivities() {
-  this.searchPerformed = true;
+    /*
+
   const formValue = this.searchForm.value;
 
   // Convert form date string to Date object if not null
@@ -51,10 +53,12 @@ searchActivities() {
   if (formValue.date) {
     searchDate = new Date(formValue.date);
   }
-
-  this.activityService.searchActivities(formValue.location, searchDate).subscribe({
+  */
+  this.searchPerformed = true;
+  this.activityService.searchActivities(this.searchForm.value.location, this.searchForm.value.date).subscribe({
     next: (results) => {
       this.activityList = results;
+      console.warn('Results:', results);
     },
     error: (error) => {
       console.error('Error fetching activities:', error);
@@ -64,7 +68,8 @@ searchActivities() {
 
   resetSearch() {
     this.searchForm.reset();
-    this.activityList = [];
+    this.ngOnInit();
+    //this.activityList = [];
     this.searchPerformed = false;
   }
 

@@ -40,10 +40,10 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 
 class TravelPackageSerializer(serializers.ModelSerializer):
-    hotel = HotelBookingSerializer(many=True, read_only=True)
-    activity = ActivitySerializer(many=True, read_only=True)
-    flight = FlightSerializer(many=True, read_only=True)
-    photo = PhotoSerializer(many=True, read_only=True)
+    hotels = HotelBookingSerializer(many=True, read_only=True)
+    activities = ActivitySerializer(many=True, read_only=True)
+    flights = FlightSerializer(many=True, read_only=True)
+    photos = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = TravelPackage
@@ -51,7 +51,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
-    travelpackage = TravelPackageSerializer(many=True, read_only=True)
+    travelPackage = TravelPackageSerializer(many=True, read_only=True)
 
     class Meta:
         model = Booking
@@ -65,10 +65,10 @@ class BillingSerializer(serializers.ModelSerializer):
 
 
 class PackageModificationSerializer(serializers.ModelSerializer):
-    hotel = HotelBookingSerializer(many=True, read_only=True)
-    activity = ActivitySerializer(many=True, read_only=True)
-    flight = FlightSerializer(many=True, read_only=True)
-    photo = PhotoSerializer(many=True, read_only=True)
+    hotels = HotelBookingSerializer(many=True, read_only=True)
+    activities = ActivitySerializer(many=True, read_only=True)
+    flights = FlightSerializer(many=True, read_only=True)
+    photos = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = PackageModification

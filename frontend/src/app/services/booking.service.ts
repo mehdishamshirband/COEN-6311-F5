@@ -1,6 +1,8 @@
 // booking.service.ts
 import { Injectable } from '@angular/core';
-import { Booking, PaymentType, PaymentState, BookingState } from '../interfaces/booking.interface'
+import {Booking, PaymentType, PaymentState, BookingState, TravelPackage} from '../interfaces/booking.interface'
+import {HttpClient} from "@angular/common/http";
+import {Observable, lastValueFrom} from "rxjs";
 
 @Injectable({
   providedIn: 'root',
@@ -329,16 +331,21 @@ export class BookingService {
   },
     // MORE BOOKINGS HERE
   ];
-  constructor() {}
+  constructor(private http: HttpClient) { }
 
-  // Fetch bookings from an API or source
-  fetchBookings(): void {
-    // Placeholder for fetching bookings logic
+  private baseUrl = 'http://localhost:8000/';
+
+  getBookings(): Observable<Booking[]> { //Observable<TravelPackage[]> {
+    return this.http.get<Booking[]>(this.baseUrl + 'Booking/');
+    //return this.bookings;
   }
 
-  getBookings(): Booking[] {
-    return this.bookings;
+  async getBookingSynchronous() {
+    return await lastValueFrom(this.getBookings()).then((bookings) => {
+      return bookings;
+    });
   }
+
 
   getBookingByNo(bookingNo: string): Booking | undefined {
   return this.bookings.find(booking => booking.bookingNo === bookingNo);

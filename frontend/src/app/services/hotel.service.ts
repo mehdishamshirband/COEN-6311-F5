@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Hotel, HotelBooking } from '../interfaces/booking.interface';
+import {Flight, Hotel, HotelBooking} from '../interfaces/booking.interface';
 import { Observable, of } from "rxjs";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -24,14 +25,19 @@ export class HotelService {
     }
   ];
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  getAllHotels(): Hotel[] {
-    return this.hotels;
+  private baseUrl = 'http://127.0.0.1:8000/';
+  getAllHotels(): Observable<Hotel[]> {
+      return this.http.get<Hotel[]>(this.baseUrl + 'Hotel/');
+    //return this.hotels;
   }
 
+
   searchHotels(location: string): Observable<Hotel[]> {
-    const results = this.hotels.filter(hotel => hotel.location.toLowerCase().includes(location.toLowerCase()));
-    return of(results);
+    return this.http.get<Hotel[]>(this.baseUrl + 'Hotel/', {params: {departureCity: location}});
+
+    //const results = this.hotels.filter(hotel => hotel.location.toLowerCase().includes(location.toLowerCase()));
+    //return of(results);
   }
 }

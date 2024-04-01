@@ -19,6 +19,7 @@ from django.urls import path, include
 from rest_framework import routers
 from flyapp import views
 
+
 router = routers.DefaultRouter()
 router.register(r'Flight', views.Flights, basename='flights')
 router.register(r'Hotel', views.Hotels, basename='hotels')
@@ -31,6 +32,7 @@ router.register(r'PackagesModifications', views.PackagesModification, basename='
 router.register(r'Report', views.Reports, basename='report')
 router.register(r'Notifs', views.Notifs, basename='notifs')
 router.register(r'Photos', views.Photos, basename='photos')
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),

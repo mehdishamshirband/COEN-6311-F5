@@ -1,51 +1,37 @@
-import { Injectable } from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {Flight, TravelPackage} from '../interfaces/booking.interface';
-import {Observable, of} from "rxjs";
+import {map, Observable, of} from "rxjs";
+import { HttpClient} from "@angular/common/http";
+import { DatePipe } from "@angular/common";
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class FlightService {
 
-    private flights: Flight[] = [
-      {
-        id: 101,
-        departureAirport: "AEX",
-        departureCity: "Alexandria",
-        departureCountry: "United States of America",
-        arrivalAirport: "AGP",
-        arrivalCity: "Malaga",
-        arrivalCountry: "Spain",
-        departureDate: new Date(2024, 8, 4, 6, 47),
-        arrivalDate: new Date(2024, 8, 4, 22, 59),
-        airline: "American Airlines",
-        price: 849,
-        duration: 425,
-        airlineLogo: 'assets/images/airlines/american-airlines.png'
+    private flights: Flight[] = []
 
-      },
-      {
-        id: 102,
-        departureAirport: "JAE",
-        departureCity: "Jaen",
-        departureCountry: "Peru",
-        arrivalAirport: "PFM",
-        arrivalCity: "Primrose",
-        arrivalCountry: "Canada",
-        departureDate: new Date(2024, 9, 21, 14, 10),
-        arrivalDate: new Date(2024, 9, 21, 19, 34),
-        airline: "Some other Airlines",
-        price: 670,
-        duration: 555,
-        airlineLogo: 'assets/images/airlines/american-airlines.png'
-      }
-    ];
+    constructor(private http: HttpClient) { }
 
-    constructor() { }
-  getAllFlights(): Flight[] {
-    return this.flights;
+    private baseUrl = 'http://127.0.0.1:8000/';
+  getAllFlights(): Observable<Flight[]> {
+      return this.http.get<Flight[]>(this.baseUrl + 'Flight/');
+    //return this.flights;
   }
 
+  searchFlights(departure: string, arrival: string, departureDate: Date): Observable<Flight[]> {
+    return this.http.get<Flight[]>(this.baseUrl + 'Flight/', {params: {departureCity: departure, arrivalCity: arrival, departureDate: departureDate.toString()||''}});
+    //return this.http.get<Flight[]>(this.baseUrl + 'searchFlights/', {params: {departure: departure, arrival: arrival, departureDate: departureDate.toString()||''}});
+    /*.pipe(
+      map((flights:any) => {
+        flights.departureDate = new Date(flights.departureDate);
+        return flights;
+      })
+    )*/
+  }
+
+  /*
   searchFlights(departure: string, arrival: string, departureDate: Date): Observable<Flight[]> {
     const searchDate = new Date(departureDate + 'T00:00:00Z');
     const results = this.flights.filter(flight => (
@@ -61,5 +47,6 @@ export class FlightService {
     //console.log("Results: ", results);
     return of(results);
   }
+  */
 
 }

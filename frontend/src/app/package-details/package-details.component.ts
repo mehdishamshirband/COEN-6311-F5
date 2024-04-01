@@ -8,6 +8,7 @@ import {RouterModule} from '@angular/router';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { FormsModule } from '@angular/forms';
+import { from, tap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -31,20 +32,25 @@ export class TravelPackageDetailsComponent implements OnInit {
     private location: Location,
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit() {
     const packageIdString = +this.route.snapshot.paramMap.get('id')!;
 
     if (packageIdString === null) {
     console.error('Package ID is missing');
     return;
-  }
+
+    }
 
     const packageId = +packageIdString
     if (!packageId) {
       console.error('Package ID is missing');
       return;
     }
-    this._travelPackage = this.travelPackageService.getTravelPackageById(packageId);
+
+    // Subscribe is an asynchronous function, need to await the result using async/await
+    this._travelPackage = await this.travelPackageService.getTravelPackageByIdSynchronous(packageIdString);
+    console.warn('Travel Package:', this._travelPackage);
+
     if (!this._travelPackage) {
       console.error('Travel package not found');
     }
@@ -96,29 +102,30 @@ export class TravelPackageDetailsComponent implements OnInit {
     this.removeFromCart = false;
   }
 
+
   mergeAndSortItems(): MergedItem[] {
-  let mergedItems: MergedItem[] = [];
+    let mergedItems: MergedItem[] = [];
 
-  if (!this._travelPackage) return [];
+    if (!this._travelPackage) return [];
 
-  const { flights, hotels, activities } = this._travelPackage;
+    const { flights, hotels, activities } = this._travelPackage;
 
-  flights?.forEach(flight => {
-    mergedItems.push({ ...flight, sortDate: flight.departureDate, type: 'Flight'});
-  });
+    flights?.forEach(flight => {
+      mergedItems.push({ ...flight, sortDate: new Date(flight.departureDate), type: 'Flight'});
+    });
 
-  hotels?.forEach(hotel => {
-    mergedItems.push({ ...hotel, sortDate: hotel.checkIn, type: 'Hotel' });
-  });
+    hotels?.forEach(hotel => {
+      mergedItems.push({ ...hotel, sortDate: new Date(hotel.checkIn), type: 'Hotel' });
+    });
 
-  activities?.forEach(activity => {
-    mergedItems.push({ ...activity, sortDate: activity.date, type: 'Activity' });
-  });
+    activities?.forEach(activity => {
+      mergedItems.push({ ...activity, sortDate: new Date(activity.date), type: 'Activity' });
+    });
 
-  // Sort by sortDate
-  mergedItems.sort((a, b) => a.sortDate.getTime() - b.sortDate.getTime());
+    // Sort by sortDate
+    mergedItems.sort((a, b) => a.sortDate.getTime() - b.sortDate.getTime());
 
-  return mergedItems;
+    return mergedItems;
   }
 
 }

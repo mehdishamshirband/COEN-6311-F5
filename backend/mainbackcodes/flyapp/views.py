@@ -10,6 +10,18 @@ from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
     FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, PhotoSerializer
 
+from datetime import datetime
+
+
+def filter_queryset_custom_package(request, results):
+    for key, value in request.query_params.items():
+        if "date" in str(key).lower() or value == "":
+            # TODO : Fix the date filter
+            continue
+
+        key = f'{key}__icontains'
+        results = results.filter(**{key: value})
+    return results
 
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
@@ -20,12 +32,33 @@ class Flights(viewsets.ModelViewSet):
                         'departureAirport': ['icontains'], 'departureDate': ['lte', 'gte'],
                         'arrivalDate': ['lte', 'gte'], 'showDetails': ['exact']}
 
+    def get_queryset(self):
+        results = super(Flights, self).get_queryset()
+        return filter_queryset_custom_package(self.request, results)
+
+
+'''
+def searchFlights(request):
+    if not request.GET["departure"] or not request.GET["arrival"] or not request.GET["departureDate"]:
+        return JsonResponse(FlightSerializer(Flight.objects.all(), many=True).data, safe=False)
+    departure, arrival, departureDate = request.GET["departure"], request.GET["arrival"], datetime.strptime(request.GET["departureDate"], '%Y-%m-%d').date()
+    # Check the date because it causes error
+    flights = Flight.objects.filter(departureCity=departure, arrivalCity=arrival) #, departureDate=departureDate)
+    #print(flights)
+    return JsonResponse(FlightSerializer(flights, many=True).data, safe=False)
+'''
+
 
 class Hotels(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
     filterset_fields = {'name': ['icontains'], 'location': ['icontains']}
+
+    def get_queryset(self):
+        results = super(Hotels, self).get_queryset()
+        return filter_queryset_custom_package(self.request, results)
+
 
 
 class HotelsBooking(viewsets.ModelViewSet):
@@ -43,14 +76,18 @@ class Activities(viewsets.ModelViewSet):
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'],
                         'location': ['icontains'], 'date': ['lte', 'gte'], 'showDetails': ['exact']}
 
+    def get_queryset(self):
+        results = super(Activities, self).get_queryset()
+        return filter_queryset_custom_package(self.request, results)
+
 
 from datetime import datetime
 
 
 def dynamicpricecalc(request):
-    if not HotelBooking.objects.filter(id=request.data.get("hotel") or "0").first() and not Flight.objects.filter(
-            id=request.data.get("flight") or "0").first() and not Activity.objects.filter(
-            id=int(request.data.get("activity") or "0")):
+    if not HotelBooking.objects.filter(id=request.data.get("hotels") or "0").first() and not Flight.objects.filter(
+            id=request.data.get("flights") or "0").first() and not Activity.objects.filter(
+            id=int(request.data.get("activities") or "0")):
         raise serializers.ValidationError('at least choose one service!!')
 
     # calc price dynamicly
@@ -61,7 +98,7 @@ def dynamicpricecalc(request):
         request.data["price"] += float(HotelBooking.objects.filter(id=int(i)).first().totalPrice)
     for i in dict(request.data).get("flight"):
         request.data["price"] += float(Flight.objects.filter(id=int(i)).first().price)
-    for i in dict(request.data).get("activity"):
+    for i in dict(request.data).get("activities"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
     request.data._mutable = False
     # print(request.data)
@@ -87,6 +124,20 @@ class TravelPackages(viewsets.ModelViewSet):
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'], 'showDetails': ['exact'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
+
+    def get_queryset(self):
+        all_package = super(TravelPackages, self).get_queryset()
+        results = TravelPackage.objects.none()
+        filtervalue = self.request.query_params.get('filterValue')
+        if filtervalue is None:
+            return all_package
+
+        for key in list(all_package[0].__dict__)[1:]:  # Get all fields names except the first one which is private
+            key = f'{key}__icontains'
+            if all_package.filter(**{key: filtervalue}).exists():
+                results = results | all_package.filter(**{key: filtervalue})
+
+        return results
 
 
 class BillingDetail(viewsets.ModelViewSet):
@@ -228,19 +279,19 @@ def email_send_booking_details(obj):
         email_body += f'Package Description: {package.description}\n'
         email_body += f'Package Price: ${package.price}\n'
         email_body += f'Travel Period: {package.startingDate} to {package.endingDate}\n'
-        if package.flight.all():
+        if package.flights.all():
             email_body += 'Flights Included:\n'
             for flight in package.flight.all():
                 email_body += f'Flight Information: {flight}\n'
                 email_body += f'Flight Price: {flight.price}\n'
-        if package.hotel.all():
+        if package.hotels.all():
             email_body += 'Hotels Included:\n'
             for hotel in package.hotel.all():
                 email_body += f'Hotel Information: {hotel}\n'
                 email_body += f'Hotel Price: {hotel.totalPrice}\n'
-        if package.activity.all():
+        if package.activities.all():
             email_body += 'Activities Included:\n'
-            for activity in package.activity.all():
+            for activity in package.activities.all():
                 email_body += f'- {activity} - price : {activity.price}\n'
         email_body += '\n'
 

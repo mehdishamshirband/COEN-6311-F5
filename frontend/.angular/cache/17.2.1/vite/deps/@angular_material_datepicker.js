@@ -155,6 +155,7 @@ import {
   ɵɵtwoWayProperty,
   ɵɵviewQuery
 } from "./chunk-JAT24HIO.js";
+import "./chunk-DGSSWR5S.js";
 import {
   animationFrameScheduler,
   asapScheduler,
@@ -162,7 +163,6 @@ import {
   isObservable,
   merge
 } from "./chunk-YIAFZ24P.js";
-import "./chunk-DGSSWR5S.js";
 import {
   ConnectableObservable,
   EMPTY,

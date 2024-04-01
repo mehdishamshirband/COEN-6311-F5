@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -87,15 +88,15 @@ class TravelPackage(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)
-    flight = models.ManyToManyField(Flight, blank=True)
-    activity = models.ManyToManyField(Activity, blank=True)
-    hotel = models.ManyToManyField(HotelBooking, blank=True)
+    flights = models.ManyToManyField(Flight, blank=True)
+    activities = models.ManyToManyField(Activity, blank=True)
+    hotels = models.ManyToManyField(HotelBooking, blank=True)
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
     showDetails = models.BooleanField(default=True, blank=True)
-    nbr_adult = models.IntegerField()
-    nbr_child = models.IntegerField()
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -122,7 +123,7 @@ class Billing(models.Model):
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     firstLineAddress = models.CharField(max_length=255)
-    secondLineAddress = models.CharField(max_length=255)
+    secondLineAddress = models.CharField(max_length=255, blank=True, default='') # optional field
     zipCode = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state_area = models.CharField(max_length=255)
@@ -149,7 +150,7 @@ status = (
 class Booking(models.Model):
     bookingNo = models.IntegerField(unique=True)
     cost = models.FloatField()
-    details = models.CharField(max_length=255)
+    # details = models.CharField(max_length=255)
     billing = models.ForeignKey(Billing, on_delete=models.CASCADE)
     bookingState = models.CharField(max_length=255, choices=status, default='CREATED')
     travelPackage = models.ManyToManyField(TravelPackage)
@@ -157,13 +158,13 @@ class Booking(models.Model):
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     firstLineAddress = models.CharField(max_length=255)
-    secondLineAddress = models.CharField(max_length=255)
+    secondLineAddress = models.CharField(max_length=255, blank=True, default='') # optional field
     zipCode = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state_area = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
-    phone = models.CharField(max_length=255)
+    phone = models.CharField(max_length=255, blank=True, default='') # optional field
 
     class Meta:
         ordering = ["bookingNo"]
@@ -185,9 +186,9 @@ class PackageModification(models.Model):
     price = models.FloatField()
     description = models.TextField()
     state = models.CharField(max_length=255, choices=state, default='PENDING')
-    flight = models.ManyToManyField(Flight, blank=True)
-    activity = models.ManyToManyField(Activity, blank=True)
-    hotel = models.ManyToManyField(HotelBooking, blank=True)
+    flights = models.ManyToManyField(Flight, blank=True)
+    activities = models.ManyToManyField(Activity, blank=True)
+    hotels = models.ManyToManyField(HotelBooking, blank=True)
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)

@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { TravelPackage } from '../interfaces/booking.interface';
 import { TravelPackageItemComponent } from '../travel-package-item/travel-package-item.component';
 import { TravelPackageService } from '../services/travel-package.service';
-import {NgForOf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-travel-package-gallery',
   standalone: true,
-  imports: [TravelPackageItemComponent, NgForOf],
+  imports: [TravelPackageItemComponent, NgForOf, NgIf],
   templateUrl: './travel-package-gallery.component.html',
   styleUrls: ['./travel-package-gallery.component.css']
 })
@@ -22,8 +22,16 @@ export class TravelPackageGalleryComponent implements OnInit {
   constructor(private travelingPackageService: TravelPackageService) {}
 
   ngOnInit() {
-    this.travelPackageList = this.travelingPackageService.getAllTravelPackages();
-    this.filteredTravelPackageList = this.travelPackageList;
+    this.travelingPackageService.getAllTravelPackages().subscribe({next: (travelPackages) => {
+        this.travelPackageList = travelPackages;
+        this.filteredTravelPackageList = this.travelPackageList;
+        console.warn('Travel Packages:', travelPackages);
+      },
+      error: (error) => {
+        console.error('Error fetching travel packages:', error);
+      }
+    });
+
 
     const placeholders = ["I want to go to...", "I want to do..."];
     let index = 0;
@@ -48,6 +56,22 @@ export class TravelPackageGalleryComponent implements OnInit {
       this.not_filtered = true;
       return;
     }
+
+    this.not_filtered = false;
+    this.travelingPackageService.filterTravelPackages(filterValue).subscribe({next: (travelPackages) => {
+        this.filteredTravelPackageList = travelPackages;
+        console.warn('Filtered Travel Packages:', travelPackages);
+      },
+      error: (error) => {
+        console.error('Error fetching travel packages:', error);
+      }
+    });
+
+
+
+
+
+    /*
     this.filteredTravelPackageList = this.travelPackageList.filter(packageData =>
       packageData.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
       packageData.description?.toLowerCase().includes(filterValue.toLowerCase()) ||
@@ -67,7 +91,7 @@ export class TravelPackageGalleryComponent implements OnInit {
         flight.airline?.toLowerCase().includes(filterValue.toLowerCase())
       )
     );
-    this.not_filtered = false;
+    */
   }
 
 
