@@ -191,11 +191,11 @@
         <input type="file" id="packagePhoto" (change)="handleFileInput($event)" accept="image/*" class="form-control">
       </div>
 
-      <!-- Embedded Components for Hotels, Flights, and Activities
+      <!-- Embedded Components for Hotels, Flights, and Activities -->
       <app-agent-hotel-management [(hotelBookings)]="editingPackage.hotels!"></app-agent-hotel-management>
       <app-agent-flight-management [(flights)]="editingPackage.flights!"></app-agent-flight-management>
       <app-agent-activity-management [(activities)]="editingPackage.activities!"></app-agent-activity-management>
-      -->
+
 
       <!-- Package actions -->
       <div class="mt-3 text-end">
