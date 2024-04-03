@@ -17,9 +17,10 @@ export class AgentPackagesComponent implements OnInit {
   constructor(private travelingPackageService: TravelPackageService) { }
 
   ngOnInit(): void {
-    this.travelingPackageService.getAllTravelPackages() /*.subscribe((data: TravelPackage[]) => {
+    this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
     this.travelPackages = data;
-    });*/
+    });
+    console.log("Fetched travelPackages in agent-packages")
     console.log(this.travelPackages);
     this.newPackage = false;
   }

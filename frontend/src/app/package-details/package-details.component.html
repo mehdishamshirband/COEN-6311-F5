@@ -5,90 +5,40 @@
       Travel Package
     </div>
     <div class="card-body">
-      <div class="d-flex flex-row">
+      <div class="row">
         <!-- Image container -->
-        <div *ngIf="travelPackage.photos && travelPackage.photos.length > 0; else noPhoto" class="flex-shrink-0 mr-3 me-4">
-          <img [src]="photoUrl" class="img-fluid rounded-2" [alt]="photoCaption" style="object-fit: cover; width: 380px; height: 380px;">
+        <div *ngIf="travelPackage.photos && travelPackage.photos.length > 0; else noPhoto" class="col-md-4">
+          <img [src]="photoUrl" class="img-fluid rounded-2" [alt]="photoCaption">
         </div>
         <!-- Text content -->
-
-        <div class="d-flex align-items-center flex-row p-2">
-          <div class="flex-grow-1">
+        <div class="col-md-5">
             <h4 class="card-title mb-3">{{ travelPackage!.name }}</h4>
             <p class="card-text">{{ travelPackage!.description }}</p>
             <p class="card-text">Price: ${{ travelPackage!.price }}</p>
             <p class="card-text"><b>Travel Dates: {{ travelPackage!.startingDate | date: 'short'}} - {{ travelPackage!.endingDate | date: 'short' }}</b></p>
-          </div>
         </div>
-
-        <div class="d-flex flex-column" *ngIf="!removeFromCart">
-
-          <p class="card-text">
-            Start reservation :
-          </p>
-
-          <!---
-          <div class="p-0 align-items-center">
-            <p class="card-text">From :
-            <input matInput [matDatepicker]="picker" placeholder="MM/DD/YYYY">
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            </p>
+        <!-- Reservation section -->
+        <div class="col-md-3" *ngIf="!removeFromCart">
+          <h5 class="mb-3">Start Reservation</h5>
+          <div>
+            <label class="form-label">Number of adults:</label>
+            <input type="number" class="form-control mb-2" min="1" max="10" step="1" [(ngModel)]="travelPackage.nbr_adult">
           </div>
-
-          <div class="p-0 align-items-center">
-            <p class="card-text">To :
-            <input matInput [matDatepicker]="picker" placeholder="MM/DD/YYYY">
-            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-            </p>
+          <div>
+            <label class="form-label">Number of children:</label>
+            <input type="number" class="form-control mb-2" min="0" max="10" step="1" [(ngModel)]="travelPackage.nbr_child">
           </div>
-          --->
-          <div class="p-0 align-items-center">
-            <p class="card-text">Number of adult :
-            <input type="number" min="1" max="10" step="1" [(ngModel)]="travelPackage.nbr_adult">
-            </p>
-          </div>
-
-          <div class="p-0 align-items-center">
-            <p class="card-text">Number of children :
-            <input type="number" min="0" max="10" step="1" [(ngModel)]="travelPackage.nbr_child">
-            </p>
-          </div>
-
-          <div class="p-2">
-            <button class="btn btn-primary mb-3 " [routerLink]="" (click)="addToCart()">Add to Cart</button>
-          </div>
-
+          <button class="btn btn-primary" [routerLink]="" (click)="addToCart()">Add to Cart</button>
         </div>
-
-        <div class="d-flex flex-column" *ngIf="removeFromCart">
-
-          <p class="card-text">
-            Your pending reservation :
-          </p>
-
-          <div class="p-0 align-items-center">
-            <p class="card-text">Number of adult : {{travelPackage.nbr_adult}}</p>
-          </div>
-
-          <div class="p-0 align-items-center">
-            <p class="card-text">Number of children : {{travelPackage.nbr_child}}
-            </p>
-          </div>
-
-          <div class="p-2">
-            <button class="btn btn-primary mb-3 " [routerLink]="" (click)="removeToCart(travelPackage.id)">Remove to Cart</button>
-          </div>
-
+        <!-- If item is in cart -->
+        <div class="col-md-3" *ngIf="removeFromCart">
+          <h5 class="mb-3">Your pending reservation:</h5>
+          <p class="card-text">Number of adult: {{travelPackage.nbr_adult}}</p>
+          <p class="card-text">Number of children: {{travelPackage.nbr_child}}</p>
+          <button class="btn btn-primary" [routerLink]="" (click)="removeToCart(travelPackage.id)">Remove to Cart</button>
         </div>
-
-
-
-
       </div>
     </div>
-
   </div>
 
    <div class="card mt-4">
@@ -98,12 +48,21 @@
     <ul class="list-group list-group-flush">
       <li *ngFor="let item of sortedItems" class="list-group-item">
         <ng-container [ngSwitch]="item['type']">
-          <div><h6>{{ item['type'] }}</h6></div>
+          <div><h6><b>{{ item['type'] }}</b></h6></div>
+
           <ng-container *ngSwitchCase="'Flight'">
             <!-- Flight details -->
-            <div>From {{ item['departureCity'] }} ({{item['departureAirport']}}) to {{ item['arrivalCity'] }} ({{item['arrivalAirport']}}) - {{ item['airline'] }} (${{ item['price'] }})</div>
-            <div>Departure: {{ item['departureDate'] | date:'medium' }}</div>
-            <div>Arrival: {{ item['arrivalDate'] | date:'medium' }}</div>
+            <div class="d-flex justify-content-between align-items-center">
+              <div class="flex-grow-1 me-3">
+                <div>From {{ item['departureCity'] }} ({{item['departureAirport']}}) to {{ item['arrivalCity'] }} ({{item['arrivalAirport']}}) - {{ item['airline'] }} (${{ item['price'] }})</div>
+                <div>Departure: {{ item['departureDate'] | date:'medium' }}</div>
+                <div>Arrival: {{ item['arrivalDate'] | date:'medium' }}</div>
+              </div>
+              <div>
+                <!-- Image container for Hotel -->
+                <img [src]="item['airlineLogo']" class="img-fluid" alt="{{ item['airline'] || 'Airline logo' }}" style="object-fit: cover; max-width: 120px; margin-right: 20px">
+              </div>
+            </div>
           </ng-container>
 
           <ng-container *ngSwitchCase="'Hotel'">
@@ -117,8 +76,8 @@
                 <div>Check-out: {{ item['checkOut'] | date:'mediumDate' }}</div>
               </div>
               <!-- Image container for Hotel -->
-              <div *ngIf="item['hotel']['photo']">
-                <img [src]="item['hotel']['photo'].url" class="img-fluid rounded-2" alt="{{ item['hotel']['photo'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              <div *ngIf="item['hotel']['photos']">
+                <img [src]="item['hotel']['photos'].url" class="img-fluid rounded-2" alt="{{ item['hotel']['photos'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
               </div>
             </div>
           </ng-container>
@@ -131,8 +90,13 @@
                 <div>Date: {{ item['date'] | date:'mediumDate' }} at {{ item['location'] }}</div>
               </div>
               <!-- Image container for Activity, displaying the first photo -->
+              <!--
               <div *ngIf="item['photos'] && item['photos'].length > 0">
                 <img [src]="item['photos'][0].url" class="img-fluid rounded-2" alt="{{ item['photos'][0].caption || 'Activity photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              </div>
+              -->
+              <div>
+                <img [src]="item['photos'].url" class="img-fluid rounded-2" alt="{{ item['photos'].caption || 'Activity photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
               </div>
             </div>
           </ng-container>

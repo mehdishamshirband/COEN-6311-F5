@@ -49,7 +49,7 @@
                 </div>
                 <div class="d-flex flex-grow-1">
                   <div class="d-flex align-items-center justify-content-center p-2" style="flex-basis: 20%;">
-                    <img *ngIf="item.hotel.photo?.url" [src]="item.hotel.photo.url" alt="{{ item.hotel.name }}" class="img-fluid" style="max-width: 180px;">
+                    <img *ngIf="item.hotel.photos?.url" [src]="item.hotel.photos.url" alt="{{ item.hotel.name }}" class="img-fluid" style="max-width: 240px;">
                   </div>
                   <div class="d-flex flex-column justify-content-between p-3" style="flex-basis: 65%;">
                     <h5 class="card-title">{{ item.hotel.name }}</h5>
@@ -126,7 +126,8 @@
                 </div>
                 <div class="d-flex flex-grow-1">
                   <div class="d-flex flex-grow-1 align-items-center justify-content-center p-2" style="flex-basis: 20%;">
-                    <img *ngIf="item.photos?.[0]?.url" [src]="item.photos[0].url" alt="{{ item.name }}" class="img-fluid" style="max-width: 180px;">
+                    <!-- <img *ngIf="item.photos?.[0]?.url" [src]="item.photos[0].url" alt="{{ item.name }}" class="img-fluid" style="max-width: 180px;"> -->
+                    <img *ngIf="item.photos?.url" [src]="item.photos.url" alt="{{ item.name }}" class="img-fluid" style="max-width: 240px;">
                   </div>
                   <div class="d-flex flex-column justify-content-between p-3" style="flex-basis: 60%;">
                     <h5 class="card-title">{{ item.name }}</h5>

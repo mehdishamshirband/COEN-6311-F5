@@ -430,8 +430,9 @@ export class TravelPackageService {
   private baseUrl = 'http://localhost:8000/';
   private Package?: TravelPackage
 
-  getAllTravelPackages(): Observable<TravelPackage[]> { //Observable<TravelPackage[]> {
+  getAllTravelPackages(): Observable<TravelPackage[]> {
     //return this.travelPackages_front;
+    console.log(this.http.get<TravelPackage[]>(this.baseUrl + 'Packages/'));
     return this.http.get<TravelPackage[]>(this.baseUrl + 'Packages/');
   }
 
