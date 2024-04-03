@@ -6,7 +6,7 @@ from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification
 class PhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Photo
-        fields = '__all__'
+        fields = ['url', 'caption']
 
 
 class FlightSerializer(serializers.ModelSerializer):
@@ -16,7 +16,7 @@ class FlightSerializer(serializers.ModelSerializer):
 
 
 class HotelSerializer(serializers.ModelSerializer):
-    photo = PhotoSerializer(read_only=True)
+    photos = PhotoSerializer(read_only=True)
 
     class Meta:
         model = Hotel
@@ -32,7 +32,7 @@ class HotelBookingSerializer(serializers.ModelSerializer):
 
 
 class ActivitySerializer(serializers.ModelSerializer):
-    photo = PhotoSerializer(read_only=True)
+    photos = PhotoSerializer(read_only=True)
 
     class Meta:
         model = Activity
