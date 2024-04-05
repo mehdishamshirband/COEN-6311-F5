@@ -76,7 +76,7 @@ export class BookingService {
               name: 'Hotel Mercurio Venezia',
               location: 'Venice, Italy',
               website: 'https://www.hotelmercurio.com/',
-              photo: {url: 'assets/images/hotels/mercurio_venezia.jpg'}
+              photos: [{url: 'assets/images/hotels/mercurio_venezia.jpg', caption: 'Mecurio Venezia'}]
             },
             checkIn: new Date('2024-04-25'),
             checkOut: new Date('2024-04-27'),
@@ -183,7 +183,7 @@ export class BookingService {
             id: 301,
             name: 'Hotel Madrid Centro',
             location: 'Madrid, Spain',
-            photo: {url: 'assets/images/hotels/hotel_madrid_centro.jpg'}
+            photos: [{url: 'assets/images/hotels/hotel_madrid_centro.jpg', caption:'Hotel Madrid Centro'}]
           },
           checkIn: new Date('2024-05-01'),
           checkOut: new Date('2024-05-05'),
@@ -195,7 +195,7 @@ export class BookingService {
             id: 302,
             name: 'Hotel Best Front Maritim Barcelona',
             location: 'Barcelona, Spain',
-            photo: {url: 'assets/images/hotels/hotel_best_front_maritim_barcelona.jpg'}
+            photos: [{url: 'assets/images/hotels/hotel_best_front_maritim_barcelona.jpg', caption: 'Hotel Barcelona'}]
           },
           checkIn: new Date('2024-05-05'),
           checkOut: new Date('2024-05-10'),
@@ -288,7 +288,7 @@ export class BookingService {
             id: 301,
             name: 'Badrutt\'s Palace Hotel',
             location: 'St. Moritz, Switzerland',
-            photo: {url: 'assets/images/hotels/hotel_badrutts_palace.jpg'}
+            photos: [{url: 'assets/images/hotels/hotel_badrutts_palace.jpg', caption: 'Badrutt\'s Palace Hotel'}]
           },
           checkIn: new Date('2024-12-11'),
           checkOut: new Date('2024-12-19'),

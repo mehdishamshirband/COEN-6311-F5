@@ -44,7 +44,7 @@ export interface Hotel {
   id: number;
   name: string;
   location: string;
-  photo?: Photo;
+  photos?: Photo[];
   website?: string;
 }
 
@@ -80,6 +80,21 @@ export interface TravelPackage {
   startingDate: Date;
   endingDate: Date;
   photos?: Photo[];
+  showDetails?: boolean;
+  nbr_adult?: number;
+  nbr_child?: number;
+}
+
+export interface NewTravelPackage {
+  id?: number;
+  name: string;
+  description: string;
+  price: number;
+  flights?: Flight[];
+  hotels?: HotelBooking[];
+  activities?: Activity[];
+  startingDate: Date;
+  endingDate: Date;
   showDetails?: boolean;
   nbr_adult?: number;
   nbr_child?: number;

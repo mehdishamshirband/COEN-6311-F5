@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { TravelPackage, Flight, HotelBooking, Activity, Photo } from "../interfaces/booking.interface";
+import {TravelPackage, Flight, HotelBooking, Activity, Photo, NewTravelPackage} from "../interfaces/booking.interface";
 import {TravelPackageService} from "../services/travel-package.service";
 import {Observable} from "rxjs";
+import {UploadService} from "../services/upload.service";
 
 @Component({
   selector: 'app-agent-packages',
@@ -11,10 +12,12 @@ import {Observable} from "rxjs";
 export class AgentPackagesComponent implements OnInit {
   travelPackages: TravelPackage[] = [];
   editingPackage?: TravelPackage;
+  newPackage?: NewTravelPackage;
   selectedPackageId?: number;
-  newPackage?: boolean;
+  newPackageCheck?: boolean;
+  private selectedFiles: any;
 
-  constructor(private travelingPackageService: TravelPackageService) { }
+  constructor(private travelingPackageService: TravelPackageService, private uploadService: UploadService) { }
 
   ngOnInit(): void {
     this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
@@ -22,13 +25,16 @@ export class AgentPackagesComponent implements OnInit {
     });
     console.log("Fetched travelPackages in agent-packages")
     console.log(this.travelPackages);
-    this.newPackage = false;
+    this.newPackageCheck = false;
+  }
+
+  get currentPackage(): any {
+    return this.newPackageCheck ? this.newPackage : this.editingPackage;
   }
 
   initNewPackage(): void {
-    this.newPackage = true;
-    this.editingPackage = {
-      id: Date.now(),
+    this.newPackageCheck = true;
+    this.newPackage = {
       name: '',
       description: '',
       price: 0,
@@ -37,31 +43,44 @@ export class AgentPackagesComponent implements OnInit {
       activities: [],
       startingDate: new Date(),
       endingDate: new Date(),
-      photos: [],
       nbr_adult: 1,
       nbr_child: 0
     };
   }
 
   savePackage(): void {
-    if (!this.editingPackage) return;
-    const index = this.travelPackages.findIndex(p => p.id === this.editingPackage!.id);
-    if (index > -1) {
-      this.travelPackages[index] = this.editingPackage;
-    } else {
-      this.travelPackages.push(this.editingPackage);
+    if (this.newPackage) {
+      const newPackage: NewTravelPackage = this.newPackage!;
+      this.travelingPackageService.addTravelPackage(newPackage).subscribe({
+        next: (response) => console.log('Package saved successfully!', response),
+        error: (error) => console.error('Error saving package:', error)});
+      this.newPackageCheck = false;
+      this.newPackage = undefined;
+      this.selectedPackageId = undefined;
     }
-    this.editingPackage = undefined;
+    else if (this.editingPackage) {
+      const index = this.travelPackages.findIndex(p => p.id === this.editingPackage!.id);
+      if (index > -1) {
+        this.travelPackages[index] = this.editingPackage;
+      } else {
+        this.travelPackages.push(this.editingPackage);
+      }
+      this.editingPackage = undefined;
+      this.selectedPackageId = undefined;
+    }
+    else return;
   }
 
+
   startEditingPackage(packageId: number): void {
-    this.newPackage = false;
+    this.newPackageCheck = false;
     const travelPackage = this.travelPackages.find(p => p.id === packageId);
     if (travelPackage) {
       travelPackage.flights = travelPackage.flights || [];
       travelPackage.hotels = travelPackage.hotels || [];
       this.editingPackage = JSON.parse(JSON.stringify(travelPackage)); // Deep clone
     }
+    console.log("editingPackage: ", this.editingPackage); //TODO: remove or comment (debug)
   }
 
   confirmPackageDeletion(index: number, event: Event) {
@@ -76,8 +95,13 @@ export class AgentPackagesComponent implements OnInit {
 
   cancelEditingPackage(): void {
     this.editingPackage = undefined;
+    this.newPackage = undefined;
+    this.selectedPackageId = undefined;
+    this.newPackageCheck = false;
   }
 
+
+  /**
   handleFileInput(event: any): void {
     if (!this.editingPackage) return;
     const file = event.target.files[0];
@@ -90,6 +114,52 @@ export class AgentPackagesComponent implements OnInit {
       reader.readAsDataURL(file);
     }
   }
+  **/
+
+  /**
+  handleFileInput(event: any, uploadDir: string): void {
+    const files: FileList = event.target.files;
+    if (files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        this.uploadService.uploadFile(files[i], uploadDir).subscribe(
+          event => {
+            console.log('File upload event:', event);
+            // Handle the upload event, e.g., progress, completion, etc.
+          },
+          error => console.error('File upload error:', error)
+        );
+      }
+    }
+  }
+**/
+
+    handleFileInput(event: any): void {
+    const files: FileList = event.target.files;
+    if (files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        this.selectedFiles.push(files[i]); //TODO: error here, why??????????
+      }
+    }
+  }
+
+addPhoto(uploadDir: string): void {
+  this.selectedFiles.forEach((file: File) => {
+    this.uploadService.uploadFile(file, uploadDir).subscribe(
+      event => {
+        console.log('File upload event:', event);
+        // Handle the upload event, e.g., progress, completion, etc.
+      },
+      error => console.error('File upload error:', error)
+    );
+  });
+}
+
+  removePhoto(): void { //TODO: implement the remove in the backend part
+    this.selectedFiles = [];
+    const fileInput = document.getElementById('packagePhoto') as HTMLInputElement;
+    fileInput.value = '';
+  }
+
 
   get sortedJourneyItems(): any[] {
     if (!this.selectedPackageId) return [];

@@ -5,8 +5,12 @@
       <div class="card mb-4 shadow-sm">
         <div class="row g-0 align-items-center">
           <div class="col-md-2">
-            <img *ngIf="booking.hotel.photo?.url" [src]="booking.hotel!.photo!.url" class="img-fluid rounded-start" alt="{{ booking.hotel.name }}" style="object-fit: cover; width: 100%; height: auto;">
-            <img *ngIf="!booking.hotel.photo?.url" src="assets/images/placeholder/placeholder_default.png" class="img-fluid rounded-start" alt="Placeholder" style="object-fit: cover; width: 100%; height: auto;">
+            <ng-container *ngIf="booking.hotel.photos && booking.hotel.photos.length; else noPhoto">
+              <img [src]="booking.hotel.photos[0].url" class="img-fluid rounded-start" alt="{{ booking.hotel.photos[0].caption }}" style="object-fit: cover; width: 100%; height: auto;">
+            </ng-container>
+            <ng-template #noPhoto>
+            <img src="assets/images/placeholder/placeholder_default.png" class="img-fluid rounded-start" alt="Placeholder" style="object-fit: cover; width: 100%; height: auto;">
+            </ng-template>
           </div>
           <div class="col-md-10">
             <div class="card-body py-1">
@@ -68,10 +72,14 @@
         </div>
         <!-- Hotel Photo Upload -->
         <div class="mb-3">
-          <label class="form-label">Hotel Photo:</label>
-          <input type="file" (change)="handleFileInput($event)" accept="image/*" id="hotelPhoto" name="hotelPhoto">
-          <!-- Display the hotel photo if it has a URL -->
-          <img *ngIf="editingHotelBooking?.hotel?.photo?.url" [src]="editingHotelBooking!.hotel!.photo!.url" class="img-thumbnail mt-2" style="height: 100px;" alt="Hotel Photo">
+          <label class="form-label">Hotel Photos:</label>
+          <div *ngFor="let photo of editingHotelBooking?.hotel?.photos; let i = index" class="mb-2">
+            <input type="file" (change)="handleFileInput($event, i)" accept="image/*" [id]="'photoFile' + i" [name]="'photoFile' + i">
+            <!-- Displaying the photo if it has a URL -->
+            <img *ngIf="photo.url" [src]="photo.url" class="img-thumbnail mt-2" style="height: 100px;" [alt]="'Photo ' + (i + 1)">
+            <button type="button" class="btn btn-remove btn-danger" style="margin-left: 12px" (click)="removePhoto(i)">Remove</button>
+          </div>
+          <button type="button" class="btn btn-custom-primary btn-sm mb-3" style="margin-left: 12px" (click)="addPhotoField()" [disabled]="editingHotelBooking!.hotel.photos!.length >= 5">Add Photo</button>
         </div>
         <div class="text-end">
           <button type="submit" class="btn btn-custom-primary me-2">Save Hotel</button>

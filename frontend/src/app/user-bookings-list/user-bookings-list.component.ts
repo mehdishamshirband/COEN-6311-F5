@@ -20,9 +20,9 @@ export class UserBookingsListComponent implements OnInit {
   async ngOnInit() {
     this.bookings = await this.bookingService.getBookingSynchronous();
     // TODO Debug the fact that travelPackage exists but we can't access it (return undefined)
-    console.warn('Bookings:', this.bookings);
-    console.warn('AAAAAABookings:', JSON.stringify(this.bookings[0].travelPackage));
-    console.warn('BBBBBBookings:', this.bookings[0].travelPackage.id);
+    console.log('Bookings:', this.bookings);
+    console.log('AAAAAABookings:', this.bookings[0].travelPackage);
+    console.log('BBBBBBookings:', this.bookings[0].travelPackage.id);
 
   }
 

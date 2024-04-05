@@ -22,7 +22,7 @@ export class AgentHotelManagementComponent {
         id: Date.now(),
         name: '',
         location: '',
-        photo: { url: '', caption: '' },
+        photos: [],//{ url: '', caption: '' },
         website: ''
       },
       checkIn: new Date(),
@@ -63,20 +63,29 @@ export class AgentHotelManagementComponent {
     this.hotelBookingsChange.emit(this.hotelBookings);
   }
 
-  handleFileInput(event: any): void {
-    if (!this.editingHotelBooking || !this.editingHotelBooking.hotel.photo) return;
+  addPhotoField(): void {
+    if (this.editingHotelBooking && this.editingHotelBooking!.hotel.photos!.length < 5) {
+      this.editingHotelBooking!.hotel.photos!.push({ url: '', caption: '' });
+    }
+  }
+
+  removePhoto(index: number): void {
+    if (this.editingHotelBooking && this.editingHotelBooking.hotel.photos) {
+      this.editingHotelBooking.hotel.photos.splice(index, 1);
+    }
+  }
+
+  handleFileInput(event: any, index: number): void {
+    if (!this.editingHotelBooking || !this.editingHotelBooking.hotel.photos) return;
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        if (this.editingHotelBooking && this.editingHotelBooking.hotel) {
-          if (!this.editingHotelBooking.hotel.photo) {
-            this.editingHotelBooking.hotel.photo = { url: '', caption: '' };
-          }
-          this.editingHotelBooking.hotel.photo.url = e.target.result;
-        }
+        this.editingHotelBooking!.hotel.photos![index].url = e.target.result;
       };
       reader.readAsDataURL(file);
     }
   }
+
+
 }

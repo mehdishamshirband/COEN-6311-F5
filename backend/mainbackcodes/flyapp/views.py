@@ -6,6 +6,9 @@ from rest_framework import serializers, exceptions
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.views import APIView
+
 from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, \
     TravelPackage, Photo
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
@@ -85,6 +88,7 @@ class Activities(viewsets.ModelViewSet):
 from datetime import datetime
 
 
+"""
 def dynamicpricecalc(request):
     if not HotelBooking.objects.filter(id=request.data.get("hotels") or "0").first() and not Flight.objects.filter(
             id=request.data.get("flights") or "0").first() and not Activity.objects.filter(
@@ -104,6 +108,49 @@ def dynamicpricecalc(request):
     request.data._mutable = False
     # print(request.data)
     return request
+"""
+"""
+def dynamicpricecalc(request):
+    mutable_data = request.data.copy()
+
+    hotel_ids = mutable_data.get("hotels", [])
+    flight_ids = mutable_data.get("flights", [])
+    activity_ids = mutable_data.get("activities", [])
+
+    if not hotel_ids and not flight_ids and not activity_ids:
+        raise serializers.ValidationError('Choose at least one service!')
+
+    total_price = 0
+    if hotel_ids:
+        total_price += HotelBooking.objects.filter(id__in=hotel_ids).aggregate(Sum('totalPrice'))['totalPrice__sum'] or 0
+    if flight_ids:
+        total_price += Flight.objects.filter(id__in=flight_ids).aggregate(Sum('price'))['price__sum'] or 0
+    if activity_ids:
+        total_price += Activity.objects.filter(id__in=activity_ids).aggregate(Sum('price'))['price__sum'] or 0
+
+    mutable_data["price"] = total_price
+    request.data = mutable_data
+
+    return request
+"""
+
+def dynamicpricecalc(validated_data):
+    # Initialize the total price based on the base package price or 0.
+    total_price = validated_data.get('price', 0)
+
+    # Example: Adding price from validated flight data (assumed to be new flights to be created)
+    flights_data = validated_data.get('flights', [])
+    for flight_data in flights_data:
+        # Directly add the flight price to total_price.
+        total_price += flight_data.get('price', 0)
+
+    # Assuming similar structure for hotels and activities, add their prices to total_price as needed.
+
+    # Update the total price in validated_data.
+    validated_data['price'] = total_price
+
+    return validated_data
+
 
 
 class TravelPackages(viewsets.ModelViewSet):
@@ -111,7 +158,8 @@ class TravelPackages(viewsets.ModelViewSet):
     serializer_class = TravelPackageSerializer
 
     def create(self, request, *args, **kwargs):
-        request = dynamicpricecalc(request)
+        print(request.data)
+        #request = dynamicpricecalc(request) #TODO: uncomment and solve the problems it involves...
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
@@ -356,3 +404,21 @@ class Notifs(viewsets.ViewSet, mixins.CreateModelMixin):
 class Photos(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
+    parser_classes = (MultiPartParser, FormParser)
+
+    def perform_create(self, serializer):
+        upload_dir = self.request.data.get('upload_dir')
+        if upload_dir not in ['photos/hotels', 'photos/flights', 'photos/activities', 'photos/travel-packages']:
+            upload_dir = 'others'
+
+        serializer.save(upload_dir=upload_dir)
+
+
+class PhotoUploadView(APIView):
+    def post(self, request, *args, **kwargs):
+        photo_serializer = PhotoSerializer(data=request.data, context={'request': request})
+        if photo_serializer.is_valid():
+            photo_serializer.save()
+            return Response(photo_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(photo_serializer.errors, status=status.HTTP_400_BAD_REQUEST)

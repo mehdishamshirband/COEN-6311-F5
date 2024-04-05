@@ -20,6 +20,7 @@ from rest_framework import routers
 from flyapp import views
 from django.conf import settings
 from django.conf.urls.static import static
+from flyapp.views import PhotoUploadView
 
 router = routers.DefaultRouter()
 router.register(r'Flight', views.Flights, basename='flights')
@@ -37,6 +38,7 @@ router.register(r'Photos', views.Photos, basename='photos')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('upload/photo/', PhotoUploadView.as_view(), name='photo-upload'),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
