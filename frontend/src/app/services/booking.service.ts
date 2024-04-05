@@ -10,6 +10,7 @@ import {Observable, lastValueFrom} from "rxjs";
 
 export class BookingService {
 
+  /*
   // Sample bookings array
   private bookings: Booking[] = [
     {
@@ -331,6 +332,7 @@ export class BookingService {
   },
     // MORE BOOKINGS HERE
   ];
+  */
   constructor(private http: HttpClient) { }
 
   private baseUrl = 'http://localhost:8000/';
@@ -346,10 +348,10 @@ export class BookingService {
     });
   }
 
-
   getBookingByNo(bookingNo: string): Booking | undefined {
-  return this.bookings.find(booking => booking.bookingNo === bookingNo);
-}
+    //return this.bookings.find(booking => booking.bookingNo === bookingNo);
+    return undefined;
+  }
 
 
 }
