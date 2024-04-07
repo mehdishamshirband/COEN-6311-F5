@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TravelPackageService } from '../services/travel-package.service';
+import { CartService } from '../services/cart.service';
 import { TravelPackage, MergedItem } from '../interfaces/booking.interface';
 import {RouterModule} from '@angular/router';
 import {MatDatepickerModule} from '@angular/material/datepicker';
@@ -29,6 +30,7 @@ export class TravelPackageDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private travelPackageService: TravelPackageService,
+    private cartService: CartService,
     private location: Location,
   ) {}
 
@@ -90,7 +92,7 @@ export class TravelPackageDetailsComponent implements OnInit {
   addToCart(): void {
     if(this._travelPackage){
       if(!localStorage.getItem('user')){
-        this.travelPackageService.localAddToCart(this._travelPackage);
+        this.cartService.localAddToCart(this._travelPackage);
         this.removeFromCart = true;
       }
     }
@@ -98,7 +100,7 @@ export class TravelPackageDetailsComponent implements OnInit {
 
 
   removeToCart(id: number): void {
-    this.travelPackageService.localRemoveToCart(id);
+    this.cartService.localRemoveToCart(id);
     this.removeFromCart = false;
   }
 

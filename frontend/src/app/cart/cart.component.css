@@ -1,5 +1,79 @@
+.d-flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px; /* Adjusts padding for smaller screens */
+  padding-right: 15px; /* Adjusts padding for smaller screens */
+  max-width: 1000px; /* Maximum width of the content, adjust as needed */
+}
+
+/* Spacing and styling for the list group */
+.list-group-item {
+  padding-bottom: 20px;
+  margin-bottom: 10px; /* Adds space between list items */
+  border-color: transparent;
+  /*transition: transform 0.2s; */ /* Smooth transition for hover effect */
+}
+
+.list-group-item:hover {
+  /*transform: scale(1.02); *//* Slightly enlarges the item on hover */
+  background-color:  transparent; /* #f8f9fa; */ /* Changes background color on hover */
+}
+
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Adjust the space between icons */
+}
+
+.image-container img {
+  object-fit: cover;
+  width: 100px; /* Adjust based on your preference */
+  height: 100px; /* Adjust to maintain 1:1 aspect ratio */
+  border-radius: 50%; /* Creates a circle shape */
+  margin-right: 20px;
+}
+
+.list-group-item-action {
+  display: flex;
+  align-items: center; /* Aligns items vertically center */
+}
+
+.text-content {
+  flex-grow: 1;
+  padding-right: 20px; /* Adds some spacing between the text and the icons */
+  align-items: center;
+  width: 250px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.icon-container i {
+  margin-left: 10px; /* Adds spacing between icons */
+}
+
+
 .my-2{
   color: lightgray;
   opacity: 0.8;
   padding-top: 100px;
+}
+
+.my-3{
+  padding-right: 20px;
+}
+
+.btn-primary{
+  align-items: center;
+  border-radius: 20px 20px 20px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3; /* Darker shade for hover effect */
 }
