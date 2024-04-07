@@ -3,6 +3,7 @@ import {RouterModule} from "@angular/router";
 import { NgIf } from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { GuestProfile } from '../interfaces/user.interface';
+import { CheckoutService } from '../services/checkout.service';
 
 
 @Component({
@@ -13,9 +14,13 @@ import { GuestProfile } from '../interfaces/user.interface';
   styleUrl: './checkout.component.css'
 })
 export class CheckoutComponent {
+
+  constructor(private checkoutService: CheckoutService) {}
+
   isLogged: boolean = false; // Add check with backend to know if user already logged in
   showLogin: boolean = true;
   rightGuestData: boolean = true;
+
 
   guestProfile: GuestProfile = {
     email: '',
@@ -28,6 +33,10 @@ export class CheckoutComponent {
     zipCode: '',
     firstLineAddress: '',
     secondLineAddress: ''
+  }
+
+  ngOnInit() {
+    this.checkoutService.clearLocalStoreGuestData();
   }
 
   continueAsGuest() {
@@ -68,7 +77,9 @@ export class CheckoutComponent {
     this.checkPhone();
     if (this.rightGuestData) {
       console.warn("Guest data:", this.guestProfile);
+      this.checkoutService.localStoreGuestData(this.guestProfile);
     }
+
 
   }
 
