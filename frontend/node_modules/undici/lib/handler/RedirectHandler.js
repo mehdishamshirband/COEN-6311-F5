@@ -2,9 +2,9 @@
 
 const util = require('../core/util')
 const { kBodyUsed } = require('../core/symbols')
-const assert = require('node:assert')
+const assert = require('assert')
 const { InvalidArgumentError } = require('../core/errors')
-const EE = require('node:events')
+const EE = require('events')
 
 const redirectableStatusCodes = [300, 301, 302, 303, 307, 308]
 
@@ -38,7 +38,6 @@ class RedirectHandler {
     this.maxRedirections = maxRedirections
     this.handler = handler
     this.history = []
-    this.redirectionLimitReached = false
 
     if (util.isStream(this.opts.body)) {
       // TODO (fix): Provide some way for the user to cache the file to e.g. /tmp
@@ -92,16 +91,6 @@ class RedirectHandler {
       ? null
       : parseLocation(statusCode, headers)
 
-    if (this.opts.throwOnMaxRedirect && this.history.length >= this.maxRedirections) {
-      if (this.request) {
-        this.request.abort(new Error('max redirects'))
-      }
-
-      this.redirectionLimitReached = true
-      this.abort(new Error('max redirects'))
-      return
-    }
-
     if (this.opts.origin) {
       this.history.push(new URL(this.opts.path, this.opts.origin))
     }
@@ -146,7 +135,7 @@ class RedirectHandler {
 
         For status 300, which is "Multiple Choices", the spec mentions both generating a Location
         response header AND a response body with the other possible location to follow.
-        Since the spec explicitly chooses not to specify a format for such body and leave it to
+        Since the spec explicitily chooses not to specify a format for such body and leave it to
         servers and browsers implementors, we ignore the body as there is no specified way to eventually parse it.
       */
     } else {
@@ -162,7 +151,7 @@ class RedirectHandler {
         TLDR: undici always ignores 3xx response trailers as they are not expected in case of redirections
         and neither are useful if present.
 
-        See comment on onData method above for more detailed information.
+        See comment on onData method above for more detailed informations.
       */
 
       this.location = null
@@ -187,7 +176,7 @@ function parseLocation (statusCode, headers) {
   }
 
   for (let i = 0; i < headers.length; i += 2) {
-    if (headers[i].length === 8 && util.headerNameToString(headers[i]) === 'location') {
+    if (headers[i].toString().toLowerCase() === 'location') {
       return headers[i + 1]
     }
   }
@@ -195,17 +184,12 @@ function parseLocation (statusCode, headers) {
 
 // https://tools.ietf.org/html/rfc7231#section-6.4.4
 function shouldRemoveHeader (header, removeContent, unknownOrigin) {
-  if (header.length === 4) {
-    return util.headerNameToString(header) === 'host'
-  }
-  if (removeContent && util.headerNameToString(header).startsWith('content-')) {
-    return true
-  }
-  if (unknownOrigin && (header.length === 13 || header.length === 6)) {
-    const name = util.headerNameToString(header)
-    return name === 'authorization' || name === 'cookie'
-  }
-  return false
+  return (
+    (header.length === 4 && header.toString().toLowerCase() === 'host') ||
+    (removeContent && header.toString().toLowerCase().indexOf('content-') === 0) ||
+    (unknownOrigin && header.length === 13 && header.toString().toLowerCase() === 'authorization') ||
+    (unknownOrigin && header.length === 6 && header.toString().toLowerCase() === 'cookie')
+  )
 }
 
 // https://tools.ietf.org/html/rfc7231#section-6.4

@@ -3,6 +3,7 @@ import {CommonModule, DatePipe} from '@angular/common';
 import {NgForOf, NgIf} from "@angular/common";
 import {TravelPackageItemComponent} from "../travel-package-item/travel-package-item.component";
 import {RouterModule} from "@angular/router";
+import { CartService } from "../services/cart.service";
 
 @Component({
   selector: 'app-cart',
@@ -18,14 +19,10 @@ import {RouterModule} from "@angular/router";
   styleUrl: './cart.component.css'
 })
 export class CartComponent {
+  constructor(private cartService: CartService) {}
 
-  get user_cart(): any {
-    return JSON.parse(localStorage.getItem('localCart')!);
-  }
+  user_cart: any = this.cartService.user_cart;
+  cart_total: number = this.cartService.cart_total;
 
-  get cart_total(): number {
-    // Compute the total price of the cart
-    return this.user_cart.reduce((acc: number, item: any) => acc + item.price, 0);
-  }
 
 }

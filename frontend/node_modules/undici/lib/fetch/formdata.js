@@ -2,10 +2,9 @@
 
 const { isBlobLike, toUSVString, makeIterator } = require('./util')
 const { kState } = require('./symbols')
-const { kEnumerableProperty } = require('../core/util')
 const { File: UndiciFile, FileLike, isFileLike } = require('./file')
 const { webidl } = require('./webidl')
-const { File: NativeFile } = require('node:buffer')
+const { Blob, File: NativeFile } = require('buffer')
 
 /** @type {globalThis['File']} */
 const File = NativeFile ?? UndiciFile
@@ -159,10 +158,9 @@ class FormData {
     webidl.brandCheck(this, FormData)
 
     return makeIterator(
-      () => this[kState],
+      () => this[kState].map(pair => [pair.name, pair.value]),
       'FormData',
-      'key+value',
-      'name', 'value'
+      'key+value'
     )
   }
 
@@ -170,10 +168,9 @@ class FormData {
     webidl.brandCheck(this, FormData)
 
     return makeIterator(
-      () => this[kState],
+      () => this[kState].map(pair => [pair.name, pair.value]),
       'FormData',
-      'key',
-      'name', 'value'
+      'key'
     )
   }
 
@@ -181,10 +178,9 @@ class FormData {
     webidl.brandCheck(this, FormData)
 
     return makeIterator(
-      () => this[kState],
+      () => this[kState].map(pair => [pair.name, pair.value]),
       'FormData',
-      'value',
-      'name', 'value'
+      'value'
     )
   }
 
@@ -204,7 +200,7 @@ class FormData {
     }
 
     for (const [key, value] of this) {
-      callbackFn.call(thisArg, value, key, this)
+      callbackFn.apply(thisArg, [value, key, this])
     }
   }
 }
@@ -212,17 +208,6 @@ class FormData {
 FormData.prototype[Symbol.iterator] = FormData.prototype.entries
 
 Object.defineProperties(FormData.prototype, {
-  append: kEnumerableProperty,
-  delete: kEnumerableProperty,
-  get: kEnumerableProperty,
-  getAll: kEnumerableProperty,
-  has: kEnumerableProperty,
-  set: kEnumerableProperty,
-  entries: kEnumerableProperty,
-  keys: kEnumerableProperty,
-  values: kEnumerableProperty,
-  forEach: kEnumerableProperty,
-  [Symbol.iterator]: { enumerable: false },
   [Symbol.toStringTag]: {
     value: 'FormData',
     configurable: true
@@ -240,7 +225,7 @@ function makeEntry (name, value, filename) {
   // 1. Set name to the result of converting name into a scalar value string.
   // "To convert a string into a scalar value string, replace any surrogates
   //  with U+FFFD."
-  // see: https://nodejs.org/dist/latest-v20.x/docs/api/buffer.html#buftostringencoding-start-end
+  // see: https://nodejs.org/dist/latest-v18.x/docs/api/buffer.html#buftostringencoding-start-end
   name = Buffer.from(name).toString('utf8')
 
   // 2. If value is a string, then set value to the result of converting

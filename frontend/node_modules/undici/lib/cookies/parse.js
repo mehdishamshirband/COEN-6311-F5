@@ -3,7 +3,7 @@
 const { maxNameValuePairSize, maxAttributeValueSize } = require('./constants')
 const { isCTLExcludingHtab } = require('./util')
 const { collectASequenceOfCodePointsFast } = require('../fetch/dataURL')
-const assert = require('node:assert')
+const assert = require('assert')
 
 /**
  * @description Parses the field-value attributes of a set-cookie header string.

@@ -1,6 +1,6 @@
 'use strict'
 
-const assert = require('node:assert')
+const assert = require('assert')
 const { URLSerializer } = require('../fetch/dataURL')
 const { isValidHeaderName } = require('../fetch/util')
 

@@ -7,6 +7,15 @@ import { TravelPackage } from '../interfaces/booking.interface';
 })
 export class CartService {
 
+  get user_cart(): any {
+    return JSON.parse(localStorage.getItem('localCart')!);
+  }
+
+  get cart_total(): number {
+    // Compute the total price of the cart
+    return this.user_cart.reduce((acc: number, item: any) => acc + item.price, 0);
+  }
+
   clearLocalCart() {
     localStorage.setItem('localCart', JSON.stringify([]));
   }

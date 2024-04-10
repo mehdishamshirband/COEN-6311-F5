@@ -5,6 +5,7 @@ export interface Photo {
 
 export enum PaymentType {
   Visa = 'Visa',
+  Mastercard = 'Mastercard',
   Paypal = 'Paypal',
 }
 
@@ -87,8 +88,9 @@ export interface TravelPackage {
 
 export interface Billing {
   id: number;
-  paymentType: PaymentType;
-  paymentState: PaymentState;
+  paymentType: PaymentType | undefined;
+  paymentState: PaymentState | undefined;
+  email: string;
   firstName: string;
   lastName: string;
   firstLineAddress: string;

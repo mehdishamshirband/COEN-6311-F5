@@ -1,0 +1,29 @@
+.form-group {
+  margin: 0 auto;
+  text-align: center;
+  align-items: center;
+
+}
+
+.StripeElement{
+  width: 100%;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: white;
+  margin: 0 auto;
+  text-align: center;
+  align-items: center;
+}
+
+.StripeElement--focus {
+box-shadow: 0 1px 3px 0 #cfd7df;
+}
+
+.StripeElement--invalid {
+border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+background-color: #fefde5 !important;
+}

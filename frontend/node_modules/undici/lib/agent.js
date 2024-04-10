@@ -7,6 +7,7 @@ const Pool = require('./pool')
 const Client = require('./client')
 const util = require('./core/util')
 const createRedirectInterceptor = require('./interceptor/redirectInterceptor')
+const { WeakRef, FinalizationRegistry } = require('./compat/dispatcher-weakref')()
 
 const kOnConnect = Symbol('onConnect')
 const kOnDisconnect = Symbol('onDisconnect')
@@ -14,6 +15,7 @@ const kOnConnectionError = Symbol('onConnectionError')
 const kMaxRedirections = Symbol('maxRedirections')
 const kOnDrain = Symbol('onDrain')
 const kFactory = Symbol('factory')
+const kFinalizer = Symbol('finalizer')
 const kOptions = Symbol('options')
 
 function defaultFactory (origin, opts) {
@@ -42,7 +44,7 @@ class Agent extends DispatcherBase {
       connect = { ...connect }
     }
 
-    this[kInterceptors] = options.interceptors?.Agent && Array.isArray(options.interceptors.Agent)
+    this[kInterceptors] = options.interceptors && options.interceptors.Agent && Array.isArray(options.interceptors.Agent)
       ? options.interceptors.Agent
       : [createRedirectInterceptor({ maxRedirections })]
 
@@ -53,28 +55,40 @@ class Agent extends DispatcherBase {
     this[kMaxRedirections] = maxRedirections
     this[kFactory] = factory
     this[kClients] = new Map()
+    this[kFinalizer] = new FinalizationRegistry(/* istanbul ignore next: gc is undeterministic */ key => {
+      const ref = this[kClients].get(key)
+      if (ref !== undefined && ref.deref() === undefined) {
+        this[kClients].delete(key)
+      }
+    })
+
+    const agent = this
 
     this[kOnDrain] = (origin, targets) => {
-      this.emit('drain', origin, [this, ...targets])
+      agent.emit('drain', origin, [agent, ...targets])
     }
 
     this[kOnConnect] = (origin, targets) => {
-      this.emit('connect', origin, [this, ...targets])
+      agent.emit('connect', origin, [agent, ...targets])
     }
 
     this[kOnDisconnect] = (origin, targets, err) => {
-      this.emit('disconnect', origin, [this, ...targets], err)
+      agent.emit('disconnect', origin, [agent, ...targets], err)
     }
 
     this[kOnConnectionError] = (origin, targets, err) => {
-      this.emit('connectionError', origin, [this, ...targets], err)
+      agent.emit('connectionError', origin, [agent, ...targets], err)
     }
   }
 
   get [kRunning] () {
     let ret = 0
-    for (const client of this[kClients].values()) {
-      ret += client[kRunning]
+    for (const ref of this[kClients].values()) {
+      const client = ref.deref()
+      /* istanbul ignore next: gc is undeterministic */
+      if (client) {
+        ret += client[kRunning]
+      }
     }
     return ret
   }
@@ -87,8 +101,9 @@ class Agent extends DispatcherBase {
       throw new InvalidArgumentError('opts.origin must be a non-empty string or URL.')
     }
 
-    let dispatcher = this[kClients].get(key)
+    const ref = this[kClients].get(key)
 
+    let dispatcher = ref ? ref.deref() : null
     if (!dispatcher) {
       dispatcher = this[kFactory](opts.origin, this[kOptions])
         .on('drain', this[kOnDrain])
@@ -96,10 +111,8 @@ class Agent extends DispatcherBase {
         .on('disconnect', this[kOnDisconnect])
         .on('connectionError', this[kOnConnectionError])
 
-      // This introduces a tiny memory leak, as dispatchers are never removed from the map.
-      // TODO(mcollina): remove te timer when the client/pool do not have any more
-      // active connections.
-      this[kClients].set(key, dispatcher)
+      this[kClients].set(key, new WeakRef(dispatcher))
+      this[kFinalizer].register(dispatcher, key)
     }
 
     return dispatcher.dispatch(opts, handler)
@@ -107,20 +120,26 @@ class Agent extends DispatcherBase {
 
   async [kClose] () {
     const closePromises = []
-    for (const client of this[kClients].values()) {
-      closePromises.push(client.close())
+    for (const ref of this[kClients].values()) {
+      const client = ref.deref()
+      /* istanbul ignore else: gc is undeterministic */
+      if (client) {
+        closePromises.push(client.close())
+      }
     }
-    this[kClients].clear()
 
     await Promise.all(closePromises)
   }
 
   async [kDestroy] (err) {
     const destroyPromises = []
-    for (const client of this[kClients].values()) {
-      destroyPromises.push(client.destroy(err))
+    for (const ref of this[kClients].values()) {
+      const client = ref.deref()
+      /* istanbul ignore else: gc is undeterministic */
+      if (client) {
+        destroyPromises.push(client.destroy(err))
+      }
     }
-    this[kClients].clear()
 
     await Promise.all(destroyPromises)
   }

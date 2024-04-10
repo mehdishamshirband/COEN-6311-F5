@@ -19,6 +19,7 @@ import { AgentHotelManagementComponent } from "./agent-hotel-management/agent-ho
 import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
 import { CancelledBookingComponent } from "./cancelled-booking/cancelled-booking.component";
 import { CheckoutComponent } from "./checkout/checkout.component";
+import { PaymentComponent } from "./payment/payment.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -29,6 +30,7 @@ const routes: Routes = [
   { path: 'package-details/:id', component: TravelPackageDetailsComponent },
   { path: 'cart', component: CartComponent },
   { path: 'checkout', component: CheckoutComponent },
+  { path: 'payment', component: PaymentComponent },
   { path: 'custom-package/flights', component: FlightGalleryComponent },
   { path: 'custom-package/hotels', component: HotelGalleryComponent },
   { path: 'custom-package/activities', component: ActivityGalleryComponent },

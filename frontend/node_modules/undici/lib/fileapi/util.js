@@ -9,10 +9,11 @@ const {
 } = require('./symbols')
 const { ProgressEvent } = require('./progressevent')
 const { getEncoding } = require('./encoding')
+const { DOMException } = require('../fetch/constants')
 const { serializeAMimeType, parseMIMEType } = require('../fetch/dataURL')
-const { types } = require('node:util')
+const { types } = require('util')
 const { StringDecoder } = require('string_decoder')
-const { btoa } = require('node:buffer')
+const { btoa } = require('buffer')
 
 /** @type {PropertyDescriptor} */
 const staticPropertyDescriptors = {
