@@ -6,7 +6,7 @@ import {
   StripeCardNumberComponent,
   StripeCardExpiryComponent,
   StripeCardCvcComponent,
-  StripeCardGroupDirective
+  StripeCardGroupDirective,
 } from 'ngx-stripe';
 import { switchMap } from 'rxjs/operators';
 import {Observable} from "rxjs"
@@ -39,14 +39,22 @@ export class PaymentComponent implements OnInit{
         color: '#31325F',
         fontWeight: 300,
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-        fontSize: '18px',
+        fontSize: '16px',
+      },
+      invalid: {
+        iconColor: '#bd1414',
+        color: '#bd1414',
       },
     },
   };
 
+
   elementsOptions: StripeElementsOptions = {
-    locale: 'auto'
-  };
+    locale: 'auto',
+    appearance: {
+      theme: 'stripe'
+    }
+    };
 
   billingInformation: Billing = {
     id: 0,

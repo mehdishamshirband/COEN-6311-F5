@@ -6,30 +6,39 @@
     <div class="row">
 
       <div class="form-group">
-        <label class="control-label">Full name on card</label>
-        <input type="text" formControlName="name" id="name" placeholder="ex. John Smith"/>
+        <label class="name">Full name on card</label>
+        <input class="form-control" type="text" formControlName="name" id="name" placeholder="ex. John Smith" autocomplete="name"/>
       </div>
 
       <div class="stripe-card" ngxStripeCardGroup [elementsOptions]="elementsOptions">
-        <div class="form-group">
-            <label class="control-label">Card Number</label>
-            <ngx-stripe-card-number
-              [options]="cardOptions"
-            ></ngx-stripe-card-number>
+        <div class="form-group" >
+            <label class="card-element">Card Number</label>
+            <div class="form-control card-number">
+              <ngx-stripe-card-number
+                [options]="cardOptions"
+                id ="card-element"
+              ></ngx-stripe-card-number>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label class="control-label">Expiration</label>
-            <ngx-stripe-card-expiry
-              [options]="cardOptions"
-            ></ngx-stripe-card-expiry>
+        <div class="form-group" style="float:left;margin-right:25px; width: 47%">
+            <label class="card-expiry">Expiration</label>
+            <div class="form-control card-details">
+              <ngx-stripe-card-expiry
+                [options]="cardOptions"
+                id = "card-expiry"
+              ></ngx-stripe-card-expiry>
+            </div>
         </div>
 
-        <div class="form-group text-center">
-            <label class="control-label">CVC</label>
+        <div class="form-group" style="float:left; width: 35%">
+          <label class="card-cvc">CVC</label>
+          <div class="form-control card-details">
             <ngx-stripe-card-cvc
               [options]="cardOptions"
+              id="card-cvc"
             ></ngx-stripe-card-cvc>
+          </div>
         </div>
       </div>
 
