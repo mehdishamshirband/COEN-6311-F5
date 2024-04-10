@@ -15,6 +15,7 @@
   export class HotelGalleryComponent implements OnInit {
     searchForm: FormGroup;
     hotelList: Hotel[] = [];
+    hotelBookingList: HotelBooking[] = []
     searchPerformed = false;
 
     @Output() hotelAdded = new EventEmitter<boolean>();
@@ -43,10 +44,13 @@
     searchHotels() {
       this.searchPerformed = true;
       const formValue = this.searchForm.value;
-      this.hotelService.searchHotels(formValue.location).subscribe({
+      void this.hotelService.searchHotels(formValue.location, formValue.checkInDate, formValue.checkOutDate).subscribe({
         next: (results) => {
-          this.hotelList = results;
-          console.warn('Results:', results);
+          this.hotelBookingList = results;
+          // Have to go with HotelBooking because it stores the dates and has the hotel object nested inside
+          this.hotelList = this.hotelBookingList.flatMap(hotelBooking => hotelBooking.hotel)
+
+          console.warn('Results:', this.hotelList);
           this.searchPerformed = true;
         },
         error: (error) => {

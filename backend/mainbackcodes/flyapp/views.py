@@ -6,8 +6,11 @@ from rest_framework import serializers, exceptions
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
 from rest_framework import status
+
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
+from django.utils import timezone
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, \
     TravelPackage, Photo
@@ -18,20 +21,44 @@ from datetime import datetime
 
 
 def filter_queryset_custom_package(request, results):
+    def get_my_timezone_date(original_datetime):
+        original_datetime = original_datetime.split('T')[0]
+        new_datetime = datetime.strptime(original_datetime, '%Y-%m-%d')
+        tz = timezone.get_current_timezone()
+        timezone_datetime = timezone.make_aware(new_datetime, tz, True)
+        return timezone_datetime
+
     for key, value in request.query_params.items():
-        if "date" in str(key).lower() or value == "":
-            # TODO : Fix the date filter
+
+        if value == "":
+            continue
+        elif "date" in key.lower():
+            if type(value) is str:
+                value = get_my_timezone_date(value)
+            if ("depart" in key.lower() or key.lower() == "date") and "__" not in key:
+                key += '__gte'
+            elif "arrival" in key.lower() and "__" not in key:
+                key += '__lte'
+        elif "__" not in key:
+            key += '__icontains'
+
+        try:
+            results = results.filter(**{key: value})
+        except Exception as e:
+            print(f"Error while filtering : {e}")
             continue
 
-        key = f'{key}__icontains'
-        results = results.filter(**{key: value})
     return results
+
+
+
 
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
     serializer_class = FlightSerializer
 
+    filter_backends = [DjangoFilterBackend]
     filterset_fields = {'airline': ['icontains'], 'price': ['lte', 'gte'], 'arrivalAirport': ['icontains'],
                         'departureAirport': ['icontains'], 'departureDate': ['lte', 'gte'],
                         'arrivalDate': ['lte', 'gte'], 'showDetails': ['exact']}
@@ -41,22 +68,11 @@ class Flights(viewsets.ModelViewSet):
         return filter_queryset_custom_package(self.request, results)
 
 
-'''
-def searchFlights(request):
-    if not request.GET["departure"] or not request.GET["arrival"] or not request.GET["departureDate"]:
-        return JsonResponse(FlightSerializer(Flight.objects.all(), many=True).data, safe=False)
-    departure, arrival, departureDate = request.GET["departure"], request.GET["arrival"], datetime.strptime(request.GET["departureDate"], '%Y-%m-%d').date()
-    # Check the date because it causes error
-    flights = Flight.objects.filter(departureCity=departure, arrivalCity=arrival) #, departureDate=departureDate)
-    #print(flights)
-    return JsonResponse(FlightSerializer(flights, many=True).data, safe=False)
-'''
-
-
 class Hotels(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
+    filter_backends = [DjangoFilterBackend]
     filterset_fields = {'name': ['icontains'], 'location': ['icontains']}
 
     def get_queryset(self):

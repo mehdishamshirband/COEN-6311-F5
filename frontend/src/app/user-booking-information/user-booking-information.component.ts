@@ -19,23 +19,14 @@ export class UserBookingInformationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.getBookingDetails();
-  }
-
-  getBookingDetails(): void {
-    const bookingNo = this.route.snapshot.paramMap.get('bookingNo');
-    if (bookingNo) {
-      this.booking = this.bookingService.getBookingByNo(bookingNo);
-      if (this.booking) {
+    this.booking = history.state;
+    console.warn('Booking:', this.booking);
+    if (this.booking) {
         this.sortedItems = this.mergeAndSortItems();
       } else {
-        console.error('Booking not found with the provided booking number.');
-        // Handle the case where the booking is not found
-      }
-    } else {
-      console.error('No booking number provided in the route parameters.');
-      // Handle the missing parameter appropriately, maybe navigate back or show an error message
+      console.error('Booking not found with the provided booking number.');
     }
+
   }
 
   mergeAndSortItems(): MergedItem[] {
@@ -46,15 +37,15 @@ export class UserBookingInformationComponent implements OnInit {
     const { flights, hotels, activities } = this.booking.travelPackage;
 
     flights?.forEach(flight => {
-      mergedItems.push({ ...flight, sortDate: flight.departureDate, type: 'Flight'});
+      mergedItems.push({ ...flight, sortDate: new Date(flight.departureDate), type: 'Flight'});
     });
 
     hotels?.forEach(hotel => {
-      mergedItems.push({ ...hotel, sortDate: hotel.checkIn, type: 'Hotel' });
+      mergedItems.push({ ...hotel, sortDate: new Date(hotel.checkIn), type: 'Hotel' });
     });
 
     activities?.forEach(activity => {
-      mergedItems.push({ ...activity, sortDate: activity.date, type: 'Activity' });
+      mergedItems.push({ ...activity, sortDate: new Date(activity.date), type: 'Activity' });
     });
 
     // Sort by sortDate
@@ -64,7 +55,7 @@ export class UserBookingInformationComponent implements OnInit {
   }
 
   cancelBooking(id: number): void {
-    this.router.navigate(['/cancelled-booking', this.booking!.bookingNo],
+    void this.router.navigate(['/cancelled-booking', this.booking!.bookingNo],
       { state: { booking: this.booking } });
   }
 
