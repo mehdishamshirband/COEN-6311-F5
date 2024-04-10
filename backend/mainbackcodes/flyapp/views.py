@@ -12,6 +12,8 @@ from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification
     TravelPackage, Photo
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
     FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, PhotoSerializer
+import stripe, json
+from rest_framework.views import APIView
 
 from datetime import datetime
 
@@ -371,3 +373,31 @@ class Notifs(viewsets.ViewSet, mixins.CreateModelMixin):
 class Photos(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
+
+
+class CreatePaymentIntents(APIView):
+    def post(self, request) -> JsonResponse:
+        try:
+            data = request.data
+
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+
+            # Create a PaymentIntent with the order amount and currency
+            intent = stripe.PaymentIntent.create(
+                amount=data['amount'],
+                currency='cad', # Check if we can put it in auto
+                # In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+                automatic_payment_methods={
+                    'enabled': True,
+                },
+            )
+
+            return JsonResponse({
+                'clientSecret': intent['client_secret'],
+                'paymentIntent': {'status': 'succeeded'}
+            })
+
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
+

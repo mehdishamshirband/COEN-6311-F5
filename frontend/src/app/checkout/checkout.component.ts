@@ -4,6 +4,7 @@ import { NgIf } from "@angular/common";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { GuestProfile } from '../interfaces/user.interface';
 import { CheckoutService } from '../services/checkout.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -15,7 +16,8 @@ import { CheckoutService } from '../services/checkout.service';
 })
 export class CheckoutComponent {
 
-  constructor(private checkoutService: CheckoutService) {}
+  constructor(private checkoutService: CheckoutService,
+              private router: Router) {}
 
   isLogged: boolean = false; // Add check with backend to know if user already logged in
   showLogin: boolean = true;
@@ -78,6 +80,7 @@ export class CheckoutComponent {
     if (this.rightGuestData) {
       console.warn("Guest data:", this.guestProfile);
       this.checkoutService.localStoreGuestData(this.guestProfile);
+      void this.router.navigate(['/payment']);
     }
 
 

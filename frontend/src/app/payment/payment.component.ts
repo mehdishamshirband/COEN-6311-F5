@@ -36,7 +36,6 @@ export class PaymentComponent implements OnInit{
     style: {
       base: {
         iconColor: '#666EE8',
-        color: '#31325F',
         fontWeight: 300,
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSize: '16px',
@@ -78,7 +77,7 @@ export class PaymentComponent implements OnInit{
   constructor(private http: HttpClient,
     private fb: FormBuilder,
     private stripeService: StripeService,
-    private cartService: CartService) { }
+    public cartService: CartService) { }
 
   ngOnInit() {}
 
@@ -88,10 +87,10 @@ export class PaymentComponent implements OnInit{
       return;
     }
 
-    this.createPaymentIntent(this.cartService.cart_total)
+    void this.createPaymentIntent(this.cartService.cart_total)
       .pipe(
         switchMap((pi:any) =>
-          this.stripeService.confirmCardPayment(pi.client_secret, {
+          this.stripeService.confirmCardPayment(pi.clientSecret, {
             payment_method: {
               card: this.card.element,
               billing_details: {
@@ -102,12 +101,17 @@ export class PaymentComponent implements OnInit{
         )
       )
       .subscribe((result: any) => {
+        console.warn("RESULT POST", result);
         if (result.error) {
-          // Show error to your customer (e.g., insufficient funds)
-          console.log(result.error.message);
+          // Show error to the customer (e.g., insufficient funds)
+
+          alert(result.error.message + "\n" + this.CardDeclinedReason(String(result.error.decline_code)));
+
+
         } else {
           // The payment has been processed!
           if (result.paymentIntent.status === 'succeeded') {
+
             //this.billingInformation.paymentType = this.VisaOrMastercard(this.card.element.card.brand);
             // Show a success message to your customer
           }
@@ -118,10 +122,32 @@ export class PaymentComponent implements OnInit{
   private baseUrl = 'http://localhost:8000/';
 
   createPaymentIntent(amount: number): Observable<PaymentIntent> {
+    // Stripe understands amounts as cents
+    let float_value : number = amount * 100;
+
     return this.http.post<PaymentIntent>(
-      `${this.baseUrl}/create-payment-intent`,
-      { amount }
+      `${this.baseUrl}Create-payment-intent/`,
+      { 'amount': float_value }
     );
+  }
+
+  CardDeclinedReason(reason: string): string {
+    const reason_dict : any =  {
+      "undefined": "",
+      "generic_decline": "The card has been declined for an unknown reason.",
+      "insufficient_funds": "The card has insufficient funds to complete the purchase.",
+      "lost_card": "The card has been reported as lost.",
+      "stolen_card": "The card has been reported as stolen.",
+      "expired_card": "The card has expired.",
+      "incorrect_cvc": "The card's CVC is incorrect.",
+      "processing_error": "An error occurred while processing the card.",
+      "incorrect_number": "The card number is incorrect.",
+      "card_velocity_exceeded": "The customer has exceeded the balance or credit limit available on their card.",
+      "card_declined": "The card has been declined for an unknown reason."
+    }
+
+    return reason_dict[reason];
+
   }
 
 }

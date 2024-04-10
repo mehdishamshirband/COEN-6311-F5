@@ -207,3 +207,4 @@ class Notification(models.Model):
     recipient = models.CharField(max_length=255)  # ForeignKey(User, related_name='recipient', on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+

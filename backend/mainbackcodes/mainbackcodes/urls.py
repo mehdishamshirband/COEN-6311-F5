@@ -37,6 +37,7 @@ router.register(r'Photos', views.Photos, basename='photos')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('Create-payment-intent/', views.CreatePaymentIntents.as_view(), name='create-payment-intent'),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

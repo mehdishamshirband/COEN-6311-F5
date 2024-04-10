@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']
 }
 
 MIDDLEWARE = [
@@ -140,3 +141,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # email confs
 MAILTRAP_TOKEN="ed9fa34d275956738a29ae2355b3833f"
+
+# Stripe API Key
+STRIPE_SECRET_KEY = "sk_test_51P3rga02b8wR2O4c3QatCIcNuLUupEAJKQn2bmKN8cYbsVskvJVxXgsE7MYH99W95erx7OyHMqdTKSW2A3XH30Cn00W2icpl1i"
