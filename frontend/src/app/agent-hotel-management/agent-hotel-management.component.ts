@@ -48,6 +48,7 @@ export class AgentHotelManagementComponent implements OnInit {
     const hotelBooking = this.hotelBookings.find(hb => hb.id === hotelBookingId);
     if (hotelBooking) {
       this.editingHotelBooking = JSON.parse(JSON.stringify(hotelBooking));
+      console.log(this.editingHotelBooking);
     }
   }
 
@@ -61,8 +62,6 @@ export class AgentHotelManagementComponent implements OnInit {
       } else {
         this.hotelBookings.push(this.editingHotelBooking);
       }
-      this.hotelBookingsChange.emit(this.hotelBookings);
-      this.editingHotelBooking = undefined;
     }
     this.hotelBookingsChange.emit(this.hotelBookings);
     this.editingHotelBooking = undefined;
@@ -81,6 +80,8 @@ export class AgentHotelManagementComponent implements OnInit {
     event.stopPropagation();
     this.hotelBookings.splice(index, 1);
     this.hotelBookingsChange.emit(this.hotelBookings);
+    this.editingHotelBooking = undefined;
+    this.newHotelBooking = undefined;
   }
 
   addPhotoField(): void {
@@ -102,6 +103,7 @@ export class AgentHotelManagementComponent implements OnInit {
     console.log(this.newHotelBooking); //TODO: delete these debug lines
     if (this.editingHotelBooking && this.editingHotelBooking.hotel && this.editingHotelBooking.hotel.photos) {
       this.editingHotelBooking.hotel.photos.splice(index, 1);
+      this.editingHotelBooking.hotel.photo_ids?.splice(index, 1);
     }
   }
 
@@ -109,29 +111,55 @@ export class AgentHotelManagementComponent implements OnInit {
     const file = event.target.files[0];
     const uploadDir = 'photos/hotels';
     if (file) {
-      this.uploadService.uploadFile(file, uploadDir).subscribe(
-  response => {
-          if (response.type === 4) { // HttpResponse
-            console.log(response);
-            const responseBody = response.body;
-            if (responseBody.id) {
-              if(!this.newHotelBooking?.hotel.photo_ids) {
-                this.newHotelBooking!.hotel.photo_ids = [responseBody.id];
+      if (this.newHotelBookingCheck && this.newHotelBooking) {
+        this.uploadService.uploadFile(file, uploadDir).subscribe(
+    response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              if (responseBody.id) {
+                if(this.newHotelBooking?.hotel.photo_ids) {
+                  this.newHotelBooking!.hotel!.photo_ids[index] = responseBody.id;
+                }
+                else {
+                  this.newHotelBooking!.hotel.photo_ids = [responseBody.id];
+                }
+                if (this.newHotelBooking?.hotel.photos) {
+                  this.newHotelBooking!.hotel.photos[index] = {url: responseBody.url, caption: responseBody.caption};
+                }
               }
-              else {
-                this.newHotelBooking!.hotel.photo_ids!.push(responseBody.id);
-              }
-              if (this.newHotelBooking?.hotel.photos) {
-                this.newHotelBooking!.hotel.photos[index] = {url: responseBody.url, caption: responseBody.caption};
-              }
+              console.log(this.newHotelBooking); //TODO: delete these debug lines
             }
-            console.log(this.newHotelBooking); //TODO: delete these debug lines
+          },
+    error => {
+            console.error("Error during the image upload: ", error);
           }
-        },
-  error => {
-          console.error("Error during the image upload: ", error);
-        }
-      );
+        );
+      } else if (this.editingHotelBooking) {
+        this.uploadService.uploadFile(file, uploadDir).subscribe(
+    response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              if (responseBody.id) {
+                if(this.editingHotelBooking?.hotel.photo_ids) {
+                  this.editingHotelBooking!.hotel!.photo_ids[index] = responseBody.id;
+                }
+                else {
+                  this.editingHotelBooking!.hotel.photo_ids = [responseBody.id];
+                }
+                if (this.editingHotelBooking?.hotel.photos) {
+                  this.editingHotelBooking!.hotel.photos[index] = {url: responseBody.url, caption: responseBody.caption};
+                }
+              }
+              console.log(this.editingHotelBooking); //TODO: delete these debug lines
+            }
+          },
+    error => {
+            console.error("Error during the image upload: ", error);
+          }
+        );
+      }
     }
   }
 

@@ -44,7 +44,8 @@ export class AgentActivityManagementComponent implements OnInit {
     event.preventDefault();
     const activity = this.activities.find(a => a.id === activityId);
     if (activity) {
-      this.editingActivity = JSON.parse(JSON.stringify(activity)); // Ensures a deep clone
+      this.editingActivity = JSON.parse(JSON.stringify(activity));
+      console.log(this.editingActivity);
     }
   }
 
@@ -64,6 +65,7 @@ export class AgentActivityManagementComponent implements OnInit {
     this.editingActivity = undefined;
     this.newActivityCheck = false;
     this.newActivity = undefined;
+    console.log(this.activities);
   }
 
   cancelEditingActivity(): void {
@@ -91,50 +93,64 @@ export class AgentActivityManagementComponent implements OnInit {
     console.log(this.newActivity); //TODO: delete these debug lines
     if (this.editingActivity && this.editingActivity.photos) {
       this.editingActivity.photos.splice(index, 1);
+      this.editingActivity.photo_ids?.splice(index, 1);
     }
   }
-
-  /*
-  handleFileInput(event: any, index: number): void {
-    if (!this.editingActivity || !this.editingActivity.photos) return;
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.editingActivity!.photos![index].url = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-   */
 
   handleFileInput(event: any, index: number): void {
     const file = event.target.files[0];
     const uploadDir = 'photos/activities';
     if (file) {
-      this.uploadService.uploadFile(file, uploadDir).subscribe(
-  response => {
-          if (response.type === 4) { // HttpResponse
-            console.log(response);
-            const responseBody = response.body;
-            if (responseBody.id) {
-              if(!this.newActivity?.photo_ids) {
-                this.newActivity!.photo_ids = [responseBody.id];
+      if (this.newActivityCheck && this.newActivity) {
+        this.uploadService.uploadFile(file, uploadDir).subscribe(
+          response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              if (responseBody.id) {
+                if (this.newActivity?.photo_ids) {
+                  this.newActivity!.photo_ids[index] = responseBody.id;
+                }
+                else {
+                  this.newActivity!.photo_ids= [responseBody.id];
+                }
+                if (this.newActivity?.photos) {
+                  this.newActivity!.photos[index] = {url: responseBody.url, caption: responseBody.caption};
+                }
               }
-              else {
-                this.newActivity!.photo_ids!.push(responseBody.id);
-              }
-              if (this.newActivity?.photos) {
-                this.newActivity!.photos[index] = {url: responseBody.url, caption: responseBody.caption};
-              }
+              console.log(this.newActivity); //TODO: delete these debug lines
             }
-            console.log(this.newActivity); //TODO: delete these debug lines
+          },
+          error => {
+            console.error("Error during the image upload: ", error);
           }
-        },
-  error => {
-          console.error("Error during the image upload: ", error);
-        }
-      );
+        );
+      }
+      else if (this.editingActivity) {
+        this.uploadService.uploadFile(file, uploadDir).subscribe(
+          response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              if (responseBody.id) {
+                if (this.editingActivity?.photo_ids) {
+                  this.editingActivity!.photo_ids[index] = responseBody.id;
+                }
+                else {
+                  this.editingActivity!.photo_ids= [responseBody.id];
+                }
+                if (this.editingActivity?.photos) {
+                  this.editingActivity!.photos[index] = {url: responseBody.url, caption: responseBody.caption};
+                }
+              }
+              console.log(this.editingActivity); //TODO: delete these debug lines
+            }
+          },
+          error => {
+            console.error("Error during the image upload: ", error);
+          }
+        );
+      }
     }
   }
 
@@ -143,6 +159,8 @@ export class AgentActivityManagementComponent implements OnInit {
     event.stopPropagation();
     this.activities.splice(index, 1);
     this.activitiesChange.emit(this.activities);
+    this.editingActivity = undefined;
+    this.newActivity = undefined;
   }
 }
 
