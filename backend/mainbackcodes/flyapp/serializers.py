@@ -102,10 +102,10 @@ class BookingSerializer(serializers.ModelSerializer):  # (Do not remove this com
 
 
 class PackageModificationSerializer(serializers.ModelSerializer):
-    # hotels = HotelBookingSerializer(many=True, read_only=True)
-    # activities = ActivitySerializer(many=True, read_only=True)
-    # flights = FlightSerializer(many=True, read_only=True)
-    # photos = PhotoSerializer(many=True, read_only=True)
+    hotels = HotelBookingSerializer(many=True, read_only=True)
+    activities = ActivitySerializer(many=True, read_only=True)
+    flights = FlightSerializer(many=True, read_only=True)
+    photos = PhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = PackageModification
