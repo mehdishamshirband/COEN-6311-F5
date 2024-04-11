@@ -459,8 +459,12 @@ export class TravelPackageService {
   }
 **/
 
-    addTravelPackage(formData: NewTravelPackage): Observable<any> {
+  addTravelPackage(formData: NewTravelPackage): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}Packages/`, formData);
+  }
+
+  editTravelPackage(id: number, formData: Partial<NewTravelPackage>): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}Packages/${id}/`, formData);
   }
 
   onePackageById(id: number): Observable<TravelPackage> {

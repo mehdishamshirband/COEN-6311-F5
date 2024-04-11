@@ -179,13 +179,13 @@ class TravelPackages(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     def partial_update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     def destroy(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}

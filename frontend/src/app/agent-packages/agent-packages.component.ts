@@ -80,6 +80,9 @@ export class AgentPackagesComponent implements OnInit {
       } else {
         this.travelPackages.push(this.editingPackage);
       }
+      this.travelingPackageService.editTravelPackage(this.editingPackage.id, this.editingPackage).subscribe({
+        next: (response) => {console.log('Package saved successfully!', response); this.reloadCurrentRoute()},
+        error: (error) => console.error('Error saving package:', error)});
       this.editingPackage = undefined;
       this.selectedPackageId = undefined;
     }

@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'flyapp',
     'rest_framework',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
+    'admin_tools',
 ]
 
 REST_FRAMEWORK = {
