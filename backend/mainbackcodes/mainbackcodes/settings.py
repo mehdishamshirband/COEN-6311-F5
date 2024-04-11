@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -41,11 +42,20 @@ INSTALLED_APPS = [
     'flyapp',
     'rest_framework',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
+    "rest_framework.authtoken",
+    'rest_framework_simplejwt',
 ]
 
+AUTH_USER_MODEL = 'flyapp.CustomUser'
+
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 MIDDLEWARE = [
@@ -147,3 +157,6 @@ STRIPE_PUBLISHABLE_KEY = 'pk_test_51P4OLILBunQWME18A94RVRT8y76tDdn8P0SfJ1fsFIBRq
 STRIPE_WEBHOOK_SECRET = 'whsec_4c04c665ad7490fc2c721ea89a293d4233493b57467d7c0aaad45e728f39bed6'
 
 CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_CREDENTIALS = True
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
