@@ -5,6 +5,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { GuestProfile } from '../interfaces/user.interface';
 import { CheckoutService } from '../services/checkout.service';
 import { Router } from '@angular/router';
+import { CartService } from "../services/cart.service";
 
 
 @Component({
@@ -17,7 +18,8 @@ import { Router } from '@angular/router';
 export class CheckoutComponent {
 
   constructor(private checkoutService: CheckoutService,
-              private router: Router) {}
+              private router: Router,
+              public cartService: CartService) {}
 
   isLogged: boolean = false; // Add check with backend to know if user already logged in
   showLogin: boolean = true;

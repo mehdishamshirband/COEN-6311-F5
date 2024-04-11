@@ -7,20 +7,23 @@ export enum PaymentType {
   Visa = 'Visa',
   Mastercard = 'Mastercard',
   Paypal = 'Paypal',
+  Stripe = 'Stripe'
 }
 
 export enum PaymentState {
-  FirstDeposit,
-  SecondDeposit,
-  LastDeposit,
+  FirstDeposit = 'First_Deposit',
+  SecondDeposit = 'Second_Deposit',
+  LastDeposit = 'Last_Deposit',
 }
 
 export enum BookingState {
-  Processing = 'In process',
-  Confirmed = 'Confirmed',
+  Created = 'Created',
+  Processing = 'Processing',
   Canceled = 'Canceled',
   Failed = 'Failed',
-  Refunded = 'Refunded',
+  Modified = 'Modified',
+  Confirmed = 'Confirmed',
+  Refunded = 'Refunded'
 }
 
 export interface Flight {
@@ -88,8 +91,8 @@ export interface TravelPackage {
 
 export interface Billing {
   id: number;
-  paymentType: PaymentType | undefined;
-  paymentState: PaymentState | undefined;
+  paymentType: PaymentType;
+  paymentState: PaymentState;
   email: string;
   firstName: string;
   lastName: string;

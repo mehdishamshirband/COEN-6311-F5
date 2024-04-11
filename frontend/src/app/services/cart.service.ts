@@ -16,8 +16,14 @@ export class CartService {
     return this.user_cart.reduce((acc: number, item: any) => acc + item.price, 0);
   }
 
+  cart_total_parameter(user_cart: any): number {
+    // Compute the total price of the cart
+    return user_cart.reduce((acc: number, item: any) => acc + item.price, 0);
+  }
+
   clearLocalCart() {
     localStorage.setItem('localCart', JSON.stringify([]));
+    this.cartData.emit([])
   }
 
   localRemoveToCart(id: number): void {

@@ -167,15 +167,51 @@ class BookingDetail(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
 
-    def create(self, request, *args, **kwargs):
-        if request.data.get("travelPackage"):
-            request.data._mutable = True
-            request.data["cost"] = str(
-                (TravelPackage.objects.filter(id=int(request.data["travelPackage"])).first()).price)
-            request.data._mutable = False
 
-        # print("data:",request.data)
-        return super().create(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+
+        try:
+            billing_data = request.data["billing"]
+
+            new_billing = Billing.objects.create(paymentState=billing_data["paymentState"],
+                                                 paymentType=billing_data["paymentType"],
+                                                 firstName=billing_data["firstName"],
+                                                 lastName=billing_data["lastName"],
+                                                 firstLineAddress=billing_data["firstLineAddress"],
+                                                 secondLineAddress=billing_data["secondLineAddress"],
+                                                 zipCode=billing_data["zipCode"],
+                                                 city=billing_data["city"],
+                                                 state_area=billing_data["state_area"],
+                                                 country=billing_data["country"])
+
+            new_billing.save()
+
+            travel_package_data = TravelPackage.objects.filter(id=request.data.get("travelPackage").get("id")).first()
+            small_bookingNo = Booking.objects.all().count()
+
+            new_booking = Booking.objects.create(bookingNo=small_bookingNo + 1,
+                                                 cost=request.data["cost"],
+                                                 bookingState=request.data["bookingState"],
+                                                 firstName=request.data["firstName"],
+                                                 lastName=request.data["lastName"],
+                                                 firstLineAddress=request.data["firstLineAddress"],
+                                                 secondLineAddress=request.data["secondLineAddress"],
+                                                 zipCode=request.data["zipCode"],
+                                                 city=request.data["city"],
+                                                 state_area=request.data["state_area"],
+                                                 country=request.data["country"],
+                                                 email=request.data["email"],
+                                                 phone=request.data["phone"],
+                                                 billing=new_billing,
+                                                 travelPackage=travel_package_data)
+
+            new_booking.save()
+            return Response({"msg": "booking created successfully"})
+
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
+
 
     def update(self, request, *args, **kwargs):
         if self.get_object().bookingState == "confirmed":

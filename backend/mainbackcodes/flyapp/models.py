@@ -106,14 +106,16 @@ class TravelPackage(models.Model):
 
 
 PaymentType = (
-    ('visa', 'VISA'),
-    ('paypal', 'PAYPAL'),
+    ('Visa', 'VISA'),
+    ('Mastercard', 'MASTERCARD'),
+    ('Paypal', 'PAYPAL'),
+    ('Stripe', 'STRIPE')
 )
 
 PaymentState = (
-    ('firstdeposit', 'FIRSTDEPOSIT'),
-    ('seconddeposit', 'SECONDDEPOSIT'),
-    ('lastdeposit', 'LASTDEPOSIT'),
+    ('First_Deposit', 'FIRST_DEPOSIT'),
+    ('Second_Deposit', 'SECOND_DEPOSIT'),
+    ('Last_Deposit', 'LAST_DEPOSIT'),
 )
 
 
@@ -137,13 +139,13 @@ class Billing(models.Model):
 
 
 status = (
-    ('created', 'CREATED'),
-    ('processing', 'PROCESSING'),
-    ('canceled', 'CANCELED'),
-    ('failed', 'FAILED'),
-    ('modified', 'MODIFIED'),
-    ('confirmed', 'CONFIRMED'),
-    ('refunded', 'REFUNDED')
+    ('Created', 'CREATED'),
+    ('Processing', 'PROCESSING'),
+    ('Canceled', 'CANCELED'),
+    ('Failed', 'FAILED'),
+    ('Modified', 'MODIFIED'),
+    ('Confirmed', 'CONFIRMED'),
+    ('Refunded', 'REFUNDED')
 )
 
 

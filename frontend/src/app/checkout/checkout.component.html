@@ -3,8 +3,12 @@
 </div>
 <hr>
 
-<!-- If user is not logged in -->
-<div class="d-flex flex-column" *ngIf="showLogin && !isLogged">
+<div class="h-100 d-flex align-items-center justify-content-center" *ngIf="cartService.user_cart.length === 0">
+  <h3 class="my-2">Your cart is empty, you should select at least one element before reaching this stage !</h3>
+</div>
+
+<!-- If user is not logged in and the cart is not empty-->
+<div class="d-flex flex-column" *ngIf="showLogin && !isLogged && cartService.user_cart.length">
   <div class="d-flex-element">
     <button class="btn btn-primary" [routerLink]="['/login']">Login</button>
   </div>

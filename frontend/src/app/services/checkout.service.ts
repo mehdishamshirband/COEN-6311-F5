@@ -15,6 +15,10 @@ export class CheckoutService{
     localStorage.setItem('guestData', JSON.stringify([data]));
   }
 
+  get getLocalStoreGuestData(): any {
+    return JSON.parse(localStorage.getItem('guestData')!);
+  }
+
 
 
 

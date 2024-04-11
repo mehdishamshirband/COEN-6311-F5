@@ -12,8 +12,10 @@ import { switchMap } from 'rxjs/operators';
 import {Observable} from "rxjs"
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, Validators, FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import {Billing, PaymentState, PaymentType} from '../interfaces/booking.interface';
 import { CartService } from "../services/cart.service";
+import {Router} from "@angular/router";
+import {NgIf} from "@angular/common";
+import { CheckoutService } from "../services/checkout.service";
 
 @Component({
   selector: 'app-payment',
@@ -24,7 +26,8 @@ import { CartService } from "../services/cart.service";
     StripeCardCvcComponent,
     StripeCardGroupDirective,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgIf
   ],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css'
@@ -55,21 +58,6 @@ export class PaymentComponent implements OnInit{
     }
     };
 
-  billingInformation: Billing = {
-    id: 0,
-    paymentType: undefined, // Seems impossible to get the card type from the card element
-    paymentState: undefined,
-    email: '',
-    firstName: '',
-    lastName: '',
-    firstLineAddress: '',
-    secondLineAddress: '',
-    zipCode: '',
-    city: '',
-    state_area: '',
-    country: '',
-  };
-
   paymentForm: FormGroup = this.fb.group({
     name: ['', [Validators.required]],
   })
@@ -77,7 +65,9 @@ export class PaymentComponent implements OnInit{
   constructor(private http: HttpClient,
     private fb: FormBuilder,
     private stripeService: StripeService,
-    public cartService: CartService) { }
+    public cartService: CartService,
+    private router: Router,
+    public checkoutService: CheckoutService) { }
 
   ngOnInit() {}
 
@@ -90,6 +80,7 @@ export class PaymentComponent implements OnInit{
     void this.createPaymentIntent(this.cartService.cart_total)
       .pipe(
         switchMap((pi:any) =>
+          // When payment is refused, it returns an error (402 Payment Required), and I don't know how to handle that
           this.stripeService.confirmCardPayment(pi.clientSecret, {
             payment_method: {
               card: this.card.element,
@@ -104,15 +95,14 @@ export class PaymentComponent implements OnInit{
         console.warn("RESULT POST", result);
         if (result.error) {
           // Show error to the customer (e.g., insufficient funds)
-
           alert(result.error.message + "\n" + this.CardDeclinedReason(String(result.error.decline_code)));
-
 
         } else {
           // The payment has been processed!
           if (result.paymentIntent.status === 'succeeded') {
 
-            //this.billingInformation.paymentType = this.VisaOrMastercard(this.card.element.card.brand);
+            void this.router.navigate(['/payment-success'],
+            { state: { result: result } });
             // Show a success message to your customer
           }
         }
@@ -122,7 +112,7 @@ export class PaymentComponent implements OnInit{
   private baseUrl = 'http://localhost:8000/';
 
   createPaymentIntent(amount: number): Observable<PaymentIntent> {
-    // Stripe understands amounts as cents
+    // Stripe understands amount as cents
     let float_value : number = amount * 100;
 
     return this.http.post<PaymentIntent>(
@@ -150,4 +140,5 @@ export class PaymentComponent implements OnInit{
 
   }
 
+  protected readonly localStorage = localStorage;
 }

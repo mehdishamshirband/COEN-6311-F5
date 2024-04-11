@@ -20,6 +20,7 @@ import { UserAccountInformationComponent } from "./user-account-information/user
 import { CancelledBookingComponent } from "./cancelled-booking/cancelled-booking.component";
 import { CheckoutComponent } from "./checkout/checkout.component";
 import { PaymentComponent } from "./payment/payment.component";
+import { PaymentSuccessComponent } from "./payment-success/payment-success.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -31,6 +32,7 @@ const routes: Routes = [
   { path: 'cart', component: CartComponent },
   { path: 'checkout', component: CheckoutComponent },
   { path: 'payment', component: PaymentComponent },
+  { path: 'payment-success', component: PaymentSuccessComponent },
   { path: 'custom-package/flights', component: FlightGalleryComponent },
   { path: 'custom-package/hotels', component: HotelGalleryComponent },
   { path: 'custom-package/activities', component: ActivityGalleryComponent },
@@ -42,6 +44,7 @@ const routes: Routes = [
   { path: 'agent-packages/flights', component: AgentFlightManagementComponent }, //TODO: delete
   { path: 'agent-packages/hotels', component: AgentHotelManagementComponent }, //TODO: delete
   { path: 'account', component: UserAccountInformationComponent},
+
 
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];
