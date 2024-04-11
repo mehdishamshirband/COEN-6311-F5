@@ -19,7 +19,6 @@ export class ActivityService {
       date: new Date(2024, 8, 5),
       price: 190,
       photos: [{url: 'assets/images/activities/new-york-city-tour.jpg'}],
-      showDetails: false
     },
     {
       id: 202,
@@ -30,7 +29,6 @@ export class ActivityService {
       date: new Date(2024, 8, 7),
       price: 90,
       photos: [{url: 'assets/images/activities/moutain-hiking-rocky-mountains.jpg'}],
-      showDetails: false
     }
   ];
 

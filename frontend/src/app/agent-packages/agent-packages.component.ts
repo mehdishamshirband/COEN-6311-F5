@@ -3,6 +3,7 @@ import {TravelPackage, Flight, HotelBooking, Activity, Photo, NewTravelPackage} 
 import {TravelPackageService} from "../services/travel-package.service";
 import {Observable} from "rxjs";
 import {UploadService} from "../services/upload.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-agent-packages',
@@ -20,8 +21,9 @@ export class AgentPackagesComponent implements OnInit {
   uploadedImages: any[] = [];
   newPhotosSelected?: boolean;
   photosAdded?: boolean;
+  photoAddedIDs: number[] = [];
 
-  constructor(private travelingPackageService: TravelPackageService, private uploadService: UploadService) { }
+  constructor(private travelingPackageService: TravelPackageService, private uploadService: UploadService, private router: Router) { }
 
   ngOnInit(): void {
     this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
@@ -30,6 +32,14 @@ export class AgentPackagesComponent implements OnInit {
     console.log("Fetched travelPackages in agent-packages")
     console.log(this.travelPackages);
     this.newPackageCheck = false;
+  }
+
+  reloadCurrentRoute() {
+    // A trick to reload the current route
+    let currentUrl = this.router.url;
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+      this.router.navigate([currentUrl]);
+    });
   }
 
   get currentPackage(): any {
@@ -57,7 +67,7 @@ export class AgentPackagesComponent implements OnInit {
     if (this.newPackage) {
       const newPackage: NewTravelPackage = this.newPackage!;
       this.travelingPackageService.addTravelPackage(newPackage).subscribe({
-        next: (response) => console.log('Package saved successfully!', response),
+        next: (response) => {console.log('Package saved successfully!', response); this.reloadCurrentRoute()},
         error: (error) => console.error('Error saving package:', error)});
       this.newPackageCheck = false;
       this.newPackage = undefined;
@@ -75,7 +85,6 @@ export class AgentPackagesComponent implements OnInit {
     }
     else return;
   }
-
 
   startEditingPackage(packageId: number): void {
     this.newPackageCheck = false;
@@ -103,6 +112,12 @@ export class AgentPackagesComponent implements OnInit {
     this.newPackage = undefined;
     this.selectedPackageId = undefined;
     this.newPackageCheck = false;
+    this.photoAddedIDs = [];
+    this.photosAdded = false;
+    this.imagesToUpload = [];
+    this.newPhotosSelected = false;
+    this.selectedFiles = [];
+    this.uploadedImages = [];
   }
 
 
@@ -159,27 +174,6 @@ export class AgentPackagesComponent implements OnInit {
 
     for (let i = 0; i < fileList.length; i++) {
       this.imagesToUpload.push(fileList[i]);
-      /*
-      this.uploadService.uploadFile(fileList[i], uploadDir).subscribe(
-        response => {
-          if (response.type === 4) { // HttpResponse
-            console.log(response);
-            const responseBody = response.body;
-            this.uploadedImages.push({
-              name: fileList[i].name,
-              url: responseBody.url,
-              caption: responseBody.caption,
-              uploadDir: responseBody.upload_dir
-            });
-            this.newPackage?.photos?.push({
-              url: responseBody.url,
-              caption: responseBody.caption
-            });
-          }
-        },
-        error => console.error("Error during the image upload: ", error)
-      );
-    */
     }
     this.newPhotosSelected = true;
     console.log(this.imagesToUpload);
@@ -188,16 +182,69 @@ export class AgentPackagesComponent implements OnInit {
 
   removePhotos(): void {
     this.newPackage!.photos = []; //TODO: add the delete request
+    this.newPackage!.photo_ids = [];
     this.uploadedImages = [];
     this.imagesToUpload = [];
+    this.photoAddedIDs = [];
     console.log(this.imagesToUpload);
     console.log(this.newPackage);
+    console.log(this.photoAddedIDs);
     const fileInput = document.getElementById('packagePhoto') as HTMLInputElement;
     fileInput.value = '';
     this.newPhotosSelected = false;
     this.photosAdded = false;
   }
 
+  addPhoto(uploadDir: string): void {
+  if (this.imagesToUpload) {
+    const uploadPromises = this.imagesToUpload.map(imageToUpload => {
+      return new Promise((resolve, reject) => {
+        this.uploadService.uploadFile(imageToUpload, uploadDir).subscribe(
+          response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              this.uploadedImages.push({
+                name: imageToUpload.name,
+                url: responseBody.url,
+                caption: responseBody.caption,
+                uploadDir: responseBody.upload_dir
+              });
+              //this.newPackage?.photos?.push({
+              //  url: responseBody.url,
+              //  caption: responseBody.caption
+              //});
+              if (responseBody.id) {
+                if(!this.newPackage?.photo_ids) {
+                  this.newPackage!.photo_ids = [responseBody.id];
+                }
+                else {
+                  this.newPackage!.photo_ids!.push(responseBody.id);
+                }
+                this.photoAddedIDs.push(responseBody.id);
+              }
+              resolve(responseBody);
+            }
+          },
+          error => {
+            console.error("Error during the image upload: ", error);
+            reject(error);
+          }
+        );
+      });
+    });
+
+    Promise.all(uploadPromises).then(() => {
+      this.newPhotosSelected = false;
+      this.photosAdded = true;
+      console.log("Uploaded photos IDs:", this.photoAddedIDs);
+    }).catch(error => {
+      console.error("Error in uploading one or more photos", error);
+    });
+  }
+}
+
+  /*
   addPhoto(uploadDir: string): void {
     if(this.imagesToUpload) {
       while(this.imagesToUpload.length > 0) {
@@ -230,6 +277,7 @@ export class AgentPackagesComponent implements OnInit {
     this.photosAdded = true;
     console.log(this.imagesToUpload);
   }
+   */
 
 deleteAllUploadedImages(): void {
   this.uploadedImages.forEach(image => {

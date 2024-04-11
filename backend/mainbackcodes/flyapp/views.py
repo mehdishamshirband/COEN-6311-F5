@@ -61,7 +61,7 @@ class Flights(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {'airline': ['icontains'], 'price': ['lte', 'gte'], 'arrivalAirport': ['icontains'],
                         'departureAirport': ['icontains'], 'departureDate': ['lte', 'gte'],
-                        'arrivalDate': ['lte', 'gte'], 'showDetails': ['exact']}
+                        'arrivalDate': ['lte', 'gte']}
 
     def get_queryset(self):
         results = super(Flights, self).get_queryset()
@@ -86,7 +86,7 @@ class HotelsBooking(viewsets.ModelViewSet):
     serializer_class = HotelBookingSerializer
 
     filterset_fields = {'hotel': ['exact'], 'totalPrice': ['lte', 'gte'], 'checkOut': ['lte', 'gte'],
-                        'checkIn': ['lte', 'gte'], 'showDetails': ['exact']}
+                        'checkIn': ['lte', 'gte']}
 
 
 class Activities(viewsets.ModelViewSet):
@@ -94,7 +94,7 @@ class Activities(viewsets.ModelViewSet):
     serializer_class = ActivitySerializer
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'],
-                        'location': ['icontains'], 'date': ['lte', 'gte'], 'showDetails': ['exact']}
+                        'location': ['icontains'], 'date': ['lte', 'gte']}
 
     def get_queryset(self):
         results = super(Activities, self).get_queryset()
@@ -187,7 +187,7 @@ class TravelPackages(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
 
-    filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'], 'showDetails': ['exact'],
+    filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
 
     def get_queryset(self):
@@ -434,8 +434,15 @@ class PhotoUploadView(APIView):
     def post(self, request, *args, **kwargs):
         photo_serializer = PhotoSerializer(data=request.data, context={'request': request})
         if photo_serializer.is_valid():
-            photo_serializer.save()
-            return Response(photo_serializer.data, status=status.HTTP_201_CREATED)
+            photo_instance = photo_serializer.save()
+            response_data = {
+                'id': photo_instance.id,
+                'url': request.build_absolute_uri(photo_instance.url.url),
+                'caption': photo_instance.caption,
+                'upload_dir': photo_instance.upload_dir
+                # Include any other fields you want in the response
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED) #photo_serializer.data
         else:
             return Response(photo_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

@@ -41,42 +41,42 @@
 
   <!-- TODO: add mandatory fields. Same for hotels and flights -->
   <!-- Edit or Add Activity Form -->
-  <div *ngIf="editingActivity" class="card p-3 mb-3">
-    <h2 class="card-title mb-3">{{newActivity ? 'Add New' : 'Edit'}} Activity</h2>
+  <div *ngIf="editingActivity || newActivityCheck" class="card p-3 mb-3">
+    <h2 class="card-title mb-3">{{newActivityCheck ? 'Add New' : 'Edit'}} Activity</h2>
     <form (ngSubmit)="saveActivity()" class="card-body custom-form">
       <div class="mb-3">
         <label for="activityName" class="form-label">Name:</label>
-        <input type="text" class="form-control" id="activityName" [(ngModel)]="editingActivity.name" name="activityName" required>
+        <input type="text" class="form-control" id="activityName" [(ngModel)]="currentActivity.name" name="activityName" required>
       </div>
       <div class="mb-3">
         <label for="activityType" class="form-label">Type:</label>
-        <input type="text" class="form-control" id="activityType" [(ngModel)]="editingActivity.type" name="activityType" required>
+        <input type="text" class="form-control" id="activityType" [(ngModel)]="currentActivity.type" name="activityType" required>
       </div>
       <div class="mb-3">
         <label for="activityDescription" class="form-label">Description:</label>
-        <textarea class="form-control" id="activityDescription" [(ngModel)]="editingActivity.description" name="activityDescription" required></textarea>
+        <textarea class="form-control" id="activityDescription" [(ngModel)]="currentActivity.description" name="activityDescription" required></textarea>
       </div>
       <div class="mb-3">
         <label for="activityLocation" class="form-label">Location:</label>
-        <input type="text" class="form-control" id="activityLocation" [(ngModel)]="editingActivity.location" name="activityLocation" required>
+        <input type="text" class="form-control" id="activityLocation" [(ngModel)]="currentActivity.location" name="activityLocation" required>
       </div>
       <div class="mb-3">
         <label for="activityDate" class="form-label">Date:</label>
-        <input type="date" class="form-control" id="activityDate" [(ngModel)]="editingActivity.date" name="activityDate" required>
+        <input type="date" class="form-control" id="activityDate" [(ngModel)]="currentActivity.date" name="activityDate" required>
       </div>
       <div class="mb-3">
         <label for="activityPrice" class="form-label">Price:</label>
-        <input type="number" class="form-control" id="activityPrice" [(ngModel)]="editingActivity.price" name="activityPrice" required>
+        <input type="number" class="form-control" id="activityPrice" [(ngModel)]="currentActivity.price" name="activityPrice" required>
       </div>
       <div class="mb-3">
         <label class="form-label">Photos:</label>
-        <div *ngFor="let photo of editingActivity?.photos; let i = index" class="mb-2">
+        <div *ngFor="let photo of currentActivity?.photos; let i = index" class="mb-2">
           <input type="file" (change)="handleFileInput($event, i)" accept="image/*" [id]="'photoFile' + i" [name]="'photoFile' + i">
           <!-- Displaying the photo if it has a URL -->
           <img *ngIf="photo.url" [src]="photo.url" class="img-thumbnail mt-2" style="height: 100px;" [alt]="'Photo ' + (i + 1)">
           <button type="button" class="btn btn-remove btn-danger" style="margin-left: 12px" (click)="removePhoto(i)">Remove</button>
         </div>
-        <button type="button" class="btn btn-custom-primary btn-sm mb-3" style="margin-left: 12px" (click)="addPhotoField()" [disabled]="editingActivity!.photos!.length >= 5">Add Photo</button>
+        <button type="button" class="btn btn-custom-primary btn-sm mb-3" style="margin-left: 12px" (click)="addPhotoField()" [disabled]="currentActivity!.photos!.length >= 5">Add Photo</button>
       </div>
       <div class="text-end">
         <button type="submit" class="btn btn-custom-primary me-2">Save Activity</button>

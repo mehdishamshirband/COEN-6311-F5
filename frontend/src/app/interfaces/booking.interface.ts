@@ -37,7 +37,6 @@ export interface Flight {
   duration: number;
   price: number;
   stops?: Flight[];
-  showDetails?: boolean;
 }
 
 export interface Hotel {
@@ -54,7 +53,6 @@ export interface HotelBooking {
   checkIn: Date;
   checkOut: Date;
   totalPrice: number;
-  showDetails?: boolean;
 }
 
 export interface Activity {
@@ -66,7 +64,18 @@ export interface Activity {
   date: Date;
   price: number;
   photos?: Photo[];
-  showDetails?: boolean;
+}
+
+export interface NewActivity {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+  location: string;
+  date: Date;
+  price: number;
+  photos?: Photo[];
+  photo_ids?: number[];
 }
 
 export interface TravelPackage {
@@ -80,7 +89,6 @@ export interface TravelPackage {
   startingDate: Date;
   endingDate: Date;
   photos?: Photo[];
-  showDetails?: boolean;
   nbr_adult?: number;
   nbr_child?: number;
 }
@@ -94,9 +102,9 @@ export interface NewTravelPackage {
   hotels?: HotelBooking[];
   activities?: Activity[];
   photos?: Photo[];
+  photo_ids?: number[];
   startingDate: Date;
   endingDate: Date;
-  showDetails?: boolean;
   nbr_adult?: number;
   nbr_child?: number;
 }

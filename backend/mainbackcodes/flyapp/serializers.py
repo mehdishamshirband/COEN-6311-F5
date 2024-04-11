@@ -79,39 +79,68 @@ class HotelBookingSerializer(serializers.ModelSerializer):
 
 class ActivitySerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, read_only=True)
+    photo_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True, required=False)
 
     class Meta:
         model = Activity
-        fields = '__all__'
+        fields = ['type', 'name', 'price', 'description', 'location', 'date', 'photos', 'photo_ids']
+
+    @transaction.atomic
+    def create(self, validated_data):
+        photo_ids = validated_data.pop('photo_ids', [])
+        activity = Activity.objects.create(**validated_data)
+        if photo_ids:
+            photos = Photo.objects.filter(id__in=photo_ids)
+            print("Found photos for given IDs:", photos.exists())
+            activity.photos.set(photos)
+
+        return activity
 
 
 class TravelPackageSerializer(serializers.ModelSerializer):
     hotels = HotelBookingSerializer(many=True, read_only=True)
-    activities = ActivitySerializer(many=True, read_only=True)
+    activities = ActivitySerializer(many=True)
+    #activities_data = serializers.ListField(write_only=True, required=False)
     flights = FlightSerializer(many=True, allow_null=True)
     photo_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True, required=False)
-
+    photos = PhotoSerializer(many=True, read_only=True)
     #photos = PhotoSerializer(many=True)
     #photos = PhotoSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = TravelPackage
-        fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos', 'showDetails', 'nbr_adult', 'nbr_child']
+        fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos']
 
     @transaction.atomic
     def create(self, validated_data):
         flights_data = validated_data.pop('flights', [])
+        activities_data = validated_data.pop('activities', [])
         photo_ids = validated_data.pop('photo_ids', [])
+        print("Received photo_ids:", photo_ids)
         travel_package = TravelPackage.objects.create(**validated_data)
 
         if photo_ids:
             photos = Photo.objects.filter(id__in=photo_ids)
-            for photo in photos:
-                travel_package.photos.add(photo)
+            print("Found photos for given IDs:", photos.exists())
+            travel_package.photos.set(photos)
 
         for flight_data in flights_data:
             flight = Flight.objects.create(**flight_data)
             travel_package.flights.add(flight)
+
+        for activity_data in activities_data:
+            """"
+            activity_photo_ids = activity_data.pop('photo_ids', [])
+            activity = Activity.objects.create(**activity_data)
+            if activity_photo_ids:
+                activity_photos = Photo.objects.filter(id__in=activity_photo_ids)
+                activity.photos.set(activity_photos)
+            travel_package.activities.add(activity)
+            """
+            activity_serializer = ActivitySerializer(data=activity_data)
+            if activity_serializer.is_valid(raise_exception=True):
+                activity = activity_serializer.save()
+                travel_package.activities.add(activity)
 
         return travel_package
 

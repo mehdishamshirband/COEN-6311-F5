@@ -62,4 +62,5 @@ import {CsrfInterceptor} from "./interceptor-csrf";
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

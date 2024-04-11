@@ -20,7 +20,6 @@ class Flight(models.Model):
     departureDate = models.DateTimeField()
     arrivalDate = models.DateTimeField()
     # stops = models.ManyToManyField(Flight)
-    showDetails = models.BooleanField(default=True, blank=True)
 
     class Meta:
         ordering = ["airline"]
@@ -68,7 +67,6 @@ class HotelBooking(models.Model):
     totalPrice = models.FloatField()
     checkIn = models.DateField()
     checkOut = models.DateField()
-    showDetails = models.BooleanField(default=True, blank=True)
 
     class Meta:
         ordering = ["hotel"]
@@ -85,7 +83,6 @@ class Activity(models.Model):
     location = models.CharField(max_length=255)
     date = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
-    showDetails = models.BooleanField(default=True, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -112,9 +109,6 @@ class TravelPackage(models.Model):
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
-    showDetails = models.BooleanField(default=True, blank=True)
-    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
-    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -183,6 +177,8 @@ class Booking(models.Model):
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     phone = models.CharField(max_length=255, blank=True, default='') # optional field
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], blank=True)
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
 
     class Meta:
         ordering = ["bookingNo"]
