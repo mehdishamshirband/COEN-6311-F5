@@ -110,9 +110,9 @@ def dynamicpricecalc(request):
     # if request.data.get("type") == "custom":
     request.data._mutable = True
     request.data["price"] = 0
-    for i in dict(request.data).get("hotel"):
+    for i in dict(request.data).get("hotels"):
         request.data["price"] += float(HotelBooking.objects.filter(id=int(i)).first().totalPrice)
-    for i in dict(request.data).get("flight"):
+    for i in dict(request.data).get("flights"):
         request.data["price"] += float(Flight.objects.filter(id=int(i)).first().price)
     for i in dict(request.data).get("activities"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
@@ -179,8 +179,10 @@ class BookingDetail(viewsets.ModelViewSet):
         if self.get_object().bookingState == "confirmed":
             raise exceptions.MethodNotAllowed(detail="customer already paid!!", method=request.method)
         request.data._mutable = True
-        # request.data["cost"] = TravelPackage.objects.filter(id=request.data.get("travelPackage")).first().price
-        request.data["cost"] = self.get_object().travelPackage.first().price
+        if request.data.get("travelPackage"):
+            request.data["cost"] = TravelPackage.objects.filter(id=request.data.get("travelPackage")).first().price
+        else:
+            request.data["cost"] = self.get_object().travelPackage.first().price
         request.data._mutable = False
         email_send_booking_details(self.get_object())
         return super().update(request, *args, **kwargs)
@@ -204,6 +206,11 @@ class PackagesModification(viewsets.ModelViewSet):
                 detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
                 method=request.method)
 
+        if request.data.get("travelPackage") == None:
+            raise exceptions.MethodNotAllowed(
+                detail="Please select a package to update.",
+                method=request.method)
+
         updated_booking = Booking.objects.filter(travelPackage__id=request.data.get("travelPackage")).first()
         updated_booking.bookingState = "processing"
         updated_booking.save()
@@ -211,7 +218,8 @@ class PackagesModification(viewsets.ModelViewSet):
             if PackageModification.objects.filter(
                     package__id=request.data["travelPackage"]).first().state != "accepted":
                 raise exceptions.MethodNotAllowed(
-                    detail="you already have an active modifications request , please wait", method=request.method)
+                    detail="you already have an active modifications request , please wait or create a new request",
+                    method=request.method)
         except Exception as e:
             print(e)
 
@@ -287,7 +295,7 @@ def email_send_booking_details(obj):
     email_body += f'Booking No: {obj.bookingNo}\n'
     email_body += f'Customer Name: {obj.firstName}\n'
     email_body += f'Total Cost: ${obj.cost}\n'
-    email_body += f'Booking Details: {obj.details}\n'
+    # email_body += f'Booking Details: {obj.details}\n'
     email_body += f'Booking Status: {obj.bookingState}\n'
 
     for package in packages:
