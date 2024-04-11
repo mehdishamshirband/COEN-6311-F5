@@ -47,9 +47,26 @@ export interface Hotel {
   website?: string;
 }
 
+export interface NewHotel {
+  id: number;
+  name: string;
+  location: string;
+  photos?: Photo[];
+  photo_ids?: number[];
+  website?: string;
+}
+
 export interface HotelBooking {
   id: number;
   hotel: Hotel;
+  checkIn: Date;
+  checkOut: Date;
+  totalPrice: number;
+}
+
+export interface NewHotelBooking {
+  id: number;
+  hotel: NewHotel;
   checkIn: Date;
   checkOut: Date;
   totalPrice: number;

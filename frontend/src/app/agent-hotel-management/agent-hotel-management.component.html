@@ -37,49 +37,49 @@
     </div>
 
   <!-- Edit or Add Hotel Booking Form -->
-    <div *ngIf="editingHotelBooking" class="card p-3 mb-3">
-      <h2 class="card-title mb-3">{{newHotelBooking ? 'Add New' : 'Edit'}} Hotel Booking</h2>
+    <div *ngIf="editingHotelBooking || newHotelBookingCheck" class="card p-3 mb-3">
+      <h2 class="card-title mb-3">{{newHotelBookingCheck ? 'Add New' : 'Edit'}} Hotel Booking</h2>
       <form (ngSubmit)="saveHotelBooking()" class="card-body custom-form">
         <!-- Hotel Name -->
         <div class="mb-3">
           <label for="hotelName" class="form-label">Hotel Name:</label>
-          <input type="text" class="form-control" id="hotelName" [(ngModel)]="editingHotelBooking.hotel.name" name="hotelName" required>
+          <input type="text" class="form-control" id="hotelName" [(ngModel)]="currentHotelBooking.hotel.name" name="hotelName" required>
         </div>
         <!-- Hotel Location -->
         <div class="mb-3">
           <label for="hotelLocation" class="form-label">Location:</label>
-          <input type="text" class="form-control" id="hotelLocation" [(ngModel)]="editingHotelBooking.hotel.location" name="hotelLocation" required>
+          <input type="text" class="form-control" id="hotelLocation" [(ngModel)]="currentHotelBooking.hotel.location" name="hotelLocation" required>
         </div>
         <!-- Hotel Website (Optional) -->
         <div class="mb-3">
           <label for="hotelWebsite" class="form-label">Website:</label>
-          <input type="url" class="form-control" id="hotelWebsite" [(ngModel)]="editingHotelBooking.hotel.website" name="hotelWebsite">
+          <input type="url" class="form-control" id="hotelWebsite" [(ngModel)]="currentHotelBooking.hotel.website" name="hotelWebsite">
         </div>
         <!-- Check-in Date -->
         <div class="mb-3">
           <label for="checkInDate" class="form-label">Check-In Date:</label>
-          <input type="date" class="form-control" id="checkInDate" [(ngModel)]="editingHotelBooking.checkIn" name="checkInDate" required>
+          <input type="date" class="form-control" id="checkInDate" [(ngModel)]="currentHotelBooking.checkIn" name="checkInDate" required>
         </div>
         <!-- Check-out Date -->
         <div class="mb-3">
           <label for="checkOutDate" class="form-label">Check-Out Date:</label>
-          <input type="date" class="form-control" id="checkOutDate" [(ngModel)]="editingHotelBooking.checkOut" name="checkOutDate" required>
+          <input type="date" class="form-control" id="checkOutDate" [(ngModel)]="currentHotelBooking.checkOut" name="checkOutDate" required>
         </div>
         <!-- Total Price -->
         <div class="mb-3">
           <label for="totalPrice" class="form-label">Total Price:</label>
-          <input type="number" class="form-control" id="totalPrice" [(ngModel)]="editingHotelBooking.totalPrice" name="totalPrice" required>
+          <input type="number" class="form-control" id="totalPrice" [(ngModel)]="currentHotelBooking.totalPrice" name="totalPrice" required>
         </div>
         <!-- Hotel Photo Upload -->
         <div class="mb-3">
           <label class="form-label">Hotel Photos:</label>
-          <div *ngFor="let photo of editingHotelBooking?.hotel?.photos; let i = index" class="mb-2">
+          <div *ngFor="let photo of currentHotelBooking?.hotel?.photos; let i = index" class="mb-2">
             <input type="file" (change)="handleFileInput($event, i)" accept="image/*" [id]="'photoFile' + i" [name]="'photoFile' + i">
             <!-- Displaying the photo if it has a URL -->
             <img *ngIf="photo.url" [src]="photo.url" class="img-thumbnail mt-2" style="height: 100px;" [alt]="'Photo ' + (i + 1)">
             <button type="button" class="btn btn-remove btn-danger" style="margin-left: 12px" (click)="removePhoto(i)">Remove</button>
           </div>
-          <button type="button" class="btn btn-custom-primary btn-sm mb-3" style="margin-left: 12px" (click)="addPhotoField()" [disabled]="editingHotelBooking!.hotel.photos!.length >= 5">Add Photo</button>
+          <button type="button" class="btn btn-custom-primary btn-sm mb-3" style="margin-left: 12px" (click)="addPhotoField()" [disabled]="currentHotelBooking!.hotel.photos!.length >= 5">Add Photo</button>
         </div>
         <div class="text-end">
           <button type="submit" class="btn btn-custom-primary me-2">Save Hotel</button>
@@ -89,7 +89,7 @@
     </div>
 
     <!-- Button to add new hotel booking, visible when not currently editing/adding -->
-    <div *ngIf="!editingHotelBooking" class="mb-0">
+    <div *ngIf="!currentHotelBooking" class="mb-0">
       <button (click)="initNewHotelBooking()" class="btn btn-custom-primary">Add Hotel Booking</button>
     </div>
   </div>

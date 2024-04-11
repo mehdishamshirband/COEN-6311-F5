@@ -13,8 +13,6 @@ export class AgentActivityManagementComponent implements OnInit {
   editingActivity?: NewActivity;
   newActivity?: NewActivity;
   newActivityCheck?: boolean;
-  uploadedImages: any[] = [];
-  photoAddedIDs: number[] = [];
 
   constructor(private uploadService: UploadService) { }
 
@@ -28,7 +26,7 @@ export class AgentActivityManagementComponent implements OnInit {
 
   initNewActivity(): void {
     this.newActivityCheck = true;
-    console.log(this.newActivityCheck);
+    console.log(this.newActivityCheck); //TODO: remove this debug line
     this.newActivity = {
       id: Date.now(),
       name: '',
@@ -66,16 +64,12 @@ export class AgentActivityManagementComponent implements OnInit {
     this.editingActivity = undefined;
     this.newActivityCheck = false;
     this.newActivity = undefined;
-    this.uploadedImages = [];
-    this.photoAddedIDs = [];
   }
 
   cancelEditingActivity(): void {
     this.editingActivity = undefined;
     this.newActivityCheck = false;
     this.newActivity = undefined;
-    this.uploadedImages = [];
-    this.photoAddedIDs = [];
   }
 
   addPhotoField(): void {
@@ -93,12 +87,8 @@ export class AgentActivityManagementComponent implements OnInit {
     if (this.newActivityCheck && this.newActivity) {
       this.newActivity.photos?.splice(index, 1);
       this.newActivity.photo_ids?.splice(index, 1);
-      this.uploadedImages.splice(index, 1);
-      this.photoAddedIDs.splice(index, 1);
     }
     console.log(this.newActivity); //TODO: delete these debug lines
-    console.log(this.uploadedImages);
-    console.log(this.photoAddedIDs);
     if (this.editingActivity && this.editingActivity.photos) {
       this.editingActivity.photos.splice(index, 1);
     }
@@ -127,12 +117,6 @@ export class AgentActivityManagementComponent implements OnInit {
           if (response.type === 4) { // HttpResponse
             console.log(response);
             const responseBody = response.body;
-            this.uploadedImages.push({
-              name: file.name,
-              url: responseBody.url,
-              caption: responseBody.caption,
-              uploadDir: responseBody.upload_dir
-            });
             if (responseBody.id) {
               if(!this.newActivity?.photo_ids) {
                 this.newActivity!.photo_ids = [responseBody.id];
@@ -140,14 +124,11 @@ export class AgentActivityManagementComponent implements OnInit {
               else {
                 this.newActivity!.photo_ids!.push(responseBody.id);
               }
-              this.photoAddedIDs.push(responseBody.id);
               if (this.newActivity?.photos) {
                 this.newActivity!.photos[index] = {url: responseBody.url, caption: responseBody.caption};
               }
             }
             console.log(this.newActivity); //TODO: delete these debug lines
-            console.log(this.uploadedImages);
-            console.log(this.photoAddedIDs);
           }
         },
   error => {

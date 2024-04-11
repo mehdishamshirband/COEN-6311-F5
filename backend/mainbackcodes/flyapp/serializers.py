@@ -54,28 +54,36 @@ class FlightSerializer(serializers.ModelSerializer):
 
 
 class HotelSerializer(serializers.ModelSerializer):
-    photos = PhotoSerializer(many=True, allow_null=True, required=False)
+    photos = PhotoSerializer(many=True, read_only=True)
+    photo_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True, required=False)
 
     class Meta:
         model = Hotel
-        fields = '__all__'
+        fields = ['name', 'location', 'website', 'photos', 'photo_ids']
 
     @transaction.atomic
     def create(self, validated_data):
-        photos_data = validated_data.pop('photos', [])
+        photo_ids = validated_data.pop('photo_ids', [])
         hotel = Hotel.objects.create(**validated_data)
-        for photo_data in photos_data:
-            Photo.objects.create(hotel=hotel, **photo_data)
+        if photo_ids:
+            photos = Photo.objects.filter(id__in=photo_ids)
+            print("Found photos for given IDs:", photos.exists())
+            hotel.photos.set(photos)
 
         return hotel
 
 class HotelBookingSerializer(serializers.ModelSerializer):
-    hotel = HotelSerializer(read_only=True)
+    hotel = HotelSerializer()
 
     class Meta:
         model = HotelBooking
         fields = '__all__'
 
+    def create(self, validated_data):
+        hotel_data = validated_data.pop('hotel')
+        hotel = HotelSerializer.create(HotelSerializer(), validated_data=hotel_data)
+        hotel_booking = HotelBooking.objects.create(hotel=hotel, **validated_data)
+        return hotel_booking
 
 class ActivitySerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, read_only=True)
@@ -98,7 +106,7 @@ class ActivitySerializer(serializers.ModelSerializer):
 
 
 class TravelPackageSerializer(serializers.ModelSerializer):
-    hotels = HotelBookingSerializer(many=True, read_only=True)
+    hotels = HotelBookingSerializer(many=True)
     activities = ActivitySerializer(many=True)
     #activities_data = serializers.ListField(write_only=True, required=False)
     flights = FlightSerializer(many=True, allow_null=True)
@@ -115,6 +123,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         flights_data = validated_data.pop('flights', [])
         activities_data = validated_data.pop('activities', [])
+        hotels_data = validated_data.pop('hotels', [])
         photo_ids = validated_data.pop('photo_ids', [])
         print("Received photo_ids:", photo_ids)
         travel_package = TravelPackage.objects.create(**validated_data)
@@ -129,96 +138,19 @@ class TravelPackageSerializer(serializers.ModelSerializer):
             travel_package.flights.add(flight)
 
         for activity_data in activities_data:
-            """"
-            activity_photo_ids = activity_data.pop('photo_ids', [])
-            activity = Activity.objects.create(**activity_data)
-            if activity_photo_ids:
-                activity_photos = Photo.objects.filter(id__in=activity_photo_ids)
-                activity.photos.set(activity_photos)
-            travel_package.activities.add(activity)
-            """
             activity_serializer = ActivitySerializer(data=activity_data)
             if activity_serializer.is_valid(raise_exception=True):
                 activity = activity_serializer.save()
                 travel_package.activities.add(activity)
 
-        return travel_package
-
-
-    """
-    @transaction.atomic
-    def create(self, validated_data):
-        flights_data = validated_data.pop('flights', [])
-        photos_data = validated_data.pop('photos', [])
-        with transaction.atomic():
-            travel_package = TravelPackage.objects.create(**validated_data)
-            for flight_data in flights_data:
-                flight = Flight.objects.create(**flight_data)
-                travel_package.flights.add(flight)
-
-            # Associate photos with the travel package
-            for photo_data in photos_data:
-                #photo = Photo.objects.create(**photo_data)
-                #travel_package.photos.add(photo)
-                Photo.objects.create(**photo_data, travel_package=travel_package)
+        for hotel_data in hotels_data:
+            hotel_serializer = HotelBookingSerializer(data=hotel_data)
+            if hotel_serializer.is_valid(raise_exception=True):
+                hotel = hotel_serializer.save()
+                travel_package.hotels.add(hotel)
 
         return travel_package
-    """
 
-    """
-    @transaction.atomic
-    def create(self, validated_data):
-        flights_data = validated_data.pop('flights', [])
-        with transaction.atomic():
-            travel_package = TravelPackage.objects.create(**validated_data)
-            # Create flights and add them to the travel package
-            for flight_data in flights_data:
-                flight = Flight.objects.create(**flight_data)
-                travel_package.flights.add(flight)
-
-        photos = self.context['request'].FILES.getlist('photos')
-        for photo in photos:
-            photo_instance = Photo.objects.create(url=photo)
-            travel_package.photos.add(photo_instance)
-
-        travel_package.save()  # Save the travel package to update the ManyToMany relationship
-        return travel_package
-    """
-
-    """
-    def to_internal_value(self, data):
-        # Parse the 'flights' field from JSON string to Python objects
-        flights_data = data.get('flights')
-        if flights_data:
-            try:
-                data['flights'] = json.loads(flights_data)
-            except ValueError:
-                raise serializers.ValidationError({"flights": "Invalid JSON format for flights."})
-        return super().to_internal_value(data)
-    """
-
-    """
-    def create(self, validated_data):
-        flights_data = validated_data.pop('flights', [])
-        travel_package = TravelPackage.objects.create(**validated_data)
-        for flight_data in flights_data:
-            Flight.objects.create(**flight_data, travel_package=travel_package)
-
-        return travel_package
-    """
-
-    #@transaction.atomic
-"""    def create(self, validated_data):
-        flights_data = validated_data.pop('flights', [])
-        travel_package = TravelPackage.objects.create(**validated_data)
-
-        
-        for flight_data in flights_data:
-            flight_serializer = FlightSerializer(data=flight_data)
-            flight_serializer.is_valid(raise_exception=True)
-            flight_serializer.save(travel_package=travel_package)  # Assuming FlightSerializer handles travel_package
-
-        return travel_package"""
 
 
 class BookingSerializer(serializers.ModelSerializer):
