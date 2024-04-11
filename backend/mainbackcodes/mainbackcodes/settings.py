@@ -125,9 +125,7 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost:4200','http://localhost:4200']
-
-
+CSRF_TRUSTED_ORIGINS = ['https://localhost:4200', 'http://localhost:4200']
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -155,4 +153,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # email confs
-MAILTRAP_TOKEN="ed9fa34d275956738a29ae2355b3833f"
+MAILTRAP_TOKEN = "ed9fa34d275956738a29ae2355b3833f"
