@@ -208,8 +208,13 @@
           accept="image/*"
           multiple
           class="form-control mb-2">
-        <button type="button" (click)="addPhoto('photos/travel-packages')" class="btn btn-custom-primary me-2 mb-2">Add Photo</button>
-        <button type="button" (click)="removePhoto()" class="btn btn-remove btn-outline-danger mb-2" style="margin-top: 0px; height:35.6px">Remove Photos</button>
+        <div class="mb-2">
+          <ng-container *ngFor="let image of uploadedImages; let i = index;">
+            {{image.name}}{{i < uploadedImages.length - 1 ? ', ' : ''}}
+          </ng-container>
+        </div>
+        <button *ngIf="newPhotosSelected" type="button" (click)="addPhoto('photos/travel-packages')" class="btn btn-custom-primary me-2 mb-2">Add Photos</button>
+        <button *ngIf="photosAdded" type="button" (click)="removePhotos()" class="btn btn-remove btn-outline-danger mb-2" style="margin-top: 0px; height:35.6px">Remove Photos</button>
       </div>
 
       <!-- Embedded Components for Hotels, Flights, and Activities --->

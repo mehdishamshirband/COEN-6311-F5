@@ -39,6 +39,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('upload/photo/', PhotoUploadView.as_view(), name='photo-upload'),
+    path('photos/<int:id>/delete/', PhotoUploadView.as_view(), name='photo-delete'),  # Route pour la suppression
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -438,3 +438,8 @@ class PhotoUploadView(APIView):
             return Response(photo_serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(photo_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        photo = get_object_or_404(Photo, pk=pk)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

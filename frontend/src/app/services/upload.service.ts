@@ -23,4 +23,8 @@ export class UploadService {
       observe: 'events'
     });
   }
+
+  deleteImage(url: string): Observable<any> {
+    return this.http.delete(url);
+  }
 }

@@ -16,6 +16,10 @@ export class AgentPackagesComponent implements OnInit {
   selectedPackageId?: number;
   newPackageCheck?: boolean;
   private selectedFiles: any;
+  imagesToUpload: File[] | null = [];
+  uploadedImages: any[] = [];
+  newPhotosSelected?: boolean;
+  photosAdded?: boolean;
 
   constructor(private travelingPackageService: TravelPackageService, private uploadService: UploadService) { }
 
@@ -41,6 +45,7 @@ export class AgentPackagesComponent implements OnInit {
       flights: [],
       hotels: [],
       activities: [],
+      photos: [],
       startingDate: new Date(),
       endingDate: new Date(),
       nbr_adult: 1,
@@ -133,6 +138,7 @@ export class AgentPackagesComponent implements OnInit {
   }
 **/
 
+  /*
     handleFileInput(event: any): void {
     const files: FileList = event.target.files;
     if (files.length > 0) {
@@ -141,24 +147,104 @@ export class AgentPackagesComponent implements OnInit {
       }
     }
   }
+*/
 
-addPhoto(uploadDir: string): void {
-  this.selectedFiles.forEach((file: File) => {
-    this.uploadService.uploadFile(file, uploadDir).subscribe(
-      event => {
-        console.log('File upload event:', event);
-        // Handle the upload event, e.g., progress, completion, etc.
-      },
-      error => console.error('File upload error:', error)
-    );
-  });
-}
+  handleFileInput(event: any): void {
+    const fileList: FileList = event.target.files;
+    const uploadDir = 'photos/travel-packages';
 
-  removePhoto(): void { //TODO: implement the remove in the backend part
-    this.selectedFiles = [];
+    if (!this.imagesToUpload) {
+      this.imagesToUpload = [];
+    }
+
+    for (let i = 0; i < fileList.length; i++) {
+      this.imagesToUpload.push(fileList[i]);
+      /*
+      this.uploadService.uploadFile(fileList[i], uploadDir).subscribe(
+        response => {
+          if (response.type === 4) { // HttpResponse
+            console.log(response);
+            const responseBody = response.body;
+            this.uploadedImages.push({
+              name: fileList[i].name,
+              url: responseBody.url,
+              caption: responseBody.caption,
+              uploadDir: responseBody.upload_dir
+            });
+            this.newPackage?.photos?.push({
+              url: responseBody.url,
+              caption: responseBody.caption
+            });
+          }
+        },
+        error => console.error("Error during the image upload: ", error)
+      );
+    */
+    }
+    this.newPhotosSelected = true;
+    console.log(this.imagesToUpload);
+    console.log(this.newPackage!); //TODO: delete this debug line
+  }
+
+  removePhotos(): void {
+    this.newPackage!.photos = []; //TODO: add the delete request
+    this.uploadedImages = [];
+    this.imagesToUpload = [];
+    console.log(this.imagesToUpload);
+    console.log(this.newPackage);
     const fileInput = document.getElementById('packagePhoto') as HTMLInputElement;
     fileInput.value = '';
+    this.newPhotosSelected = false;
+    this.photosAdded = false;
   }
+
+  addPhoto(uploadDir: string): void {
+    if(this.imagesToUpload) {
+      while(this.imagesToUpload.length > 0) {
+        let imageToUpload = this.imagesToUpload.pop();
+        if (imageToUpload !== undefined) {
+          this.uploadService.uploadFile(imageToUpload, uploadDir).subscribe(
+            response => {
+              if (response.type === 4) { // HttpResponse
+                console.log(response);
+                const responseBody = response.body;
+                this.uploadedImages.push({
+                  name: imageToUpload!.name,
+                  url: responseBody.url,
+                  caption: responseBody.caption,
+                  uploadDir: responseBody.upload_dir
+                });
+                this.newPackage?.photos?.push({
+                  url: responseBody.url,
+                  caption: responseBody.caption
+                });
+                this.imagesToUpload!.pop();
+              }
+            },
+            error => console.error("Error during the image upload: ", error)
+          );
+        }
+      }
+    }
+    this.newPhotosSelected = false;
+    this.photosAdded = true;
+    console.log(this.imagesToUpload);
+  }
+
+deleteAllUploadedImages(): void {
+  this.uploadedImages.forEach(image => {
+    this.uploadService.deleteImage(image.url).subscribe({
+      next: (response) => {
+        console.log('Photo deleted successfully.', response);
+      },
+      error: (error) => {
+        console.error("Error occurred during photo removal: ", error);
+      }
+    });
+  });
+  this.uploadedImages = [];
+}
+
 
 
   get sortedJourneyItems(): any[] {

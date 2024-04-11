@@ -93,6 +93,7 @@ export interface NewTravelPackage {
   flights?: Flight[];
   hotels?: HotelBooking[];
   activities?: Activity[];
+  photos?: Photo[];
   startingDate: Date;
   endingDate: Date;
   showDetails?: boolean;
