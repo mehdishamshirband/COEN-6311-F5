@@ -49,18 +49,17 @@ class TravelPackageSerializer(serializers.ModelSerializer):
         model = TravelPackage
         fields = '__all__'
 
-
-class BookingSerializer(serializers.ModelSerializer):
-    travelPackage = TravelPackageSerializer(read_only=True)
-
-    class Meta:
-        model = Booking
-        fields = '__all__'
-
-
 class BillingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billing
+        fields = '__all__'
+
+class BookingSerializer(serializers.ModelSerializer):
+    travelPackage = TravelPackageSerializer(read_only=True)
+    billing = BillingSerializer(read_only=True)
+
+    class Meta:
+        model = Booking
         fields = '__all__'
 
 

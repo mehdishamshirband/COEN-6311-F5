@@ -37,6 +37,8 @@ router.register(r'Photos', views.Photos, basename='photos')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('process-payment/', views.PaymentView.as_view(), name='process_payment'),
+    path('webhook/', views.stripe_webhook, name='stripe_webhook'),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

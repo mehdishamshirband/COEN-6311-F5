@@ -1,17 +1,19 @@
 from django.core.mail import get_connection
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpRequest, JsonResponse, QueryDict
+from django.http import HttpRequest, HttpResponse, JsonResponse, QueryDict
 from rest_framework import serializers, exceptions
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, generics
 from rest_framework.response import Response
-from rest_framework import status
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
+from django.views.decorators.csrf import csrf_exempt
+import stripe
 from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, \
     TravelPackage, Photo
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
-    FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, PhotoSerializer
+    FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, \
+    PhotoSerializer
 
 from datetime import datetime
 
@@ -47,8 +49,6 @@ def filter_queryset_custom_package(request, results):
     return results
 
 
-
-
 # Create your views here.
 class Flights(viewsets.ModelViewSet):
     queryset = Flight.objects.all()
@@ -74,7 +74,6 @@ class Hotels(viewsets.ModelViewSet):
     def get_queryset(self):
         results = super(Hotels, self).get_queryset()
         return filter_queryset_custom_package(self.request, results)
-
 
 
 class HotelsBooking(viewsets.ModelViewSet):
@@ -103,16 +102,16 @@ from datetime import datetime
 def dynamicpricecalc(request):
     if not HotelBooking.objects.filter(id=request.data.get("hotels") or "0").first() and not Flight.objects.filter(
             id=request.data.get("flights") or "0").first() and not Activity.objects.filter(
-            id=int(request.data.get("activities") or "0")):
+        id=int(request.data.get("activities") or "0")):
         raise serializers.ValidationError('at least choose one service!!')
 
     # calc price dynamicly
     # if request.data.get("type") == "custom":
     request.data._mutable = True
     request.data["price"] = 0
-    for i in dict(request.data).get("hotel"):
+    for i in dict(request.data).get("hotels"):
         request.data["price"] += float(HotelBooking.objects.filter(id=int(i)).first().totalPrice)
-    for i in dict(request.data).get("flight"):
+    for i in dict(request.data).get("flights"):
         request.data["price"] += float(Flight.objects.filter(id=int(i)).first().price)
     for i in dict(request.data).get("activities"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
@@ -171,6 +170,8 @@ class BookingDetail(viewsets.ModelViewSet):
             request.data["cost"] = str(
                 (TravelPackage.objects.filter(id=int(request.data["travelPackage"])).first()).price)
             request.data._mutable = False
+        else:
+            raise serializers.ValidationError('Please select a TravelPackage!')
 
         # print("data:",request.data)
         return super().create(request, *args, **kwargs)
@@ -179,8 +180,10 @@ class BookingDetail(viewsets.ModelViewSet):
         if self.get_object().bookingState == "confirmed":
             raise exceptions.MethodNotAllowed(detail="customer already paid!!", method=request.method)
         request.data._mutable = True
-        # request.data["cost"] = TravelPackage.objects.filter(id=request.data.get("travelPackage")).first().price
-        request.data["cost"] = self.get_object().travelPackage.first().price
+        if request.data.get("travelPackage"):
+            request.data["cost"] = TravelPackage.objects.filter(id=request.data.get("travelPackage")).first().price
+        else:
+            request.data["cost"] = self.get_object().travelPackage.first().price
         request.data._mutable = False
         email_send_booking_details(self.get_object())
         return super().update(request, *args, **kwargs)
@@ -204,6 +207,11 @@ class PackagesModification(viewsets.ModelViewSet):
                 detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
                 method=request.method)
 
+        if request.data.get("travelPackage") == None:
+            raise exceptions.MethodNotAllowed(
+                detail="Please select a package to update.",
+                method=request.method)
+
         updated_booking = Booking.objects.filter(travelPackage__id=request.data.get("travelPackage")).first()
         updated_booking.bookingState = "processing"
         updated_booking.save()
@@ -211,7 +219,8 @@ class PackagesModification(viewsets.ModelViewSet):
             if PackageModification.objects.filter(
                     package__id=request.data["travelPackage"]).first().state != "accepted":
                 raise exceptions.MethodNotAllowed(
-                    detail="you already have an active modifications request , please wait", method=request.method)
+                    detail="you already have an active modifications request , please wait or create a new request",
+                    method=request.method)
         except Exception as e:
             print(e)
 
@@ -237,9 +246,9 @@ class PackagesModification(viewsets.ModelViewSet):
                 detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
                 method=request.method)
 
-        # if self.get_object().state == "accepted":
-        #     raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
-        # print(self.get_object().state)
+        if self.get_object().state == "accepted":
+            raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
+        print(self.get_object().state)
 
         updated_booking = Booking.objects.filter(travelPackage__id=request.data.get("package")).first()
         if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
@@ -261,10 +270,11 @@ class PackagesModification(viewsets.ModelViewSet):
             if updated_pck.is_valid():
                 updated_pck.save()
                 updated_booking.bookingState = "modified"
+                updated_booking.cost = 0
                 # updated_booking.creationdate =datetime.now()
                 # print("dada",(i for i in updated_booking.package.iterator()))
                 for package in updated_booking.travelPackage.iterator():
-                    updated_booking.cost = package.price
+                    updated_booking.cost += package.price
                 updated_booking.save()
                 email_send_booking_details(updated_booking)
 
@@ -287,7 +297,7 @@ def email_send_booking_details(obj):
     email_body += f'Booking No: {obj.bookingNo}\n'
     email_body += f'Customer Name: {obj.firstName}\n'
     email_body += f'Total Cost: ${obj.cost}\n'
-    email_body += f'Booking Details: {obj.details}\n'
+    # email_body += f'Booking Details: {obj.details}\n'
     email_body += f'Booking Status: {obj.bookingState}\n'
 
     for package in packages:
@@ -315,7 +325,8 @@ def email_send_booking_details(obj):
 
     mail = mt.Mail(
         sender=mt.Address(email="mailtrap@demomailtrap.com", name="FlyApp Email"),
-        to=[mt.Address(email="mehdi.shamshirband@mail.concordia.ca")],     #Email notifications will only be sent to this email since this email has been signed up on the demo website.
+        to=[mt.Address(email="mehdi.shamshirband@mail.concordia.ca")],
+        # Email notifications will only be sent to this email since this email has been signed up on the demo website.
         subject="Your booking details!",
         text=email_body,
         category="Django Test",
@@ -371,3 +382,88 @@ class Notifs(viewsets.ViewSet, mixins.CreateModelMixin):
 class Photos(viewsets.ModelViewSet):
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
+
+
+class PaymentView(generics.CreateAPIView):
+
+    def post(self, request, format=None):
+        print(request.data)
+
+        if not Booking.objects.get(bookingNo=request.data.get("bookingNo")):
+            raise serializers.ValidationError(f"Please add a BookingNo to start the proccess")
+
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        pkgs = Booking.objects.get(bookingNo=request.data.get("bookingNo")).travelPackage.all()
+        print(pkgs)
+        amount = 0
+        for pkg in pkgs:
+            amount += int(pkg.price) * 100  # in cents
+            print("good", amount)
+        description = "Test payment"
+        # print("good", amount)
+        if amount == 0:
+            raise serializers.ValidationError(f"Check the booking record!")
+
+        try:
+            # Create a payment intent
+            intent = stripe.PaymentIntent.create(
+                amount=amount,
+                currency="usd",
+                description=description,
+                payment_method_types=["card"],
+                payment_method_data={'type': "card",
+                                     "card": {"token": request.data.get('token')
+                                              }
+                                     },
+                metadata={
+                    "bookingNo": request.data.get("bookingNo")
+                }
+            )
+
+            print("see what", intent.TransferData)
+
+            return Response({"client_secret": intent.client_secret})
+        except stripe.error.StripeError as e:
+            print(e)
+            return Response({"error": str(e)}, status=400)
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    if request.method != 'POST':
+        return HttpResponse(status=405)  # Method Not Allowed
+    payload = request.body
+    sig_header = request.headers['STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(payload, sig_header, settings.STRIPE_WEBHOOK_SECRET)
+    except ValueError as e:
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponse({"status": "400"})
+
+    print(event['type'])
+
+    session = event['data']['object']
+    booking = Booking.objects.get(bookingNo=session["metadata"]["bookingNo"])
+    bill = booking.billing
+
+    if event['type'] == 'payment_intent.created':
+        bill.paymentState = "firstdeposit"
+    if event['type'] == 'payment_intent.succeeded':
+        bill.paymentState = "seconddeposit"
+    if event['type'] == 'charge.succeeded':
+        bill.paymentState = "lastdeposit"
+        booking.bookingState = "confirmed"
+
+    booking.save()
+    email_send_booking_details(booking)
+    bill.save()
+    print(session)
+    # customer_email = session["customer_details"]["email"]
+    # payment_intent = session["payment_intent"]
+
+    # Booking.ob
+    # return HttpResponse(status=200)
+    return HttpResponse({'status': '200'})
