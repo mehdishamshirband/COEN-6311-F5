@@ -1,8 +1,10 @@
 import json
 from rest_framework import serializers
-from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, Photo, \
+from .models import Billing, CustomUser, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, Photo, \
     TravelPackage
 from django.db import transaction
+from datetime import datetime
+import random
 
 
 """
@@ -105,19 +107,18 @@ class ActivitySerializer(serializers.ModelSerializer):
         return activity
 
 
-class TravelPackageSerializer(serializers.ModelSerializer):
+class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove this comment) - By Mehdi <-- ???
     hotels = HotelBookingSerializer(many=True)
     activities = ActivitySerializer(many=True)
-    #activities_data = serializers.ListField(write_only=True, required=False)
     flights = FlightSerializer(many=True, allow_null=True)
     photo_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True, required=False)
     photos = PhotoSerializer(many=True, read_only=True)
-    #photos = PhotoSerializer(many=True)
-    #photos = PhotoSerializer(many=True, read_only=True, required=False)
 
     class Meta:
         model = TravelPackage
         fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos']
+
+    exclude = ['user', 'type']
 
     @transaction.atomic
     def create(self, validated_data):
@@ -152,19 +153,54 @@ class TravelPackageSerializer(serializers.ModelSerializer):
         return travel_package
 
 
+    def create(self, validated_data):
+        user = self.context['request'].user
 
-class BookingSerializer(serializers.ModelSerializer):
-    travelPackage = TravelPackageSerializer(read_only=True)
+        if user.is_agent:
+            validated_data['type'] = 'PRE-MADE'
+        else:
+            validated_data['type'] = 'CUSTOM'
 
-    class Meta:
-        model = Booking
-        fields = '__all__'
+        validated_data['user'] = user
+
+        return super().create(validated_data)
 
 
 class BillingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billing
-        fields = '__all__'
+        exclude = ['user']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user'] = user
+
+        return super().create(validated_data)
+
+
+def generate_unique_booking_no(): #create booking number automatically
+
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    unique_identifier = random.randint(1000, 9999)
+    booking_no = f"{timestamp}{unique_identifier}"
+
+    return booking_no
+
+
+class BookingSerializer(serializers.ModelSerializer):  # (Do not remove this comment) - By Mehdi
+    travelPackage = TravelPackageSerializer(read_only=True)
+    billing = BillingSerializer(read_only=True)
+
+    class Meta:
+        model = Booking
+        exclude = ['user', 'bookingNo']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        validated_data['user'] = user
+        validated_data['bookingNo'] = generate_unique_booking_no()
+
+        return super().create(validated_data)
 
 
 class PackageModificationSerializer(serializers.ModelSerializer):
@@ -175,10 +211,39 @@ class PackageModificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PackageModification
-        fields = '__all__'
+        exclude = ['user', 'agent']
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        agents = CustomUser.objects.filter(is_agent=True)
+
+        random_agent = random.choice(agents)
+
+        if user.is_agent:
+            validated_data['type'] = 'PRE-MADE'
+        else:
+            validated_data['type'] = 'CUSTOM'
+
+        validated_data['user'] = user
+        validated_data['agent'] = random_agent
+
+        return super().create(validated_data)
 
 
 class NotifSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
+
+
+class UserRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('email', 'password')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        email = validated_data.get('email')
+        password = validated_data.get('password')
+        user = CustomUser.objects.create_user(email=email, password=password)
+        return user

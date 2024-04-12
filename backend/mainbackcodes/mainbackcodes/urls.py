@@ -21,6 +21,7 @@ from flyapp import views
 from django.conf import settings
 from django.conf.urls.static import static
 from flyapp.views import PhotoUploadView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
 router.register(r'Flight', views.Flights, basename='flights')
@@ -40,7 +41,15 @@ urlpatterns = [
     path('', include(router.urls)),
     path('upload/photo/', PhotoUploadView.as_view(), name='photo-upload'),
     path('photos/<int:id>/delete/', PhotoUploadView.as_view(), name='photo-delete'),
-    path('admin-tools/', include('admin_tools.urls'))
+    path('admin-tools/', include('admin_tools.urls')),
+    path('process-payment/', views.PaymentView.as_view(), name='process_payment'),
+    path('api-auth/', include('rest_framework.urls')),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refresh token
+    path('registration/', views.CustomUserRegistrationView.as_view(), name='registration'),
+    path('passwordreset/', views.PasswordResetView.as_view(), name='passwordreset'),
+    path('passwordupdate/', views.PasswordUpdateView.as_view(), name='passwordupdate'),
+    path('webhook/', views.stripe_webhook, name='stripe_webhook'),
 ]
 urlpatterns += router.urls
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

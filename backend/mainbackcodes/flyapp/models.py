@@ -2,9 +2,48 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from uuid import uuid4
 import os
+from django.contrib.auth.models import AbstractUser, UserManager
 
 
 # Create your models here.
+class CustomUserManager(UserManager):
+    def create_user(self, email, password=None, is_agent=False, **extra_fields):
+        user = self.model(email=self.normalize_email(email), **extra_fields)
+        user.is_agent = is_agent
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email=None, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("is_agent", True)
+
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+        if extra_fields.get("is_agent") is not True:
+            raise ValueError("Superuser must have is_agent=True.")
+
+        return self.create_user(email, password, **extra_fields)
+
+
+class CustomUser(AbstractUser):
+    username = None
+    email = models.EmailField(unique=True)
+    is_agent = models.BooleanField(default=False)
+    reset_code = models.CharField(max_length=10, blank=True, null=True)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'
+    # REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['password']
+
+    def __str__(self):
+        return self.email
+
 
 class Flight(models.Model):
     airline = models.CharField(max_length=255)
@@ -109,6 +148,7 @@ class TravelPackage(models.Model):
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
+    user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
@@ -135,11 +175,12 @@ class Billing(models.Model):
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     firstLineAddress = models.CharField(max_length=255)
-    secondLineAddress = models.CharField(max_length=255, blank=True, default='') # optional field
+    secondLineAddress = models.CharField(max_length=255, blank=True, default='')  # optional field
     zipCode = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state_area = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
+    user = models.ForeignKey(CustomUser, related_name='userbilling', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["firstName"]
@@ -163,22 +204,21 @@ class Booking(models.Model):
     bookingNo = models.IntegerField(unique=True)
     cost = models.FloatField()
     # details = models.CharField(max_length=255)
-    billing = models.ForeignKey(Billing, on_delete=models.CASCADE)
+    billing = models.OneToOneField(Billing, on_delete=models.CASCADE)
     bookingState = models.CharField(max_length=255, choices=status, default='CREATED')
     travelPackage = models.ForeignKey(TravelPackage, on_delete=models.CASCADE)
     purchaseDate = models.DateTimeField(auto_now_add=True)
     firstName = models.CharField(max_length=255)
     lastName = models.CharField(max_length=255)
     firstLineAddress = models.CharField(max_length=255)
-    secondLineAddress = models.CharField(max_length=255, blank=True, default='') # optional field
+    secondLineAddress = models.CharField(max_length=255, blank=True, default='')  # optional field
     zipCode = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
     state_area = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
-    phone = models.CharField(max_length=255, blank=True, default='') # optional field
-    nbr_adult = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)], blank=True)
-    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
+    phone = models.CharField(max_length=255, blank=True, default='')  # optional field
+    user = models.ForeignKey(CustomUser, related_name='userbooking', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["bookingNo"]
@@ -196,7 +236,7 @@ state = (
 
 class PackageModification(models.Model):
     name = models.CharField(max_length=255)
-    agent = models.CharField(max_length=255)
+    agent = models.ForeignKey(CustomUser, related_name='agent', on_delete=models.CASCADE)
     price = models.FloatField()
     description = models.TextField()
     state = models.CharField(max_length=255, choices=state, default='PENDING')
@@ -208,6 +248,7 @@ class PackageModification(models.Model):
     photos = models.ManyToManyField(Photo, blank=True)
     package = models.ForeignKey(TravelPackage, on_delete=models.CASCADE)
     booking_cancellation = models.BooleanField(default=False, null=True, blank=True)
+    user = models.ForeignKey(CustomUser, related_name='usermod', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
@@ -217,8 +258,8 @@ class PackageModification(models.Model):
 
 
 class Notification(models.Model):
-    sender = models.CharField(max_length=255)  # ForeignKey(User, related_name='sender', on_delete=models.CASCADE)
-    recipient = models.CharField(max_length=255)  # ForeignKey(User, related_name='recipient', on_delete=models.CASCADE)
+    sender = models.ForeignKey(CustomUser, related_name='sender', on_delete=models.CASCADE)
+    recipient = models.ForeignKey(CustomUser, related_name='recipient', on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
