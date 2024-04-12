@@ -85,15 +85,12 @@ export interface TravelPackage {
   endingDate: Date;
   photos?: Photo[];
   showDetails?: boolean;
-  nbr_adult?: number;
-  nbr_child?: number;
 }
 
 export interface Billing {
   id: number;
   paymentType: PaymentType;
   paymentState: PaymentState;
-  email: string;
   firstName: string;
   lastName: string;
   firstLineAddress: string;
@@ -122,6 +119,14 @@ export interface Booking {
   country: string;
   email: string;
   phone?: string;
+  nbr_adult: number;
+  nbr_child: number;
+}
+
+export interface NbrPerson {
+    id: number;
+    nbr_adult: number;
+    nbr_child: number;
 }
 
 export interface MergedItem {

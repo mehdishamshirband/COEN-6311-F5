@@ -34,6 +34,7 @@
           <h6 class="mb-2 text-muted">$ {{ travelPackage.price }}</h6>
         </div>
 
+        <i class="bi bi-trash" (click)="removeToCart(travelPackage.id)"></i>
       </div>
     </a>
   </div>

@@ -57,6 +57,16 @@
   margin-left: 10px; /* Adds spacing between icons */
 }
 
+.bi-trash {
+  color: red; /* Changes the color of the trash icon */
+  cursor: pointer; /* Changes cursor to pointer on hover */
+  font-size: 30px;
+}
+
+.bi-trash:hover {
+  opacity: 0.6;
+}
+
 
 .my-2{
   color: lightgray;

@@ -6,13 +6,13 @@ import { HttpClient } from '@angular/common/http';
 import {
   Billing,
   Booking,
-  BookingState,
+  BookingState, NbrPerson,
   PaymentState,
   PaymentType,
   TravelPackage
 } from '../interfaces/booking.interface';
 import {PaymentIntent} from "@stripe/stripe-js";
-import {Observable} from "rxjs";
+import {lastValueFrom, Observable} from "rxjs";
 
 @Component({
   selector: 'app-payment-success',
@@ -31,12 +31,13 @@ export class PaymentSuccessComponent implements OnInit {
   bookingInformation!: Booking;
   private baseUrl = 'http://localhost:8000/';
   check_error = false;
+  _result!: any;
 
   constructor(public cartService: CartService,
               private checkoutService: CheckoutService,
               private http: HttpClient) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.result = history.state.result;
     this.guestData = this.checkoutService.getLocalStoreGuestData[0];
     this.guestCart = this.cartService.user_cart;
@@ -45,8 +46,7 @@ export class PaymentSuccessComponent implements OnInit {
     this.billingInformation = {
       id: 0,
       paymentType: PaymentType.Stripe, // Seems impossible to get the card type from the card element
-      paymentState: PaymentState.FirstDeposit,
-      email: this.guestData.email,
+      paymentState: PaymentState.LastDeposit,
       firstName: this.guestData.firstName,
       lastName: this.guestData.lastName,
       firstLineAddress: this.guestData.firstLineAddress,
@@ -58,8 +58,21 @@ export class PaymentSuccessComponent implements OnInit {
     };
     console.log(this.billingInformation);
 
+    this._result = await this.postBillingDataSynchronous(this.billingInformation)
+
+    if (this._result.error) {
+      console.warn("Error post billing", this._result.error.message);
+    }
+    else{
+      console.warn("Post billing result", this._result);
+      this.billingInformation.id = this._result.id;
+    }
+
+
+
     for (let i = 0; i < this.cartService.user_cart.length; i++) {
-      this.CreateAndPostBooking(this.cartService.user_cart[i]);
+      let id: number = this.cartService.user_cart[i].id;
+      this.CreateAndPostBooking(this.cartService.user_cart[i], this.cartService.user_cart_nbr_person(id));
       console.log(this.bookingInformation);
       //this.checkoutService.postBooking(this.bookingInformation);
     }
@@ -71,11 +84,11 @@ export class PaymentSuccessComponent implements OnInit {
 
   }
 
-  CreateAndPostBooking = (travelPackage : TravelPackage) => {
+  CreateAndPostBooking = (travelPackage : TravelPackage, nbr_person: NbrPerson) => {
     this.bookingInformation = {
       id: 0,
       bookingNo: '0',
-      cost: travelPackage.price,
+      cost: Number(travelPackage.price),
       purchaseDate: new Date(),
       billing: this.billingInformation,
       bookingState: BookingState.Processing,
@@ -90,7 +103,11 @@ export class PaymentSuccessComponent implements OnInit {
       state_area: this.guestData.state_area,
       country: this.guestData.country,
       phone: this.guestData.phone,
+      nbr_adult: nbr_person.nbr_adult,
+      nbr_child: nbr_person.nbr_child,
     };
+
+    console.warn("Booking send", this.bookingInformation)
 
     void this.postBookingData(this.bookingInformation).subscribe((result: any) => {
       if (result.error) {
@@ -99,12 +116,25 @@ export class PaymentSuccessComponent implements OnInit {
       }
       else{
         console.warn("Post result", result);
+        this._result = result;
       }
     }
     );
 
   }
 
+
+  postBillingData(billingInformation: Billing): Observable<Billing> {
+    return this.http.post<Billing>(
+          `${this.baseUrl}BillingDetail/`, billingInformation
+        );
+  }
+
+  async postBillingDataSynchronous(billingInformation: Billing) {
+    return await lastValueFrom(this.postBillingData(billingInformation)).then((data) => {
+      return data;
+    });
+  }
 
   postBookingData(bookingInformation: Booking): Observable<Booking> {
     return this.http.post<Booking>(

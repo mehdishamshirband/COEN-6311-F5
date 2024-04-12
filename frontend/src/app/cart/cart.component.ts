@@ -24,5 +24,19 @@ export class CartComponent {
   user_cart: any = this.cartService.user_cart;
   cart_total: number = this.cartService.cart_total;
 
+  removeToCart(id: number): void {
+    this.cartService.localRemoveToCart(id);
+  }
+
+  ngOnInit(): void {
+    let cartData = localStorage.getItem('localCart');
+    this.cartService.cartData.subscribe((items : any) => {
+        this.user_cart = this.cartService.user_cart;
+      });
+
+  }
+
+
+
 
 }

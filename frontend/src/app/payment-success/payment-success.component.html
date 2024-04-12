@@ -14,7 +14,7 @@
 <div class="h-100 d-flex align-items-center justify-content-center" *ngIf="cartService.cart_total_parameter(guestCart) > 0 && result.paymentIntent.status == 'succeeded'">
   <h3 class="my-3">
     <p>Your payment of ${{result.paymentIntent.amount/100}} has been successfully processed.</p>
-    <p>Your order number is {{result.order_number}}.</p>
+    <p>Thank you for your money, your order number is {{_result.bookingNo}}.</p>
     <p>You will receive an email with the details of your order.</p>
   </h3>
 </div>

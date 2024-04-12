@@ -95,8 +95,6 @@ class TravelPackage(models.Model):
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
     showDetails = models.BooleanField(default=True, blank=True)
-    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
-    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -167,6 +165,8 @@ class Booking(models.Model):
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
     phone = models.CharField(max_length=255, blank=True, default='') # optional field
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)])
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)])
 
     class Meta:
         ordering = ["bookingNo"]
