@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import authentication_classes
 from django.views.decorators.csrf import csrf_exempt
 import stripe
 from .models import Billing, CustomUser, Flight, Hotel, Activity, HotelBooking, Notification, Booking, \
@@ -190,7 +191,7 @@ def dynamicpricecalc(request):
 class TravelPackages(viewsets.ModelViewSet):
     queryset = TravelPackage.objects.all()
     serializer_class = TravelPackageSerializer
-    permission_classes = [CustomReadOnlyOrCreatePermission, ]
+    permission_classes = [CustomReadOnlyOrCreatePermission,]
 
     def create(self, request, *args, **kwargs):
         request = dynamicpricecalc(request)

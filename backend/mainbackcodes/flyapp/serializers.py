@@ -64,6 +64,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):  # (Do not remove th
         return super().create(validated_data)
 
 
+
 class BillingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billing

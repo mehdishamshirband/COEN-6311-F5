@@ -134,7 +134,7 @@ class TravelPackage(models.Model):
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
     showDetails = models.BooleanField(default=True, blank=True)
-    #user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
