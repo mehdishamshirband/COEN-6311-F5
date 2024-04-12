@@ -20,7 +20,7 @@
 <div class="content-container mt-4">
   <div class="list-group mb-3">
     <a *ngFor="let travelPackage of user_cart" class="list-group-item list-group-item-action flex-column align-items-start" style="border-bottom: 1px solid lightgray">
-      <div class="d-flex w-100 justify-content-between align-items-center">
+      <div class="d-flex w-100 justify-content-between align-items-center" style="cursor: pointer;" [routerLink]="['/package-details', travelPackage.id]">
         <!-- Image container -->
         <div class="image-container mr-3" *ngIf="travelPackage.photos && travelPackage.photos.length > 0">
           <img [src]="travelPackage.photos[0].url" class="img-fluid rounded-2" alt="{{ travelPackage.photos[0].caption }}" style="object-fit: cover; width: 200px; height: 200px;">

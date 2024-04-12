@@ -32,6 +32,7 @@ export class CartComponent {
     let cartData = localStorage.getItem('localCart');
     this.cartService.cartData.subscribe((items : any) => {
         this.user_cart = this.cartService.user_cart;
+        this.cart_total = this.cartService.cart_total;
       });
 
   }
