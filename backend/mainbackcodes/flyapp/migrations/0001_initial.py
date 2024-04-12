@@ -163,8 +163,6 @@ class Migration(migrations.Migration):
                 ('startingDate', models.DateField()),
                 ('endingDate', models.DateField()),
                 ('showDetails', models.BooleanField(blank=True, default=True)),
-                ('nbr_adult', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(2), django.core.validators.MaxValueValidator(10)])),
-                ('nbr_child', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(10)])),
                 ('activities', models.ManyToManyField(blank=True, to='flyapp.activity')),
                 ('flights', models.ManyToManyField(blank=True, to='flyapp.flight')),
                 ('hotels', models.ManyToManyField(blank=True, to='flyapp.hotelbooking')),
@@ -218,6 +216,8 @@ class Migration(migrations.Migration):
                 ('phone', models.CharField(blank=True, default='', max_length=255)),
                 ('billing', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='flyapp.billing')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='userbooking', to=settings.AUTH_USER_MODEL)),
+                ('nbr_adult', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(2), django.core.validators.MaxValueValidator(10)])),
+                ('nbr_child', models.IntegerField(blank=True, validators=[django.core.validators.MinValueValidator(0), django.core.validators.MaxValueValidator(10)])),
                 ('travelPackage', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='flyapp.travelpackage')),
             ],
             options={
