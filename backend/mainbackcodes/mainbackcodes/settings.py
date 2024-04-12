@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -41,12 +42,20 @@ INSTALLED_APPS = [
     'flyapp',
     'rest_framework',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
+    "rest_framework.authtoken",
+    'rest_framework_simplejwt',
 ]
+
+AUTH_USER_MODEL = 'flyapp.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny']
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 MIDDLEWARE = [
@@ -142,8 +151,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # email confs
 MAILTRAP_TOKEN="ed9fa34d275956738a29ae2355b3833f"
 
+
 # Stripe API Key
 STRIPE_SECRET_KEY = "sk_test_51P3rga02b8wR2O4c3QatCIcNuLUupEAJKQn2bmKN8cYbsVskvJVxXgsE7MYH99W95erx7OyHMqdTKSW2A3XH30Cn00W2icpl1i"
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51P3rga02b8wR2O4cLRpLexqL9gPqj1xb2ZuugJnVzv1JS21c0k3oP4C6zKqvJlEVKOkOwiH9bm02b7Kl0X2P67jU00WCzJd0PD'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+# CORS_ALLOW_CREDENTIALS = True
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
