@@ -134,9 +134,7 @@ class TravelPackage(models.Model):
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
     showDetails = models.BooleanField(default=True, blank=True)
-    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
-    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
-    user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
+    #user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["name"]
