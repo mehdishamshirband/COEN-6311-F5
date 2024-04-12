@@ -39,7 +39,7 @@ function onTimeout () {
 }
 
 function refreshTimeout () {
-  if (fastNowTimeout?.refresh) {
+  if (fastNowTimeout && fastNowTimeout.refresh) {
     fastNowTimeout.refresh()
   } else {
     clearTimeout(fastNowTimeout)

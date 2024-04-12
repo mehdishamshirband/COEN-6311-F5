@@ -38,8 +38,6 @@ export class AgentPackagesComponent implements OnInit {
       startingDate: new Date(),
       endingDate: new Date(),
       photos: [],
-      nbr_adult: 1,
-      nbr_child: 0
     };
   }
 

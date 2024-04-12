@@ -1,0 +1,79 @@
+<div class="d-flex">
+  <h2 class="my-1">Checkout</h2>
+</div>
+<hr>
+
+<div class="h-100 d-flex align-items-center justify-content-center" *ngIf="cartService.user_cart.length === 0">
+  <h3 class="my-2">Your cart is empty, you should select at least one element before reaching this stage !</h3>
+</div>
+
+<!-- If user is not logged in and the cart is not empty-->
+<div class="d-flex flex-column" *ngIf="showLogin && !isLogged && cartService.user_cart.length">
+  <div class="d-flex-element">
+    <button class="btn btn-primary" [routerLink]="['/login']">Login</button>
+  </div>
+  <div class="d-flex-element">
+    <span>or</span>
+  </div>
+  <div class="d-flex-element">
+    <button class="btn btn-primary" (click)="continueAsGuest()">Continue as a guest</button>
+  </div>
+</div>
+
+
+<!-- If user is logged in or continue as a guest-->
+<div class="d-flex flex-column" *ngIf="!showLogin || isLogged">
+  <form (ngSubmit)="continueToPayment()">
+
+      <div class="form-group">
+        <label for="firstName"><b>First Name</b></label>
+        <input type="text" class="form-control" id="firstName" name="firstName" [(ngModel)]="guestProfile.firstName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="LastName"><b>Last Name</b></label>
+        <input type="text" class="form-control" id="LastName" name="lastName" [(ngModel)]="guestProfile.lastName" required>
+      </div>
+
+      <div class="form-group">
+        <label for="Country"><b>Country</b></label>
+        <input type="text" class="form-control" id="Country" name="country" [(ngModel)]="guestProfile.country" required>
+      </div>
+
+      <div class="form-group">
+        <label for="Address"><b>Address</b></label>
+        <input type="text" class="form-control" id="Address" placeholder="Postal address or P.O. box" name="firstLineAddress" [(ngModel)]="guestProfile.firstLineAddress" required>
+        <input type="text" class="form-control" placeholder="Apartment, suite, unit, building" name="secondLineAddress" [(ngModel)]="guestProfile.secondLineAddress">
+      </div>
+
+      <div class="form-group">
+        <label for="city"><b>City</b></label>
+        <input type="text" class="form-control" id="city" name="city" [(ngModel)]="guestProfile.city" required>
+      </div>
+
+      <div class="form-group">
+        <label for="state"><b>State</b></label>
+        <input type="text" class="form-control" id="state" placeholder="Province/Territory" name="state_area" [(ngModel)]="guestProfile.state_area" required>
+      </div>
+
+      <div class="form-group">
+        <label for="zipCode"><b>Zip Code</b></label>
+        <input type="text" class="form-control" id="zipCode" name="zipCode" [(ngModel)]="guestProfile.zipCode" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email"><b>Email</b></label>
+        <input type="email" class="form-control" id="email" name="email" [(ngModel)]="guestProfile.email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
+      </div>
+
+      <div class="form-group">
+        <label for="phone"><b>Phone</b></label>
+        <input type="tel" class="form-control" id="phone" name="phone" [(ngModel)]="guestProfile.phone">
+      </div>
+
+      <div class="text-center">
+        <button class="btn btn-primary btn-block mx-auto">Continue to Payment</button>
+      </div>
+
+  </form>
+</div>

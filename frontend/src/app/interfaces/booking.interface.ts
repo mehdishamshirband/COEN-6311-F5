@@ -5,21 +5,25 @@ export interface Photo {
 
 export enum PaymentType {
   Visa = 'Visa',
+  Mastercard = 'Mastercard',
   Paypal = 'Paypal',
+  Stripe = 'Stripe'
 }
 
 export enum PaymentState {
-  FirstDeposit,
-  SecondDeposit,
-  LastDeposit,
+  FirstDeposit = 'First_Deposit',
+  SecondDeposit = 'Second_Deposit',
+  LastDeposit = 'Last_Deposit',
 }
 
 export enum BookingState {
-  Processing = 'In process',
-  Confirmed = 'Confirmed',
+  Created = 'Created',
+  Processing = 'Processing',
   Canceled = 'Canceled',
   Failed = 'Failed',
-  Refunded = 'Refunded',
+  Modified = 'Modified',
+  Confirmed = 'Confirmed',
+  Refunded = 'Refunded'
 }
 
 export interface Flight {
@@ -81,8 +85,6 @@ export interface TravelPackage {
   endingDate: Date;
   photos?: Photo[];
   showDetails?: boolean;
-  nbr_adult?: number;
-  nbr_child?: number;
 }
 
 export interface Billing {
@@ -117,6 +119,14 @@ export interface Booking {
   country: string;
   email: string;
   phone?: string;
+  nbr_adult: number;
+  nbr_child: number;
+}
+
+export interface NbrPerson {
+    id: number;
+    nbr_adult: number;
+    nbr_child: number;
 }
 
 export interface MergedItem {

@@ -133,7 +133,6 @@ class NotifSerializer(serializers.ModelSerializer):
         model = Notification
         fields = '__all__'
 
-
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser

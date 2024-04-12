@@ -1,10 +1,8 @@
 from django.contrib import admin
-
 from .forms import BillingAdminForm, BookingAdminForm, PackageAdminForm, PackageModificationAdminForm, \
     UserRegistrationAdminForm
 from .models import Billing, CustomUser, Hotel, Flight, Activity, HotelBooking, PackageModification, Photo, \
     TravelPackage, Booking
-
 
 # Register your model, Accessible in admin site
 class PackageModificationAdmin(admin.ModelAdmin):

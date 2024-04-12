@@ -1,7 +1,7 @@
 'use strict'
 
-const { Transform } = require('node:stream')
-const { Console } = require('node:console')
+const { Transform } = require('stream')
+const { Console } = require('console')
 
 /**
  * Gets the output of `console.table(…)` as a string.

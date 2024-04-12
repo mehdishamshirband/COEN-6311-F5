@@ -114,7 +114,7 @@ class CacheStorage {
 
   /**
    * @see https://w3c.github.io/ServiceWorker/#cache-storage-keys
-   * @returns {Promise<string[]>}
+   * @returns {string[]}
    */
   async keys () {
     webidl.brandCheck(this, CacheStorage)

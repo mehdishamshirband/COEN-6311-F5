@@ -1,6 +1,6 @@
 'use strict'
 
-const EventEmitter = require('node:events')
+const EventEmitter = require('events')
 
 class Dispatcher extends EventEmitter {
   dispatch () {

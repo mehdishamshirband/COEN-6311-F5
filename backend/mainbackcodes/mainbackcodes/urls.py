@@ -38,6 +38,7 @@ router.register(r'Photos', views.Photos, basename='photos')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('Create-payment-intent/', views.CreatePaymentIntents.as_view(), name='create-payment-intent'),
     path('process-payment/', views.PaymentView.as_view(), name='process_payment'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login

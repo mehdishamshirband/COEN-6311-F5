@@ -27,6 +27,9 @@ import {AgentFlightManagementComponent} from "./agent-flight-management/agent-fl
 import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
 import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
 import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
+import { NgxStripeModule } from 'ngx-stripe';
+import { environment } from '../environments/environment';
+
 
 @NgModule({
   declarations: [
@@ -54,7 +57,8 @@ import { UserAccountInformationComponent } from "./user-account-information/user
     ActivityGalleryComponent,
     CustomPackageCreationComponent,
     MinToHoursMinPipe,
-    UserAccountInformationComponent
+    UserAccountInformationComponent,
+    NgxStripeModule.forRoot(environment.stripe.publicKey)
   ],
   providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync()],
   exports: [

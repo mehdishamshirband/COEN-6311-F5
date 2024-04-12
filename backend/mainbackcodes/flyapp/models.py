@@ -146,14 +146,16 @@ class TravelPackage(models.Model):
 
 
 PaymentType = (
-    ('visa', 'VISA'),
-    ('paypal', 'PAYPAL'),
+    ('Visa', 'VISA'),
+    ('Mastercard', 'MASTERCARD'),
+    ('Paypal', 'PAYPAL'),
+    ('Stripe', 'STRIPE')
 )
 
 PaymentState = (
-    ('firstdeposit', 'FIRSTDEPOSIT'),
-    ('seconddeposit', 'SECONDDEPOSIT'),
-    ('lastdeposit', 'LASTDEPOSIT'),
+    ('First_Deposit', 'FIRST_DEPOSIT'),
+    ('Second_Deposit', 'SECOND_DEPOSIT'),
+    ('Last_Deposit', 'LAST_DEPOSIT'),
 )
 
 
@@ -178,13 +180,13 @@ class Billing(models.Model):
 
 
 status = (
-    ('created', 'CREATED'),
-    ('processing', 'PROCESSING'),
-    ('canceled', 'CANCELED'),
-    ('failed', 'FAILED'),
-    ('modified', 'MODIFIED'),
-    ('confirmed', 'CONFIRMED'),
-    ('refunded', 'REFUNDED')
+    ('Created', 'CREATED'),
+    ('Processing', 'PROCESSING'),
+    ('Canceled', 'CANCELED'),
+    ('Failed', 'FAILED'),
+    ('Modified', 'MODIFIED'),
+    ('Confirmed', 'CONFIRMED'),
+    ('Refunded', 'REFUNDED')
 )
 
 
@@ -205,6 +207,8 @@ class Booking(models.Model):
     state_area = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)])
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)])
     phone = models.CharField(max_length=255, blank=True, default='')  # optional field
     user = models.ForeignKey(CustomUser, related_name='userbooking', on_delete=models.CASCADE)
 
@@ -250,3 +254,4 @@ class Notification(models.Model):
     recipient = models.ForeignKey(CustomUser, related_name='recipient', on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+

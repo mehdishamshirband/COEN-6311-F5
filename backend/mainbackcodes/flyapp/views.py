@@ -15,8 +15,12 @@ from .models import Billing, CustomUser, Flight, Hotel, Activity, HotelBooking, 
     PackageModification, \
     TravelPackage, Photo
 from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
-    FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, \
+FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, \
     PhotoSerializer, UserRegistrationSerializer
+import stripe, json
+from rest_framework.views import APIView
+
+
 
 from datetime import datetime
 from django.utils.crypto import get_random_string
@@ -224,12 +228,25 @@ class BillingDetail(viewsets.ModelViewSet):
     serializer_class = BillingSerializer
     permission_classes = [CustomReadOnlyOrCreatePermission, ]
 
+    def create(self, request, *args, **kwargs):
+        try:
+            new_billing = BillingSerializer(data=request.data)
+
+            if not new_billing.is_valid():
+                raise serializers.ValidationError(new_billing.errors)
+
+            new_billing.save()
+            return Response({"msg": "billing created successfully", "id": new_billing.data.get("id")})
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
 
 class BookingDetail(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = [CustomReadOnlyOrCreatePermission, ]
 
+    '''
     def create(self, request, *args, **kwargs):
         if request.data.get("travelPackage"):
             request.data._mutable = True
@@ -238,9 +255,46 @@ class BookingDetail(viewsets.ModelViewSet):
             request.data._mutable = False
         else:
             raise serializers.ValidationError('Please select a TravelPackage!')
+    '''
 
-        # print("data:",request.data)
-        return super().create(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+
+        try:
+
+            '''
+            new_booking = BookingSerializer(data=request.data, partial=True)
+            new_booking.bookingNo = Booking.objects.all().count() + 1
+
+            new_booking.billing = billing
+            
+            new_booking.travelPackage = travel_package
+            '''
+
+            billing = Billing.objects.get(id=request.data.get("billing").get("id"))
+            travel_package = TravelPackage.objects.get(id=request.data.get("travelPackage").get("id"))
+
+            new_booking = Booking.objects.create(
+                bookingNo=Booking.objects.all().count() + 1,
+                firstName=request.data.get("firstName"),
+                lastName=request.data.get("lastName"),
+                email=request.data.get("email"),
+                phone=request.data.get("phone"),
+                bookingState=request.data.get("bookingState"),
+                cost=request.data.get("cost"),
+                billing=billing,
+                travelPackage=travel_package,
+            )
+
+            new_booking.save()
+
+            #email_send_booking_details(new_booking)
+
+            return Response({"msg": "booking created successfully", "bookingNo": new_booking.bookingNo})
+
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
+
 
     def update(self, request, *args, **kwargs):
         if self.get_object().bookingState == "confirmed":
@@ -455,7 +509,33 @@ class Photos(viewsets.ModelViewSet):
     serializer_class = PhotoSerializer
 
 
-class PaymentView(generics.CreateAPIView):
+class CreatePaymentIntents(APIView):
+    def post(self, request) -> JsonResponse:
+        try:
+            data = request.data
+
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+
+            # Create a PaymentIntent with the order amount and currency
+            intent = stripe.PaymentIntent.create(
+                amount=data['amount'],
+                currency='cad', # Check if we can put it in auto
+                # In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+                automatic_payment_methods={
+                    'enabled': True,
+                },
+            )
+
+            return JsonResponse({
+                'clientSecret': intent['client_secret'],
+                'paymentIntent': {'status': 'succeeded'}
+            })
+
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
+
+class PaymentView(APIView):
     permission_classes = [IsAgent, ]
 
     def post(self, request, format=None):

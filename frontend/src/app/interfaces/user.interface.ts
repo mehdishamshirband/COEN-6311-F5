@@ -11,6 +11,19 @@ export interface User {
   zipcode?: string;
 }
 
+export interface GuestProfile {
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  country: string;
+  state_area: string;
+  city: string;
+  zipCode: string;
+  firstLineAddress: string;
+  secondLineAddress?: string;
+}
+
 export interface UserLogin {
   emailAddress: string;
   password: string;

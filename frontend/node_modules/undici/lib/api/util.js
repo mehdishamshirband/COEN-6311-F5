@@ -1,4 +1,4 @@
-const assert = require('node:assert')
+const assert = require('assert')
 const {
   ResponseStatusCodeError
 } = require('../core/errors')
