@@ -1,3 +1,4 @@
+import json
 from django.core.mail import get_connection
 from django.conf import settings
 from django.core.mail import send_mail
@@ -9,19 +10,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import authentication_classes
 from django.views.decorators.csrf import csrf_exempt
 import stripe
 from .models import Billing, CustomUser, Flight, Hotel, Activity, HotelBooking, Notification, Booking, \
     PackageModification, \
     TravelPackage, Photo
-from .serializers import ActivitySerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
-FlightSerializer, NotifSerializer, PackageModificationSerializer, BookingSerializer, TravelPackageSerializer, \
-    PhotoSerializer, UserRegistrationSerializer
-import stripe, json
-from rest_framework.views import APIView
-
-
+from .serializers import ActivityDSerializer, ActivitySerializer, BillingSerializer, BookingDSerializer, \
+    HotelBookingDSerializer, HotelBookingSerializer, HotelDSerializer, HotelSerializer, \
+    FlightSerializer, NotifSerializer, PackageModificationDSerializer, PackageModificationSerializer, BookingSerializer, \
+    TravelPackageDSerializer, TravelPackageSerializer, PhotoSerializer, UserRegistrationSerializer
 
 from datetime import datetime
 from django.utils.crypto import get_random_string
@@ -61,7 +58,7 @@ def filter_queryset_custom_package(request, results):
 class IsAgent(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_anonymous:
-            return False
+            return request.method in ['GET']
         elif request.user.is_staff or request.user.is_agent:
             return True
         return request.user.is_authenticated and request.method in ['GET']
@@ -82,7 +79,7 @@ class CustomReadOnlyPermission(BasePermission):
 class CustomReadOnlyOrCreatePermission(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_anonymous:
-            return False
+            return request.method == 'GET'
         elif request.user.is_staff or request.user.is_agent:
             return True
         # Allow read-only access for authenticated users (GET requests)
@@ -130,6 +127,12 @@ class Hotels(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()
     serializer_class = HotelSerializer
 
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return HotelDSerializer
+        else:
+            return self.serializer_class
+
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {'name': ['icontains'], 'location': ['icontains']}
 
@@ -143,6 +146,12 @@ class HotelsBooking(viewsets.ModelViewSet):
     queryset = HotelBooking.objects.all()
     serializer_class = HotelBookingSerializer
 
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return HotelBookingDSerializer
+        else:
+            return self.serializer_class
+
     filterset_fields = {'hotel': ['exact'], 'totalPrice': ['lte', 'gte'], 'checkOut': ['lte', 'gte'],
                         'checkIn': ['lte', 'gte'], 'showDetails': ['exact']}
 
@@ -152,9 +161,11 @@ class Activities(viewsets.ModelViewSet):
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
 
-    def list(self, request, *args, **kwargs):
-        print(request.user)
-        return super().list(request, *args, **kwargs)
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return ActivityDSerializer
+        else:
+            return self.serializer_class
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'],
                         'location': ['icontains'], 'date': ['lte', 'gte'], 'showDetails': ['exact']}
@@ -168,14 +179,14 @@ from datetime import datetime
 
 
 def dynamicpricecalc(request):
-    if not HotelBooking.objects.filter(id=request.data.get("hotels") or "0").first() and not Flight.objects.filter(
-            id=request.data.get("flights") or "0").first() and not Activity.objects.filter(
-        id=int(request.data.get("activities") or "0")):
+    if not HotelBooking.objects.filter(id=request.data.get("hotels")[0] or "0").first() and not Flight.objects.filter(
+            id=request.data.get("flights")[0] or "0").first() and not Activity.objects.filter(
+        id=request.data.get("activities")[0] or "0"):
         raise serializers.ValidationError('at least choose one service!!')
 
     # calc price dynamicly
     # if request.data.get("type") == "custom":
-    request.data._mutable = True
+    # request.data._mutable = True
     request.data["price"] = 0
     for i in dict(request.data).get("hotels"):
         request.data["price"] += float(HotelBooking.objects.filter(id=int(i)).first().totalPrice)
@@ -183,7 +194,7 @@ def dynamicpricecalc(request):
         request.data["price"] += float(Flight.objects.filter(id=int(i)).first().price)
     for i in dict(request.data).get("activities"):
         request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
-    request.data._mutable = False
+    # request.data._mutable = False
     # print(request.data)
     return request
 
@@ -191,10 +202,18 @@ def dynamicpricecalc(request):
 class TravelPackages(viewsets.ModelViewSet):
     queryset = TravelPackage.objects.all()
     serializer_class = TravelPackageSerializer
-    permission_classes = [CustomReadOnlyOrCreatePermission,]
+    permission_classes = [CustomReadOnlyOrCreatePermission, ]
+
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return TravelPackageDSerializer
+        else:
+            return self.serializer_class
 
     def create(self, request, *args, **kwargs):
+        request.data._mutable = True
         request = dynamicpricecalc(request)
+        request.data._mutable = False
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
@@ -229,73 +248,30 @@ class BillingDetail(viewsets.ModelViewSet):
     serializer_class = BillingSerializer
     permission_classes = [CustomReadOnlyOrCreatePermission, ]
 
-    def create(self, request, *args, **kwargs):
-        try:
-            new_billing = BillingSerializer(data=request.data)
-
-            if not new_billing.is_valid():
-                raise serializers.ValidationError(new_billing.errors)
-
-            new_billing.save()
-            return Response({"msg": "billing created successfully", "id": new_billing.data.get("id")})
-        except Exception as e:
-            return JsonResponse({"error": {'message': str(e)}}, status=403)
-
 
 class BookingDetail(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
     serializer_class = BookingSerializer
     permission_classes = [CustomReadOnlyOrCreatePermission, ]
 
-    '''
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return BookingDSerializer
+        else:
+            return self.serializer_class
+
     def create(self, request, *args, **kwargs):
         if request.data.get("travelPackage"):
             request.data._mutable = True
             request.data["cost"] = str(
                 (TravelPackage.objects.filter(id=int(request.data["travelPackage"])).first()).price)
+            request.data["state"] = "created"
             request.data._mutable = False
         else:
             raise serializers.ValidationError('Please select a TravelPackage!')
-    '''
 
-    def create(self, request, *args, **kwargs):
-
-        try:
-
-            '''
-            new_booking = BookingSerializer(data=request.data, partial=True)
-            new_booking.bookingNo = Booking.objects.all().count() + 1
-
-            new_booking.billing = billing
-            
-            new_booking.travelPackage = travel_package
-            '''
-
-            billing = Billing.objects.get(id=request.data.get("billing").get("id"))
-            travel_package = TravelPackage.objects.get(id=request.data.get("travelPackage").get("id"))
-
-            new_booking = Booking.objects.create(
-                bookingNo=Booking.objects.all().count() + 1,
-                firstName=request.data.get("firstName"),
-                lastName=request.data.get("lastName"),
-                email=request.data.get("email"),
-                phone=request.data.get("phone"),
-                bookingState=request.data.get("bookingState"),
-                cost=request.data.get("cost"),
-                billing=billing,
-                travelPackage=travel_package,
-            )
-
-            new_booking.save()
-
-            #email_send_booking_details(new_booking)
-
-            return Response({"msg": "booking created successfully", "bookingNo": new_booking.bookingNo})
-
-        except Exception as e:
-            return JsonResponse({"error": {'message': str(e)}}, status=403)
-
-
+        # print("data:",request.data)
+        return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
         if self.get_object().bookingState == "confirmed":
@@ -320,38 +296,56 @@ class PackagesModification(viewsets.ModelViewSet):
     serializer_class = PackageModificationSerializer
     permission_classes = [CustomReadOnlyOrCreatePermission, ]
 
-    def create(self, request, *args, **kwargs):
-        # print(request.data)
-        # print(PackageSerializer(data=request.data, partial=True).is_valid())
-        if Booking.objects.filter(
-                travelPackage__id=request.data.get("travelPackage")).first().bookingState == "confirmed":
-            raise exceptions.MethodNotAllowed(
-                detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
-                method=request.method)
+    def get_serializer_class(self):
+        if self.action in ['retrieve', 'list']:
+            return PackageModificationDSerializer
+        else:
+            return self.serializer_class
 
-        if request.data.get("travelPackage") == None:
+    def retrieve(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        return super().retrieve(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        return super().list(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        if request.data.get("package") == None:
             raise exceptions.MethodNotAllowed(
                 detail="Please select a package to update.",
                 method=request.method)
 
-        updated_booking = Booking.objects.filter(travelPackage__id=request.data.get("travelPackage")).first()
-        updated_booking.bookingState = "processing"
-        updated_booking.save()
-        try:  # Temporary exception handling and it will be updated in the Sprint 3 (Mehdi while solving)
+        if Booking.objects.filter(
+                user=request.user, bookingState="confirmed",
+                travelPackage__id=request.data.get("package")).first() != None:
+            updated_booking = Booking.objects.filter(user=request.user,
+                                                     travelPackage__id=request.data.get("package")).first()
+            if updated_booking.bookingState == "confirmed":
+                raise exceptions.MethodNotAllowed(
+                    detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
+                    method=request.method)
+            else:
+                updated_booking.bookingState = "processing"
+                updated_booking.save()
+
+        try:
             if PackageModification.objects.filter(
-                    package__id=request.data["travelPackage"]).first().state != "accepted":
+                    package__id=request.data["package"]).first().state != "accepted":
                 raise exceptions.MethodNotAllowed(
                     detail="you already have an active modifications request , please wait or create a new request",
                     method=request.method)
-        except Exception as e:
+        except AttributeError as e:
             print(e)
 
         # print("pckmod create user:",request.user)
 
-        request = dynamicpricecalc(request)
         request.data._mutable = True
+        request = dynamicpricecalc(request)
         request.data["state"] = "pending"
-        request.data["cost"] = request.data.get("price")
+        request.data["price"] = request.data.get("price")
         # request.data["agent"] = str(request.user)
         request.data._mutable = False
         # print(request.data)
@@ -363,21 +357,28 @@ class PackagesModification(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         # print(request.data,request.data["package"])
         # print(Booking.objects.filter(package__id=request.data["package"]).first().status)
-        if Booking.objects.filter(travelPackage__id=request.data.get("package")).first().bookingState == "confirmed":
-            raise exceptions.MethodNotAllowed(
-                detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
-                method=request.method)
-
         if self.get_object().state == "accepted":
             raise exceptions.MethodNotAllowed(detail="you are already accepted modified package", method=request.method)
         print(self.get_object().state)
 
-        updated_booking = Booking.objects.filter(travelPackage__id=request.data.get("package")).first()
-        if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
-            updated_booking.bookingState = "canceled"
-            # updated_booking.creationdate =datetime.now()
-            updated_booking.save()
-            return super().update(request, *args, **kwargs)
+        if Booking.objects.filter(
+                user=request.user, bookingState="confirmed",
+                travelPackage__id=request.data.get("package")).first() != None:
+            updated_booking = Booking.objects.filter(user=request.user,
+                                                     travelPackage__id=request.data.get("package")).first()
+            if updated_booking.bookingState == "confirmed":
+                raise exceptions.MethodNotAllowed(
+                    detail="you paid for this package, for modification contatct the agent or to add new services buy a new package",
+                    method=request.method)
+
+        if Booking.objects.filter(
+                user=request.user, bookingState="confirmed",
+                travelPackage__id=request.data.get("package")).first() != None:
+            if self.get_object().booking_cancellation and request.data.get("state") == "accepted":
+                updated_booking.bookingState = "canceled"
+                # updated_booking.creationdate =datetime.now()
+                updated_booking.save()
+                return super().update(request, *args, **kwargs)
 
         if request.data.get("state") == "rejected":
             return super().update(request, *args, **kwargs)
@@ -391,14 +392,17 @@ class PackagesModification(viewsets.ModelViewSet):
                                                   data=request.data, partial=True)
             if updated_pck.is_valid():
                 updated_pck.save()
-                updated_booking.bookingState = "modified"
-                updated_booking.cost = 0
-                # updated_booking.creationdate =datetime.now()
-                # print("dada",(i for i in updated_booking.package.iterator()))
-                for package in updated_booking.travelPackage.iterator():
-                    updated_booking.cost += package.price
-                updated_booking.save()
-                email_send_booking_details(updated_booking)
+                if Booking.objects.filter(
+                        user=request.user, bookingState="confirmed",
+                        travelPackage__id=request.data.get("package")).first() != None:
+                    updated_booking.bookingState = "modified"
+                    updated_booking.cost = 0
+                    # updated_booking.creationdate =datetime.now()
+                    # print("dada",(i for i in updated_booking.package.iterator()))
+                    for package in updated_booking.travelPackage.iterator():
+                        updated_booking.cost += package.price
+                    updated_booking.save()
+                    email_send_booking_details(updated_booking)
 
 
             else:
@@ -510,33 +514,7 @@ class Photos(viewsets.ModelViewSet):
     serializer_class = PhotoSerializer
 
 
-class CreatePaymentIntents(APIView):
-    def post(self, request) -> JsonResponse:
-        try:
-            data = request.data
-
-            stripe.api_key = settings.STRIPE_SECRET_KEY
-
-            # Create a PaymentIntent with the order amount and currency
-            intent = stripe.PaymentIntent.create(
-                amount=data['amount'],
-                currency='cad', # Check if we can put it in auto
-                # In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-                automatic_payment_methods={
-                    'enabled': True,
-                },
-            )
-
-            return JsonResponse({
-                'clientSecret': intent['client_secret'],
-                'paymentIntent': {'status': 'succeeded'}
-            })
-
-        except Exception as e:
-            return JsonResponse({"error": {'message': str(e)}}, status=403)
-
-
-class PaymentView(APIView):
+class PaymentView(generics.CreateAPIView):
     permission_classes = [IsAgent, ]
 
     def post(self, request, format=None):

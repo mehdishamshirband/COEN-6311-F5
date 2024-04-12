@@ -1,5 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from flyapp.views import email_send_booking_details
 from .models import Booking, CustomUser, TravelPackage, Notification
 
 @receiver(post_save, sender=TravelPackage)
@@ -14,6 +16,7 @@ def package_created(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Booking)
 def booking_created(sender, instance, created, **kwargs):
     if created:
+        email_send_booking_details(instance)
         Notification.objects.create(
             sender=CustomUser.objects.get(email="sys@info.com"),
             recipient=instance.user,
