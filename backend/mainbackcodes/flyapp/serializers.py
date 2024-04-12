@@ -2,7 +2,8 @@ from datetime import datetime
 import random
 from rest_framework import serializers
 from .models import Billing, CustomUser, Flight, Hotel, Activity, HotelBooking, Notification, Booking, \
-    PackageModification, Photo, TravelPackage
+    PackageModification, Photo, \
+    TravelPackage
 
 
 class PhotoSerializer(serializers.ModelSerializer):
@@ -17,36 +18,56 @@ class FlightSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class HotelSerializer(serializers.ModelSerializer):
-    photos = PhotoSerializer(read_only=True)
+class HotelDSerializer(serializers.ModelSerializer):  # Detailed
 
+    class Meta:
+        model = Hotel
+        fields = '__all__'
+        depth = 2
+
+
+class HotelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
         fields = '__all__'
 
 
 class HotelBookingSerializer(serializers.ModelSerializer):
-    hotel = HotelSerializer(read_only=True)
-
     class Meta:
         model = HotelBooking
         fields = '__all__'
 
 
-class ActivitySerializer(serializers.ModelSerializer):
-    photos = PhotoSerializer(read_only=True)
+class HotelBookingDSerializer(serializers.ModelSerializer):  # Detailed
 
+    class Meta:
+        model = HotelBooking
+        fields = '__all__'
+        depth = 2
+
+
+class ActivityDSerializer(serializers.ModelSerializer):  # Detailed
+    class Meta:
+        model = Activity
+        fields = '__all__'
+        depth = 1
+
+
+class ActivitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Activity
         fields = '__all__'
 
 
-class TravelPackageSerializer(serializers.ModelSerializer):  # (Do not remove this comment) - By Mehdi
-    hotels = HotelBookingSerializer(many=True, read_only=True)
-    activities = ActivitySerializer(many=True, read_only=True)
-    flights = FlightSerializer(many=True, read_only=True)
-    photos = PhotoSerializer(many=True, read_only=True)
+class TravelPackageDSerializer(serializers.ModelSerializer):  # Detailed
 
+    class Meta:
+        model = TravelPackage
+        exclude = ['user', 'type']
+        depth = 2
+
+
+class TravelPackageSerializer(serializers.ModelSerializer):
     class Meta:
         model = TravelPackage
         exclude = ['user', 'type']
@@ -64,7 +85,6 @@ class TravelPackageSerializer(serializers.ModelSerializer):  # (Do not remove th
         return super().create(validated_data)
 
 
-
 class BillingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billing
@@ -77,22 +97,27 @@ class BillingSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 
-def generate_unique_booking_no(): #create booking number automatically
-
+def generate_unique_booking_no():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+
     unique_identifier = random.randint(1000, 9999)
     booking_no = f"{timestamp}{unique_identifier}"
 
     return booking_no
 
 
-class BookingSerializer(serializers.ModelSerializer):  # (Do not remove this comment) - By Mehdi
-    travelPackage = TravelPackageSerializer(read_only=True)
-    billing = BillingSerializer(read_only=True)
+class BookingDSerializer(serializers.ModelSerializer):  # Detailed
 
     class Meta:
         model = Booking
-        exclude = ['user', 'bookingNo']
+        exclude = ['user']
+        depth = 4
+
+
+class BookingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        exclude = ['user', 'bookingNo', 'bookingState']
 
     def create(self, validated_data):
         user = self.context['request'].user
@@ -102,26 +127,24 @@ class BookingSerializer(serializers.ModelSerializer):  # (Do not remove this com
         return super().create(validated_data)
 
 
-class PackageModificationSerializer(serializers.ModelSerializer):
-    hotels = HotelBookingSerializer(many=True, read_only=True)
-    activities = ActivitySerializer(many=True, read_only=True)
-    flights = FlightSerializer(many=True, read_only=True)
-    photos = PhotoSerializer(many=True, read_only=True)
+class PackageModificationDSerializer(serializers.ModelSerializer):  # Detaield
 
     class Meta:
         model = PackageModification
         exclude = ['user', 'agent']
+        depth = 3
+
+
+class PackageModificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PackageModification
+        exclude = ['user', 'agent', 'price', 'state']
 
     def create(self, validated_data):
         user = self.context['request'].user
         agents = CustomUser.objects.filter(is_agent=True)
 
         random_agent = random.choice(agents)
-
-        if user.is_agent:
-            validated_data['type'] = 'PRE-MADE'
-        else:
-            validated_data['type'] = 'CUSTOM'
 
         validated_data['user'] = user
         validated_data['agent'] = random_agent
@@ -133,6 +156,7 @@ class NotifSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = '__all__'
+
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:

@@ -134,6 +134,8 @@ class TravelPackage(models.Model):
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
     showDetails = models.BooleanField(default=True, blank=True)
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
     user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
 
     class Meta:
@@ -144,16 +146,14 @@ class TravelPackage(models.Model):
 
 
 PaymentType = (
-    ('Visa', 'VISA'),
-    ('Mastercard', 'MASTERCARD'),
-    ('Paypal', 'PAYPAL'),
-    ('Stripe', 'STRIPE')
+    ('visa', 'VISA'),
+    ('paypal', 'PAYPAL'),
 )
 
 PaymentState = (
-    ('First_Deposit', 'FIRST_DEPOSIT'),
-    ('Second_Deposit', 'SECOND_DEPOSIT'),
-    ('Last_Deposit', 'LAST_DEPOSIT'),
+    ('firstdeposit', 'FIRSTDEPOSIT'),
+    ('seconddeposit', 'SECONDDEPOSIT'),
+    ('lastdeposit', 'LASTDEPOSIT'),
 )
 
 
@@ -178,13 +178,13 @@ class Billing(models.Model):
 
 
 status = (
-    ('Created', 'CREATED'),
-    ('Processing', 'PROCESSING'),
-    ('Canceled', 'CANCELED'),
-    ('Failed', 'FAILED'),
-    ('Modified', 'MODIFIED'),
-    ('Confirmed', 'CONFIRMED'),
-    ('Refunded', 'REFUNDED')
+    ('created', 'CREATED'),
+    ('processing', 'PROCESSING'),
+    ('canceled', 'CANCELED'),
+    ('failed', 'FAILED'),
+    ('modified', 'MODIFIED'),
+    ('confirmed', 'CONFIRMED'),
+    ('refunded', 'REFUNDED')
 )
 
 
@@ -205,8 +205,6 @@ class Booking(models.Model):
     state_area = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
     email = models.CharField(max_length=255)
-    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)])
-    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)])
     phone = models.CharField(max_length=255, blank=True, default='')  # optional field
     user = models.ForeignKey(CustomUser, related_name='userbooking', on_delete=models.CASCADE)
 
@@ -252,4 +250,3 @@ class Notification(models.Model):
     recipient = models.ForeignKey(CustomUser, related_name='recipient', on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
-

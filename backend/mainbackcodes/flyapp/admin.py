@@ -1,8 +1,10 @@
 from django.contrib import admin
+
 from .forms import BillingAdminForm, BookingAdminForm, PackageAdminForm, PackageModificationAdminForm, \
     UserRegistrationAdminForm
 from .models import Billing, CustomUser, Hotel, Flight, Activity, HotelBooking, PackageModification, Photo, \
     TravelPackage, Booking
+
 
 # Register your model, Accessible in admin site
 class PackageModificationAdmin(admin.ModelAdmin):
@@ -44,9 +46,9 @@ admin.site.register(HotelBooking)
 
 class CustomUserAdmin(admin.ModelAdmin):
     form = UserRegistrationAdminForm
-    list_display = ('email', 'is_agent')
-    list_filter = ('is_agent',)
-    search_fields = ('email',)
+    list_display = ('email', 'is_agent')  # Customize the displayed fields
+    list_filter = ('is_agent',)  # Add filters if needed
+    search_fields = ('email',)  # Add search fields if needed
     exclude = ['reset_code']
 
 

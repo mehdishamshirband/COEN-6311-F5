@@ -9,7 +9,7 @@ from .models import Billing, Booking, CustomUser, PackageModification, TravelPac
 class PackageModificationAdminForm(forms.ModelForm):
     class Meta:
         model = PackageModification
-        exclude = ['user', 'type', 'agent']
+        exclude = ['user', 'agent']
 
     def save(self, commit=True):
         instance = super().save(commit=False)
@@ -21,6 +21,14 @@ class PackageModificationAdminForm(forms.ModelForm):
             instance.type = 'PRE-MADE'
         else:
             instance.type = 'CUSTOM'
+
+        instance.price = 0
+        for f in instance.flights:
+            instance.price += f.price
+        for h in instance.hotels:
+            instance.price += h.totalPrice
+        for a in instance.activities:
+            instance.price += a.price
 
         instance.user = user
         instance.agent = random_agent
@@ -43,6 +51,14 @@ class PackageAdminForm(forms.ModelForm):
             instance.type = 'PRE-MADE'
         else:
             instance.type = 'CUSTOM'
+
+        instance.price = 0
+        for f in instance.flights:
+            instance.price += f.price
+        for h in instance.hotels:
+            instance.price += h.totalPrice
+        for a in instance.activities:
+            instance.price += a.price
 
         instance.user = user
 
@@ -76,6 +92,7 @@ class BookingAdminForm(forms.ModelForm):
         # Set the user and generate a unique booking number
         instance.user = user
         instance.bookingNo = generate_unique_booking_no()
+        instance.cost = instance.travelPackage.price
 
         if commit:
             instance.save()
@@ -90,6 +107,7 @@ class BillingAdminForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super().save(commit=False)
         user = self.instance.user
+
 
         instance.user = user
 
