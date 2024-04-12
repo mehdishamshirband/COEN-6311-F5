@@ -219,6 +219,8 @@ class Booking(models.Model):
     email = models.CharField(max_length=255)
     phone = models.CharField(max_length=255, blank=True, default='')  # optional field
     user = models.ForeignKey(CustomUser, related_name='userbooking', on_delete=models.CASCADE)
+    nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
+    nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
 
     class Meta:
         ordering = ["bookingNo"]

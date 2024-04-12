@@ -1,0 +1,29 @@
+.d-flex{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.d-flex-element{
+  display: flex;
+  padding-top: 15px;
+}
+
+.btn-primary{
+  cursor: pointer;
+  border-radius: 20px 20px 20px 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+.form-control {
+  margin-bottom: 10px;
+}
+
+.my-2{
+  color: lightgray;
+  opacity: 0.8;
+  padding-top: 100px;
+}
+
+

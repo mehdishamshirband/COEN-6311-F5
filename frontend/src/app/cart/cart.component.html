@@ -1,9 +1,15 @@
-<div class="row">
-  <div class="col-12">
+<div class="d-flex flex-row">
+  <div class="d-flex justify-content-start">
     <h2 class="my-1">Your cart</h2>
+  </div>
+  <div class="d-flex ml-auto justify-content-end" *ngIf="user_cart.length !== 0">
+      <h4 class="my-3">Subtotal ({{user_cart.length}} items): ${{cart_total}}</h4>
+      <button class="btn btn-primary" [routerLink]="['/checkout']">Proceed to Checkout</button>
   </div>
 </div>
 <hr>
+
+
 
 
 <div class="h-100 d-flex align-items-center justify-content-center">
@@ -11,16 +17,26 @@
 </div>
 
 
-<div class="container mt-4">
-  <section class="results">
-      <div class="container mt-4">
-      <div class="list-group mb-3">
-        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4">
-          <div class="col" *ngFor="let travelPackage of user_cart">
-            <app-travel-package-item [travelPackage]="travelPackage"></app-travel-package-item>
-          </div>
+<div class="content-container mt-4">
+  <div class="list-group mb-3">
+    <a *ngFor="let travelPackage of user_cart" class="list-group-item list-group-item-action flex-column align-items-start" style="border-bottom: 1px solid lightgray">
+      <div class="d-flex w-100 justify-content-between align-items-center" style="cursor: pointer;" [routerLink]="['/package-details', travelPackage.id]">
+        <!-- Image container -->
+        <div class="image-container mr-3" *ngIf="travelPackage.photos && travelPackage.photos.length > 0">
+          <img [src]="travelPackage.photos[0].url" class="img-fluid rounded-2" alt="{{ travelPackage.photos[0].caption }}" style="object-fit: cover; width: 200px; height: 200px;">
         </div>
+
+        <!-- Text content -->
+        <div class="text-content">
+          <h5 class="mb-3">{{ travelPackage.name }}</h5>
+          <p class="mb-1">{{ travelPackage.description }}</p>
+          <p class="mb-1">From {{ travelPackage.startingDate | date: 'mediumDate' }} to {{ travelPackage.endingDate | date: 'mediumDate' }}</p>
+          <h6 class="mb-2 text-muted">$ {{ travelPackage.price }}</h6>
+        </div>
+
+        <i class="bi bi-trash" (click)="removeToCart(travelPackage.id)"></i>
       </div>
-    </div>
-  </section>
+    </a>
+  </div>
 </div>
+

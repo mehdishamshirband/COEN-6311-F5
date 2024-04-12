@@ -16,8 +16,6 @@ export class TravelPackageService {
         price: 1500,
         startingDate: new Date(2024, 3, 10), // Dates are in format: year, monthIndex (0-based), day
         endingDate: new Date(2024, 3, 15),
-        nbr_adult: 2,
-        nbr_child: 0,
         photos: [
           {
             url: 'assets/images/travel-packages/terville.jpg',
@@ -82,8 +80,6 @@ export class TravelPackageService {
     price: 2500,
     startingDate: new Date(2024, 4, 20),
     endingDate: new Date(2024, 4, 25),
-    nbr_adult: 2,
-    nbr_child: 0,
     photos: [
       {
         url: 'assets/images/travel-packages/budapest.jpg',
@@ -164,8 +160,6 @@ export class TravelPackageService {
     price: 3000,
     startingDate: new Date(2024, 6, 15),
     endingDate: new Date(2024, 6, 20),
-    nbr_adult: 2,
-    nbr_child: 0,
     photos: [
       {
         url: 'assets/images/travel-packages/copenhagen.jpg',
@@ -262,8 +256,6 @@ export class TravelPackageService {
       price: 4000,
       startingDate: new Date(2024, 6, 20),
       endingDate: new Date(2024, 6, 25),
-      nbr_adult: 2,
-      nbr_child: 0,
       photos: [
         {
         url: 'assets/images/travel-packages/paris.jpg',
@@ -344,8 +336,6 @@ export class TravelPackageService {
       price: 4000,
       startingDate: new Date(2024, 6, 20),
       endingDate: new Date(2024, 6, 25),
-      nbr_adult: 2,
-      nbr_child: 0,
       photos: [
         {
         url: 'assets/images/travel-packages/paris.jpg',
@@ -472,33 +462,6 @@ export class TravelPackageService {
         this.Package = travelPackage;
       }});
     return of(this.Package!);
-  }
-
-  localRemoveToCart(id: number): void {
-    let cartData = [];
-    let localCart = localStorage.getItem('localCart');
-    if (localCart) {
-      cartData = JSON.parse(localCart);
-      cartData = cartData.filter((item: TravelPackage) => item.id !== id);
-      localStorage.setItem('localCart', JSON.stringify(cartData));
-      this.cartData.emit(cartData);
-    }
-  }
-
-  cartData = new EventEmitter<TravelPackage[]|[]>(); // Event emitter to emit the cart data
-  localAddToCart(data: TravelPackage): void {
-    let cartData = [];
-    let localCart = localStorage.getItem('localCart');
-    if (!localCart) {
-      localStorage.setItem('localCart', JSON.stringify([data]));
-    }
-    else{
-      cartData = JSON.parse(localCart);
-      cartData.push(data);
-      localStorage.setItem('localCart', JSON.stringify(cartData));
-      this.cartData.emit(cartData);
-    }
-
   }
 
 }

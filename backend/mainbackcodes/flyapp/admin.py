@@ -46,9 +46,9 @@ admin.site.register(HotelBooking)
 
 class CustomUserAdmin(admin.ModelAdmin):
     form = UserRegistrationAdminForm
-    list_display = ('email', 'is_agent')
-    list_filter = ('is_agent',)
-    search_fields = ('email',)
+    list_display = ('email', 'is_agent')  # Customize the displayed fields
+    list_filter = ('is_agent',)  # Add filters if needed
+    search_fields = ('email',)  # Add search fields if needed
     exclude = ['reset_code']
 
 

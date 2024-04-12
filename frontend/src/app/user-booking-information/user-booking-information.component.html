@@ -51,8 +51,8 @@
         <p class="card-text">{{ booking.travelPackage.description }}</p>
         <p class="card-text">Price: ${{ booking.travelPackage.price }}</p>
         <p class="card-text">Travel Dates: {{ booking.travelPackage.startingDate | date }} - {{ booking.travelPackage.endingDate | date }}</p>
-        <p class="card-text">Number of adults: {{ booking.travelPackage.nbr_adult }}</p>
-        <p class="card-text">Number of children: {{ booking.travelPackage.nbr_child }}</p>
+        <p class="card-text">Number of adults: {{ booking.nbr_adult }}</p>
+        <p class="card-text">Number of children: {{ booking.nbr_child }}</p>
       </div>
     </div>
   </div>

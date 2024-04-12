@@ -1,0 +1,61 @@
+<div class="d-flex">
+  <h2 class="my-1">Payment</h2>
+</div>
+<hr>
+
+<div class="h-100 d-flex align-items-center justify-content-center" *ngIf="cartService.cart_total === 0 || checkoutService.getLocalStoreGuestData.length === 0">
+  <h3 class="my-2">Your cart is empty or you didn't provide your information.
+    You should select at least one element and provide us your information before reaching this stage !</h3>
+</div>
+
+<div class="container payment-container" *ngIf="cartService.cart_total">
+
+  <form class="checkout-form" [formGroup]="paymentForm">
+
+    <div class="row">
+
+      <div class="form-group">
+        <label class="name">Full name on card</label>
+        <input class="form-control" type="text" formControlName="name" id="name" placeholder="ex. John Smith" autocomplete="name"/>
+      </div>
+
+      <div class="stripe-card" ngxStripeCardGroup [elementsOptions]="elementsOptions">
+        <div class="form-group" >
+            <label class="card-element">Card Number</label>
+            <div class="form-control card-number">
+              <ngx-stripe-card-number
+                [options]="cardOptions"
+                id ="card-element"
+              ></ngx-stripe-card-number>
+            </div>
+        </div>
+
+        <div class="form-group" style="float:left;margin-right:25px; width: 47%">
+            <label class="card-expiry">Expiration</label>
+            <div class="form-control card-details">
+              <ngx-stripe-card-expiry
+                [options]="cardOptions"
+                id = "card-expiry"
+              ></ngx-stripe-card-expiry>
+            </div>
+        </div>
+
+        <div class="form-group" style="float:left; width: 35%">
+          <label class="card-cvc">CVC</label>
+          <div class="form-control card-details">
+            <ngx-stripe-card-cvc
+              [options]="cardOptions"
+              id="card-cvc"
+            ></ngx-stripe-card-cvc>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="text-center">
+        <button class="btn btn-primary btn-block mx-auto" (click)="pay()">Pay ${{cartService.cart_total}}</button>
+      </div>
+
+    </div>
+  </form>
+</div>

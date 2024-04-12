@@ -57,9 +57,7 @@ export class AgentPackagesComponent implements OnInit {
       activities: [],
       photos: [],
       startingDate: new Date(),
-      endingDate: new Date(),
-      nbr_adult: 1,
-      nbr_child: 0
+      endingDate: new Date()
     };
   }
 

@@ -27,7 +27,9 @@ import {AgentFlightManagementComponent} from "./agent-flight-management/agent-fl
 import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
 import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
 import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
-import {CsrfInterceptor} from "./interceptor-csrf";
+import { CsrfInterceptor } from "./interceptor-csrf";
+import { NgxStripeModule } from 'ngx-stripe';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -55,7 +57,8 @@ import {CsrfInterceptor} from "./interceptor-csrf";
     ActivityGalleryComponent,
     CustomPackageCreationComponent,
     MinToHoursMinPipe,
-    UserAccountInformationComponent
+    UserAccountInformationComponent,
+    NgxStripeModule.forRoot(environment.stripe.publicKey)
   ],
   providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync(), {provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true}],
   exports: [

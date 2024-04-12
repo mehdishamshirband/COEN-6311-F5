@@ -4,6 +4,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { TravelPackage } from './interfaces/booking.interface';
 import {TravelPackageService} from "./services/travel-package.service";
+import {CartService} from "./services/cart.service";
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,7 @@ import {TravelPackageService} from "./services/travel-package.service";
 })
 export class AppComponent {
   constructor(private scrollToTopService: ScrollToTopService, private router: Router,
-              private travelPackageService: TravelPackageService,) {
+              private travelPackageService: TravelPackageService, private cartService: CartService) {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(event => {
@@ -30,7 +31,7 @@ export class AppComponent {
     if (cartData) {
       this.cartItems = JSON.parse(cartData).length;
     }
-    this.travelPackageService.cartData.subscribe((items : any) => {
+    this.cartService.cartData.subscribe((items : any) => {
       this.cartItems = items.length
     });
   }

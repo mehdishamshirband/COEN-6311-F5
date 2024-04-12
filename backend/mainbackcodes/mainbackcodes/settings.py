@@ -56,6 +56,7 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
     ),
 }
 
@@ -165,12 +166,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # email confs
 MAILTRAP_TOKEN = "ed9fa34d275956738a29ae2355b3833f"
 
+
 # payment stripe test mode
 STRIPE_SECRET_KEY = 'sk_test_51P4OLILBunQWME180y39Cfuz1CpX6FmHqKFA6654CfEk8iy2z8mfT3kUI2TZQQYj5gASgnwoVo17mxfMKFFyNP4Y00QpUqNjvE'
 STRIPE_PUBLISHABLE_KEY = 'pk_test_51P4OLILBunQWME18A94RVRT8y76tDdn8P0SfJ1fsFIBRqQ9i3bBs7bOHx5ZMl9fVyPuM3CNQpJw1qEvm63783GmF00j8qkFGWW'
 STRIPE_WEBHOOK_SECRET = 'whsec_4c04c665ad7490fc2c721ea89a293d4233493b57467d7c0aaad45e728f39bed6'
 
+
 CORS_ORIGIN_ALLOW_ALL = True
+
 # CORS_ALLOW_CREDENTIALS = True
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'

@@ -3,7 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { TravelPackageService } from '../services/travel-package.service';
-import { TravelPackage, MergedItem } from '../interfaces/booking.interface';
+import { CartService } from '../services/cart.service';
+import { TravelPackage, MergedItem, NbrPerson } from '../interfaces/booking.interface';
 import {RouterModule} from '@angular/router';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -21,14 +22,15 @@ export class TravelPackageDetailsComponent implements OnInit {
   private _travelPackage?: TravelPackage;
   private temp_travelPackage?: TravelPackage;
   sortedItems: MergedItem[] = [];
-  nbr_adult: number = 2;
-  nbr_child: number = 0;
   temp!: any
   removeFromCart: boolean = false;
+  nbrPerson: NbrPerson = this.cartService.user_cart_nbr_person(0);
+
 
   constructor(
     private route: ActivatedRoute,
     private travelPackageService: TravelPackageService,
+    private cartService: CartService,
     private location: Location,
   ) {}
 
@@ -55,6 +57,10 @@ export class TravelPackageDetailsComponent implements OnInit {
       console.error('Travel package not found');
     }
     this.sortedItems = this.mergeAndSortItems();
+
+    this.nbrPerson = this.cartService.user_cart_nbr_person(packageId);
+
+    console.warn('NbrPerson:', this.nbrPerson);
 
     packageId && this.travelPackageService.onePackageById(packageId).subscribe((result: TravelPackage) => {
         this.temp_travelPackage = result;
@@ -90,7 +96,7 @@ export class TravelPackageDetailsComponent implements OnInit {
   addToCart(): void {
     if(this._travelPackage){
       if(!localStorage.getItem('user')){
-        this.travelPackageService.localAddToCart(this._travelPackage);
+        this.cartService.localAddToCart(this._travelPackage, this.nbrPerson);
         this.removeFromCart = true;
       }
     }
@@ -98,7 +104,7 @@ export class TravelPackageDetailsComponent implements OnInit {
 
 
   removeToCart(id: number): void {
-    this.travelPackageService.localRemoveToCart(id);
+    this.cartService.localRemoveToCart(id);
     this.removeFromCart = false;
   }
 

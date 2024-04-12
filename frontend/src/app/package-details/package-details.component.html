@@ -22,20 +22,26 @@
           <h5 class="mb-3">Start Reservation</h5>
           <div>
             <label class="form-label">Number of adults:</label>
-            <input type="number" class="form-control mb-2" min="1" max="10" step="1" [(ngModel)]="travelPackage.nbr_adult">
+            <input type="number" class="form-control mb-2" min="1" max="10" step="1" [(ngModel)]="nbrPerson.nbr_adult">
           </div>
           <div>
             <label class="form-label">Number of children:</label>
-            <input type="number" class="form-control mb-2" min="0" max="10" step="1" [(ngModel)]="travelPackage.nbr_child">
+            <input type="number" class="form-control mb-2" min="0" max="10" step="1" [(ngModel)]="nbrPerson.nbr_child">
           </div>
           <button class="btn btn-custom-primary" [routerLink]="" (click)="addToCart()">Add to Cart</button>
         </div>
         <!-- If item is in cart -->
         <div class="col-md-3" *ngIf="removeFromCart">
           <h5 class="mb-3">Your pending reservation:</h5>
+<<<<<<< HEAD
           <p class="card-text">Number of adult: {{travelPackage.nbr_adult}}</p>
           <p class="card-text">Number of children: {{travelPackage.nbr_child}}</p>
           <button class="btn btn-custom-primary" [routerLink]="" (click)="removeToCart(travelPackage.id)">Remove to Cart</button>
+=======
+          <p class="card-text">Number of adult: {{nbrPerson.nbr_adult}}</p>
+          <p class="card-text">Number of children: {{nbrPerson.nbr_child}}</p>
+          <button class="btn btn-primary" [routerLink]="" (click)="removeToCart(travelPackage.id)">Remove to Cart</button>
+>>>>>>> origin/master
         </div>
       </div>
     </div>
