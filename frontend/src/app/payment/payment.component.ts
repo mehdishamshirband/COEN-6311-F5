@@ -116,7 +116,7 @@ export class PaymentComponent implements OnInit{
     let float_value : number = amount * 100;
 
     return this.http.post<PaymentIntent>(
-      `${this.baseUrl}Create-payment-intent/`,
+      `${this.baseUrl}process-payment/`,
       { 'amount': float_value }
     );
   }
