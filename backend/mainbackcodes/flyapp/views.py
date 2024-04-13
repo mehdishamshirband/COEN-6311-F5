@@ -96,6 +96,8 @@ class CustomReadOnlyOrCreatePermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         # Allow read access for authenticated users if the object belongs to them
+        if request.user.is_anonymous:
+            return request.method == 'GET'
         return (request.user.is_authenticated and obj.user == request.user) or (
                     request.user.is_staff or request.user.is_agent)
 
