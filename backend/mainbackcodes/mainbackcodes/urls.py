@@ -20,6 +20,7 @@ from rest_framework import routers
 from flyapp import views
 from django.conf import settings
 from django.conf.urls.static import static
+from flyapp.views import PhotoUploadView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = routers.DefaultRouter()
@@ -38,6 +39,9 @@ router.register(r'Photos', views.Photos, basename='photos')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('upload/photo/', PhotoUploadView.as_view(), name='photo-upload'),
+    path('photos/<int:id>/delete/', PhotoUploadView.as_view(), name='photo-delete'),
+    path('admin-tools/', include('admin_tools.urls')),
     path('process-payment/', views.PaymentView.as_view(), name='process_payment'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login

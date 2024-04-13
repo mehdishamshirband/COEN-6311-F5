@@ -13,14 +13,14 @@ export class HotelService {
       id: 1,
       name: "Hotel Sunshine",
       location: "Malaga, Spain",
-      photo: { url: 'assets/images/hotels/hotel_sunshine_malaga.jpg' },
+      photos: [{ url: 'assets/images/hotels/hotel_sunshine_malaga.jpg', caption:'Hotel Sunshine Malaga' }],
       website: "http://hotelsunshine.com"
     },
     {
       id: 2,
       name: "Mountain Retreat",
       location: "Alexandria, United States of America",
-      photo: { url: 'assets/images/hotels/mountain-retreat-hotel.jpg' },
+      photos: [{ url: 'assets/images/hotels/mountain-retreat-hotel.jpg', caption: 'Mountain Retreat Hotel' }],
       website: "http://mountainretreat.com"
     }
   ];

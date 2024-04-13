@@ -1,5 +1,5 @@
 import {EventEmitter, Injectable} from '@angular/core';
-import { TravelPackage } from '../interfaces/booking.interface';
+import {NewTravelPackage, TravelPackage} from '../interfaces/booking.interface';
 import { HttpClient } from '@angular/common/http';
 import {lastValueFrom, Observable, of} from "rxjs";
 
@@ -45,10 +45,10 @@ export class TravelPackageService {
               id: 50,
               name: "My House *****",
               location: "Terville, France",
-              photo: {
+              photos: [{
                 url: 'https://example.com/hotel-terville.jpg',
                 caption: 'My House ***** in Terville',
-              },
+              }],
               website: "https://myhouse.com",
             },
             checkIn: new Date(2024, 3, 10),
@@ -73,7 +73,6 @@ export class TravelPackageService {
             ],
           }
         ],
-        showDetails: false,
       },{
     id: 1,
     name: 'Budapest Getaway',
@@ -110,10 +109,10 @@ export class TravelPackageService {
           id: 51,
           name: "Four Seasons *****",
           location: "Budapest, Hungary",
-          photo: {
+          photos: [{
             url: 'https://example.com/hotel-budapest.jpg',
             caption: 'Four Seasons, Budapest',
-          },
+          }],
           website: "https://fourseasons.com",
         },
         checkIn: new Date(2024, 4, 20),
@@ -153,7 +152,6 @@ export class TravelPackageService {
         ],
       }
     ],
-    showDetails: false,
   },
       {
     id: 2,
@@ -192,10 +190,10 @@ export class TravelPackageService {
           id: 52,
           name: "Hotel D'Angleterre",
           location: "Copenhagen, Denmark",
-          photo: {
+          photos: [{
             url: 'assets/images/hotels/hotel-d-angleterre-copenhague.jpg',
             caption: 'Hotel D\'Angleterre, Copenhagen',
-          },
+          }],
           website: "https://www.dangleterre.com",
         },
         checkIn: new Date(2024, 6, 15),
@@ -250,7 +248,6 @@ export class TravelPackageService {
         ],
       }
     ],
-    showDetails: false,
     },
     {
       id: 3,
@@ -288,10 +285,10 @@ export class TravelPackageService {
             id: 53,
             name: "Hôtel Plaza Athénée *****",
             location: "Paris, France",
-            photo: {
+            photos: [{
               url: 'https://example.com/hotel-paris.jpg',
               caption: 'Luxury stay at Hôtel Plaza Athénée',
-            },
+            }],
             website: "https://dorchestercollection.com",
           },
           checkIn: new Date(2024, 6, 20),
@@ -331,7 +328,6 @@ export class TravelPackageService {
           ],
         },
       ],
-      showDetails: false,
     },
       {
       id: 4,
@@ -369,10 +365,10 @@ export class TravelPackageService {
             id: 53,
             name: "Hôtel Plaza Athénée *****",
             location: "Paris, France",
-            photo: {
+            photos: [{
               url: 'https://example.com/hotel-paris.jpg',
               caption: 'Luxury stay at Hôtel Plaza Athénée',
-            },
+            }],
             website: "https://dorchestercollection.com",
           },
           checkIn: new Date(2024, 6, 20),
@@ -412,13 +408,13 @@ export class TravelPackageService {
           ],
         }
       ],
-      showDetails: false,
     }
     ];
   constructor(private http: HttpClient) { }
 
   private baseUrl = 'http://localhost:8000/';
   private Package?: TravelPackage
+
 
   getAllTravelPackages(): Observable<TravelPackage[]> {
     //return this.travelPackages_front;
@@ -445,6 +441,21 @@ export class TravelPackageService {
       let bKeys = Object.keys(b).sort();
       return JSON.stringify(aKeys) === JSON.stringify(bKeys);
     }
+
+    /**
+  addTravelPackage(newPackage: NewTravelPackage): Observable<TravelPackage> {
+    console.log(newPackage);
+    return this.http.post<TravelPackage>(this.baseUrl + 'Packages/', newPackage);
+  }
+**/
+
+  addTravelPackage(formData: NewTravelPackage): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}Packages/`, formData);
+  }
+
+  editTravelPackage(id: number, formData: Partial<NewTravelPackage>): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}Packages/${id}/`, formData);
+  }
 
   onePackageById(id: number): Observable<TravelPackage> {
     this.getTravelPackageById(id)?.subscribe({next: (travelPackage) => {

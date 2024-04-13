@@ -41,14 +41,22 @@ export interface Flight {
   duration: number;
   price: number;
   stops?: Flight[];
-  showDetails?: boolean;
 }
 
 export interface Hotel {
   id: number;
   name: string;
   location: string;
-  photo?: Photo;
+  photos?: Photo[];
+  website?: string;
+}
+
+export interface NewHotel {
+  id: number;
+  name: string;
+  location: string;
+  photos?: Photo[];
+  photo_ids?: number[];
   website?: string;
 }
 
@@ -58,7 +66,14 @@ export interface HotelBooking {
   checkIn: Date;
   checkOut: Date;
   totalPrice: number;
-  showDetails?: boolean;
+}
+
+export interface NewHotelBooking {
+  id: number;
+  hotel: NewHotel;
+  checkIn: Date;
+  checkOut: Date;
+  totalPrice: number;
 }
 
 export interface Activity {
@@ -70,7 +85,18 @@ export interface Activity {
   date: Date;
   price: number;
   photos?: Photo[];
-  showDetails?: boolean;
+}
+
+export interface NewActivity {
+  id: number;
+  name: string;
+  type: string;
+  description: string;
+  location: string;
+  date: Date;
+  price: number;
+  photos?: Photo[];
+  photo_ids?: number[];
 }
 
 export interface TravelPackage {
@@ -84,7 +110,22 @@ export interface TravelPackage {
   startingDate: Date;
   endingDate: Date;
   photos?: Photo[];
-  showDetails?: boolean;
+  nbr_adult?: number; //TODO: delete
+  nbr_child?: number; //TODO: delete
+}
+
+export interface NewTravelPackage {
+  id?: number;
+  name: string;
+  description: string;
+  price: number;
+  flights?: Flight[];
+  hotels?: HotelBooking[];
+  activities?: Activity[];
+  photos?: Photo[];
+  photo_ids?: number[];
+  startingDate: Date;
+  endingDate: Date;
 }
 
 export interface Billing {

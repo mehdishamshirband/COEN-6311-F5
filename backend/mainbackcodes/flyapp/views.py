@@ -7,18 +7,21 @@ from rest_framework import serializers, exceptions, status
 from rest_framework import viewsets, mixins, generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from rest_framework.views import APIView
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.permissions import IsAuthenticated, BasePermission, IsAdminUser
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 import stripe
-from .models import Billing, CustomUser, Flight, Hotel, Activity, HotelBooking, Notification, Booking, \
-    PackageModification, \
-    TravelPackage, Photo
-from .serializers import ActivityDSerializer, ActivitySerializer, BillingSerializer, BookingDSerializer, \
-    HotelBookingDSerializer, HotelBookingSerializer, HotelDSerializer, HotelSerializer, \
-    FlightSerializer, NotifSerializer, PackageModificationDSerializer, PackageModificationSerializer, BookingSerializer, \
-    TravelPackageDSerializer, TravelPackageSerializer, PhotoSerializer, UserRegistrationSerializer
+from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification, Booking, PackageModification, \
+    TravelPackage, Photo, CustomUser
+from .serializers import ActivitySerializer, ActivityDSerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
+    BookingDSerializer, HotelBookingDSerializer, HotelDSerializer, FlightSerializer, NotifSerializer, PackageModificationSerializer, \
+    PackageModificationDSerializer, BookingSerializer, TravelPackageSerializer, TravelPackageDSerializer, \
+    PhotoSerializer, UserRegistrationSerializer
 
 from datetime import datetime
 from django.utils.crypto import get_random_string
@@ -117,7 +120,7 @@ class Flights(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_fields = {'airline': ['icontains'], 'price': ['lte', 'gte'], 'arrivalAirport': ['icontains'],
                         'departureAirport': ['icontains'], 'departureDate': ['lte', 'gte'],
-                        'arrivalDate': ['lte', 'gte'], 'showDetails': ['exact']}
+                        'arrivalDate': ['lte', 'gte']}
 
     def get_queryset(self):
         results = super(Flights, self).get_queryset()
@@ -155,7 +158,7 @@ class HotelsBooking(viewsets.ModelViewSet):
             return self.serializer_class
 
     filterset_fields = {'hotel': ['exact'], 'totalPrice': ['lte', 'gte'], 'checkOut': ['lte', 'gte'],
-                        'checkIn': ['lte', 'gte'], 'showDetails': ['exact']}
+                        'checkIn': ['lte', 'gte']}
 
 
 class Activities(viewsets.ModelViewSet):
@@ -170,7 +173,7 @@ class Activities(viewsets.ModelViewSet):
             return self.serializer_class
 
     filterset_fields = {'type': ['icontains'], 'name': ['icontains'], 'price': ['lte', 'gte'],
-                        'location': ['icontains'], 'date': ['lte', 'gte'], 'showDetails': ['exact']}
+                        'location': ['icontains'], 'date': ['lte', 'gte']}
 
     def get_queryset(self):
         results = super(Activities, self).get_queryset()
@@ -180,6 +183,7 @@ class Activities(viewsets.ModelViewSet):
 from datetime import datetime
 
 
+"""
 def dynamicpricecalc(request):
     if not HotelBooking.objects.filter(id=request.data.get("hotels")[0] or "0").first() and not Flight.objects.filter(
             id=request.data.get("flights")[0] or "0").first() and not Activity.objects.filter(
@@ -199,6 +203,49 @@ def dynamicpricecalc(request):
     # request.data._mutable = False
     # print(request.data)
     return request
+"""
+"""
+def dynamicpricecalc(request):
+    mutable_data = request.data.copy()
+
+    hotel_ids = mutable_data.get("hotels", [])
+    flight_ids = mutable_data.get("flights", [])
+    activity_ids = mutable_data.get("activities", [])
+
+    if not hotel_ids and not flight_ids and not activity_ids:
+        raise serializers.ValidationError('Choose at least one service!')
+
+    total_price = 0
+    if hotel_ids:
+        total_price += HotelBooking.objects.filter(id__in=hotel_ids).aggregate(Sum('totalPrice'))['totalPrice__sum'] or 0
+    if flight_ids:
+        total_price += Flight.objects.filter(id__in=flight_ids).aggregate(Sum('price'))['price__sum'] or 0
+    if activity_ids:
+        total_price += Activity.objects.filter(id__in=activity_ids).aggregate(Sum('price'))['price__sum'] or 0
+
+    mutable_data["price"] = total_price
+    request.data = mutable_data
+
+    return request
+"""
+
+def dynamicpricecalc(validated_data):
+    # Initialize the total price based on the base package price or 0.
+    total_price = validated_data.get('price', 0)
+
+    # Example: Adding price from validated flight data (assumed to be new flights to be created)
+    flights_data = validated_data.get('flights', [])
+    for flight_data in flights_data:
+        # Directly add the flight price to total_price.
+        total_price += flight_data.get('price', 0)
+
+    # Assuming similar structure for hotels and activities, add their prices to total_price as needed.
+
+    # Update the total price in validated_data.
+    validated_data['price'] = total_price
+
+    return validated_data
+
 
 
 class TravelPackages(viewsets.ModelViewSet):
@@ -219,15 +266,15 @@ class TravelPackages(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     def partial_update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     def destroy(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="you'r not allow to perform this action", method=request.method)
+        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
-    filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'], 'showDetails': ['exact'],
+    filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
 
     def get_queryset(self):
@@ -514,7 +561,35 @@ class Photos(viewsets.ModelViewSet):
     permission_classes = [IsAgent, ]
     queryset = Photo.objects.all()
     serializer_class = PhotoSerializer
+    parser_classes = (MultiPartParser, FormParser)
 
+    def perform_create(self, serializer):
+        upload_dir = self.request.data.get('upload_dir')
+        if upload_dir not in ['photos/hotels', 'photos/flights', 'photos/activities', 'photos/travel-packages']:
+            upload_dir = 'others'
+
+        serializer.save(upload_dir=upload_dir)
+
+
+class PhotoUploadView(APIView):
+    def post(self, request, *args, **kwargs):
+        photo_serializer = PhotoSerializer(data=request.data, context={'request': request})
+        if photo_serializer.is_valid():
+            photo_instance = photo_serializer.save()
+            response_data = {
+                'id': photo_instance.id,
+                'url': request.build_absolute_uri(photo_instance.url.url),
+                'caption': photo_instance.caption,
+                'upload_dir': photo_instance.upload_dir
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED) #photo_serializer.data
+        else:
+            return Response(photo_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        photo = get_object_or_404(Photo, pk=pk)
+        photo.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class PaymentView(generics.CreateAPIView):
     permission_classes = [IsAgent, ]
@@ -657,3 +732,4 @@ class PasswordUpdateView(APIView):
         user.save()
 
         return Response({'detail': 'Password updated successfully'}, status=status.HTTP_200_OK)
+

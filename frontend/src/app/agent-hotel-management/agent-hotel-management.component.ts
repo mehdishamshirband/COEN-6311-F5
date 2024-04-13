@@ -1,28 +1,39 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { HotelBooking, Hotel, Photo } from "../interfaces/booking.interface";
+import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import {HotelBooking, Hotel, Photo, NewHotelBooking} from "../interfaces/booking.interface";
+import {UploadService} from "../services/upload.service";
 
 @Component({
   selector: 'app-agent-hotel-management',
   templateUrl: './agent-hotel-management.component.html',
   styleUrl: './agent-hotel-management.component.css'
 })
-export class AgentHotelManagementComponent {
-  @Input() hotelBookings: HotelBooking[] = [];
-  @Output() hotelBookingsChange = new EventEmitter<HotelBooking[]>();
-  editingHotelBooking?: HotelBooking;
-  newHotelBooking?: boolean;
+export class AgentHotelManagementComponent implements OnInit {
+  @Input() hotelBookings: NewHotelBooking[] = [];
+  @Output() hotelBookingsChange = new EventEmitter<NewHotelBooking[]>();
+  editingHotelBooking?: NewHotelBooking;
+  newHotelBooking?: NewHotelBooking;
+  newHotelBookingCheck?: boolean;
 
-  constructor() { }
+  constructor(private uploadService: UploadService) { }
+
+  ngOnInit() {
+    this.newHotelBookingCheck = false;
+  }
+
+  get currentHotelBooking(): any {
+    return this.newHotelBookingCheck ? this.newHotelBooking : this.editingHotelBooking;
+  }
 
   initNewHotelBooking(): void {
-    this.newHotelBooking = true;
-    this.editingHotelBooking = {
+    this.newHotelBookingCheck = true;
+    this.newHotelBooking = {
       id: Date.now(),
       hotel: {
         id: Date.now(),
         name: '',
         location: '',
-        photo: { url: '', caption: '' },
+        photos: [],
+        photo_ids: [],
         website: ''
       },
       checkIn: new Date(),
@@ -33,27 +44,35 @@ export class AgentHotelManagementComponent {
 
   startEditingHotelBooking(hotelBookingId: number, event: MouseEvent): void {
     event.preventDefault();
-    this.newHotelBooking = false;
+    this.newHotelBookingCheck = false;
     const hotelBooking = this.hotelBookings.find(hb => hb.id === hotelBookingId);
     if (hotelBooking) {
       this.editingHotelBooking = JSON.parse(JSON.stringify(hotelBooking));
+      console.log(this.editingHotelBooking);
     }
   }
 
   saveHotelBooking(): void {
-    if (!this.editingHotelBooking) return;
-    const index = this.hotelBookings.findIndex(hb => hb.id === this.editingHotelBooking!.id);
-    if (index > -1) {
-      this.hotelBookings[index] = this.editingHotelBooking;
-    } else {
-      this.hotelBookings.push(this.editingHotelBooking);
+    if (this.newHotelBookingCheck && this.newHotelBooking) {
+      this.hotelBookings.push(this.newHotelBooking);
+    } else if (this.editingHotelBooking) {
+      const index = this.hotelBookings.findIndex(hb => hb.id === this.editingHotelBooking!.id);
+      if (index > -1) {
+        this.hotelBookings[index] = this.editingHotelBooking;
+      } else {
+        this.hotelBookings.push(this.editingHotelBooking);
+      }
     }
     this.hotelBookingsChange.emit(this.hotelBookings);
     this.editingHotelBooking = undefined;
+    this.newHotelBookingCheck = false;
+    this.newHotelBooking = undefined;
   }
 
   cancelEditingHotelBooking(): void {
     this.editingHotelBooking = undefined;
+    this.newHotelBookingCheck = false;
+    this.newHotelBooking = undefined;
   }
 
   deleteHotelBooking(index: number, event: MouseEvent): void {
@@ -61,22 +80,88 @@ export class AgentHotelManagementComponent {
     event.stopPropagation();
     this.hotelBookings.splice(index, 1);
     this.hotelBookingsChange.emit(this.hotelBookings);
+    this.editingHotelBooking = undefined;
+    this.newHotelBooking = undefined;
   }
 
-  handleFileInput(event: any): void {
-    if (!this.editingHotelBooking || !this.editingHotelBooking.hotel.photo) return;
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        if (this.editingHotelBooking && this.editingHotelBooking.hotel) {
-          if (!this.editingHotelBooking.hotel.photo) {
-            this.editingHotelBooking.hotel.photo = { url: '', caption: '' };
-          }
-          this.editingHotelBooking.hotel.photo.url = e.target.result;
-        }
-      };
-      reader.readAsDataURL(file);
+  addPhotoField(): void {
+    if(this.newHotelBookingCheck) {
+      if(this.newHotelBooking && this.newHotelBooking!.hotel && this.newHotelBooking!.hotel.photos!.length < 5) {
+        this.newHotelBooking!.hotel.photos!.push({url: '', caption: ''});
+      }
+    }
+    if (this.editingHotelBooking && this.editingHotelBooking!.hotel && this.editingHotelBooking!.hotel.photos!.length < 5) {
+      this.editingHotelBooking!.hotel.photos!.push({ url: '', caption: '' });
     }
   }
+
+  removePhoto(index: number): void {
+    if (this.newHotelBookingCheck && this.newHotelBooking && this.newHotelBooking.hotel) {
+      this.newHotelBooking.hotel.photos?.splice(index, 1);
+      this.newHotelBooking.hotel.photo_ids?.splice(index, 1);
+    }
+    console.log(this.newHotelBooking); //TODO: delete these debug lines
+    if (this.editingHotelBooking && this.editingHotelBooking.hotel && this.editingHotelBooking.hotel.photos) {
+      this.editingHotelBooking.hotel.photos.splice(index, 1);
+      this.editingHotelBooking.hotel.photo_ids?.splice(index, 1);
+    }
+  }
+
+  handleFileInput(event: any, index: number): void {
+    const file = event.target.files[0];
+    const uploadDir = 'photos/hotels';
+    if (file) {
+      if (this.newHotelBookingCheck && this.newHotelBooking) {
+        this.uploadService.uploadFile(file, uploadDir).subscribe(
+    response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              if (responseBody.id) {
+                if(this.newHotelBooking?.hotel.photo_ids) {
+                  this.newHotelBooking!.hotel!.photo_ids[index] = responseBody.id;
+                }
+                else {
+                  this.newHotelBooking!.hotel.photo_ids = [responseBody.id];
+                }
+                if (this.newHotelBooking?.hotel.photos) {
+                  this.newHotelBooking!.hotel.photos[index] = {url: responseBody.url, caption: responseBody.caption};
+                }
+              }
+              console.log(this.newHotelBooking); //TODO: delete these debug lines
+            }
+          },
+    error => {
+            console.error("Error during the image upload: ", error);
+          }
+        );
+      } else if (this.editingHotelBooking) {
+        this.uploadService.uploadFile(file, uploadDir).subscribe(
+    response => {
+            if (response.type === 4) { // HttpResponse
+              console.log(response);
+              const responseBody = response.body;
+              if (responseBody.id) {
+                if(this.editingHotelBooking?.hotel.photo_ids) {
+                  this.editingHotelBooking!.hotel!.photo_ids[index] = responseBody.id;
+                }
+                else {
+                  this.editingHotelBooking!.hotel.photo_ids = [responseBody.id];
+                }
+                if (this.editingHotelBooking?.hotel.photos) {
+                  this.editingHotelBooking!.hotel.photos[index] = {url: responseBody.url, caption: responseBody.caption};
+                }
+              }
+              console.log(this.editingHotelBooking); //TODO: delete these debug lines
+            }
+          },
+    error => {
+            console.error("Error during the image upload: ", error);
+          }
+        );
+      }
+    }
+  }
+
+
 }

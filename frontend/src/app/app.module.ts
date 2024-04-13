@@ -22,14 +22,14 @@ import { ActivityGalleryComponent } from "./activity-gallery/activity-gallery.co
 import { CustomPackageCreationComponent } from "./custom-package-creation/custom-package-creation.component";
 import { MinToHoursMinPipe } from "./min-to-hours-min.pipe";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AgentFlightManagementComponent} from "./agent-flight-management/agent-flight-management.component";
 import {AgentHotelManagementComponent} from "./agent-hotel-management/agent-hotel-management.component";
 import {AgentActivityManagementComponent} from "./agent-activity-management/agent-activity-management.component";
 import { UserAccountInformationComponent } from "./user-account-information/user-account-information.component";
+import { CsrfInterceptor } from "./interceptor-csrf";
 import { NgxStripeModule } from 'ngx-stripe';
 import { environment } from '../environments/environment';
-
 
 @NgModule({
   declarations: [
@@ -60,9 +60,10 @@ import { environment } from '../environments/environment';
     UserAccountInformationComponent,
     NgxStripeModule.forRoot(environment.stripe.publicKey)
   ],
-  providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync()],
+  providers: [BookingService, TravelPackageService, ScrollToTopService, provideAnimationsAsync(), {provide: HTTP_INTERCEPTORS, useClass: CsrfInterceptor, multi: true}],
   exports: [
   ],
   bootstrap: [AppComponent]
 })
+
 export class AppModule { }

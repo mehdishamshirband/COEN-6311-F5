@@ -1,5 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from uuid import uuid4
+import os
 from django.contrib.auth.models import AbstractUser, UserManager
 
 
@@ -57,7 +59,6 @@ class Flight(models.Model):
     departureDate = models.DateTimeField()
     arrivalDate = models.DateTimeField()
     # stops = models.ManyToManyField(Flight)
-    showDetails = models.BooleanField(default=True, blank=True)
 
     class Meta:
         ordering = ["airline"]
@@ -66,16 +67,32 @@ class Flight(models.Model):
         return self.airline
 
 
-class Photo(models.Model):
-    url = models.CharField(max_length=255)
-    caption = models.CharField(max_length=255, null=True, blank=True)
+def photo_upload_to(instance, filename):
+    #ext = filename.split('.')[-1]
+    #filename = f"{uuid4()}.{ext}"
+    upload_dir = instance.upload_dir
+    basename, ext = os.path.splitext(filename)
+    ext = ext.lower()
+    if not ext.startswith('.'):
+        ext = '.' + ext
+    unique_id = uuid4()
+    new_filename = f"{basename}_{unique_id}{ext}"
 
+    return os.path.join(upload_dir, new_filename)
+
+class Photo(models.Model):
+    url = models.ImageField(upload_to=photo_upload_to)
+    caption = models.CharField(max_length=255, null=True, blank=True)
+    upload_dir = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.caption if self.caption else "No Caption"
 
 class Hotel(models.Model):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     website = models.CharField(max_length=255, null=True)
-    photos = models.ForeignKey(Photo, on_delete=models.SET_NULL, null=True, blank=True)
+    photos = models.ManyToManyField(Photo, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -89,7 +106,6 @@ class HotelBooking(models.Model):
     totalPrice = models.FloatField()
     checkIn = models.DateField()
     checkOut = models.DateField()
-    showDetails = models.BooleanField(default=True, blank=True)
 
     class Meta:
         ordering = ["hotel"]
@@ -105,8 +121,7 @@ class Activity(models.Model):
     description = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     date = models.DateField()
-    photos = models.ForeignKey(Photo, on_delete=models.SET_NULL, null=True, blank=True)
-    showDetails = models.BooleanField(default=True, blank=True)
+    photos = models.ManyToManyField(Photo, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -133,9 +148,6 @@ class TravelPackage(models.Model):
     startingDate = models.DateField()
     endingDate = models.DateField()
     photos = models.ManyToManyField(Photo, blank=True)
-    showDetails = models.BooleanField(default=True, blank=True)
-    # nbr_adult = models.IntegerField(validators=[MinValueValidator(2), MaxValueValidator(10)], blank=True)
-    # nbr_child = models.IntegerField(validators=[MinValueValidator(0), MaxValueValidator(10)], blank=True)
     user = models.ForeignKey(CustomUser, related_name='userpkg', on_delete=models.CASCADE)
 
     class Meta:
@@ -252,3 +264,4 @@ class Notification(models.Model):
     recipient = models.ForeignKey(CustomUser, related_name='recipient', on_delete=models.CASCADE)
     message = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
