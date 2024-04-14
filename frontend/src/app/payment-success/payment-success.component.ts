@@ -83,9 +83,8 @@ export class PaymentSuccessComponent implements OnInit {
     }
 
     if (!this.check_error){
-      // TODO : Uncomment this line when the backend is ready
-      //this.cartService.clearLocalCart();
-      //this.checkoutService.clearLocalStoreGuestData();
+      this.cartService.clearLocalCart();
+      this.checkoutService.clearLocalStoreGuestData();
     }
 
   }
