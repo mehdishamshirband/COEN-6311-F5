@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { User, UserLogin, UserRegister, UserForgetPassword } from '../interfaces/user.interface';
 import {Observable, of} from "rxjs";
 import {TravelPackage} from "../interfaces/booking.interface";
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import {TravelPackage} from "../interfaces/booking.interface";
 export class UserService {
   userSample: User = {
     id: 123456789,
-    emailAddress: 'b_vauche@live.concordia.ca',
+    email: 'b_vauche@live.concordia.ca',
     firstName: 'Benjamin',
     lastName: 'Vauchel',
     birthDate: new Date(2001,5,31),
@@ -19,7 +20,10 @@ export class UserService {
     city: 'Montreal',
     zipcode: 'H2A 3A5'
   };
-  constructor() { }
+  constructor(private http: HttpClient) { }
+
+  baseUrl = 'http://127.0.0.1:8000/'
+
   getUserSample(): User {
     return this.userSample;
   }
@@ -41,6 +45,10 @@ export class UserService {
   validatePhone(phone: string) {
     const re = /^\d{10}$/;
     return re.test(phone);
+  }
+
+  createUser(user: UserRegister): Observable<User> {
+    return this.http.post<User>(`${this.baseUrl}registration/`, user);
   }
 
 }

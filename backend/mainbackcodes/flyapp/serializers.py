@@ -140,7 +140,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove t
     class Meta:
         model = TravelPackage
         fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos']
-        exclude = ['user', 'type']
+    exclude = ['user', 'type']
 
     @transaction.atomic
     def create(self, validated_data):
@@ -286,5 +286,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         email = validated_data.get('email')
         password = validated_data.get('password')
-        user = CustomUser.objects.create_user(email=email, password=password)
+        first_name = validated_data.get('firstName')
+        last_name = validated_data.get('lastName')
+        user = CustomUser.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
         return user

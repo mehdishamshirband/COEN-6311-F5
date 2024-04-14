@@ -21,7 +21,7 @@ import {UserService} from "../services/user.service";
 export class UserAccountInformationComponent implements OnInit {
   user: User = {
     id: 0,
-    emailAddress: '',
+    email: '',
     firstName: '',
     lastName: '',
     birthDate: new Date(0),
