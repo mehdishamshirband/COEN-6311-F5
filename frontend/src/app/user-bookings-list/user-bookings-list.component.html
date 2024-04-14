@@ -15,9 +15,14 @@
     <a *ngFor="let booking of bookings" class="list-group-item list-group-item-action flex-column align-items-start" (click)="goToBookingDetails(booking.bookingNo)" style="border-bottom: 1px solid lightgray">
       <div class="d-flex w-100 justify-content-between align-items-center">
         <!-- Image container -->
-        <div class="image-container mr-3" *ngIf="booking.travelPackage.photos && booking.travelPackage.photos.length > 0">
-          <img [src]="booking.travelPackage.photos[0].url" class="img-fluid rounded-2" alt="{{ booking.travelPackage.photos[0].caption }}" style="object-fit: cover; width: 200px; height: 200px;">
-        </div>
+        <ng-container *ngIf="booking.travelPackage.photos && booking.travelPackage.photos.length > 0">
+          <div class="image-container mr-3">
+            <img [src]="booking.travelPackage.photos[0].url" class="img-fluid rounded-2" alt="{{ booking.travelPackage.photos[0].caption }}" style="object-fit: cover; width: 200px; height: 200px;">
+          </div>
+        </ng-container>
+        <ng-template #noPhoto>
+          <img src="assets/images/placeholder/placeholder_default.png" class="img-fluid rounded" alt="Placeholder" style="object-fit: cover; width: 200px; height: 200px;">
+        </ng-template>
 
         <!-- Text content -->
         <div class="text-content">

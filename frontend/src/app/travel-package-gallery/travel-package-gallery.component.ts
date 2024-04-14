@@ -67,31 +67,6 @@ export class TravelPackageGalleryComponent implements OnInit {
       }
     });
 
-
-
-
-
-    /*
-    this.filteredTravelPackageList = this.travelPackageList.filter(packageData =>
-      packageData.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
-      packageData.description?.toLowerCase().includes(filterValue.toLowerCase()) ||
-      packageData.activities?.some(activity =>
-        activity.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        activity.type?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        activity.description?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        activity.location?.toLowerCase().includes(filterValue.toLowerCase())
-      ) ||
-      packageData.hotels?.some(hotel =>
-        hotel.hotel.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        hotel.hotel.location?.toLowerCase().includes(filterValue.toLowerCase())
-      ) ||
-      packageData.flights?.some(flight =>
-        flight.departureCity?.toLowerCase().includes(filterValue.toLowerCase()) || //TODO: include country and airport too
-        flight.arrivalCity?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        flight.airline?.toLowerCase().includes(filterValue.toLowerCase())
-      )
-    );
-    */
   }
 
 

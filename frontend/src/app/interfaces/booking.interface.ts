@@ -124,6 +124,7 @@ export interface NewTravelPackage {
   photo_ids?: number[];
   startingDate: Date;
   endingDate: Date;
+  user: number;
 }
 
 export interface Billing {

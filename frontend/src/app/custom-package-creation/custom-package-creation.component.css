@@ -30,6 +30,12 @@
   max-width: 100%;
 }
 
+.hotel-photo {
+  max-height: 200px;
+  width: auto;
+  max-width: 100%;
+}
+
 /* Right-aligned content for price and remove button */
 .price-remove-container {
   display: flex;

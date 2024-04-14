@@ -32,7 +32,7 @@ def filter_queryset_custom_package(request, results):
         original_datetime = original_datetime.split('T')[0]
         new_datetime = datetime.strptime(original_datetime, '%Y-%m-%d')
         tz = timezone.get_current_timezone()
-        timezone_datetime = timezone.make_aware(new_datetime, tz, True)
+        timezone_datetime = timezone.make_aware(new_datetime, tz)
         return timezone_datetime
 
     for key, value in request.query_params.items():
@@ -229,22 +229,25 @@ def dynamicpricecalc(request):
     return request
 """
 
-def dynamicpricecalc(validated_data):
-    # Initialize the total price based on the base package price or 0.
-    total_price = validated_data.get('price', 0)
+def dynamicpricecalc(request):
+    if not HotelBooking.objects.filter(id=request.data.get("hotels")[0] or "0").first() and not Flight.objects.filter(
+            id=request.data.get("flights")[0] or "0").first() and not Activity.objects.filter(
+            id=request.data.get("activities")[0] or "0"):
+        raise serializers.ValidationError('at least choose one service!!')
 
-    # Example: Adding price from validated flight data (assumed to be new flights to be created)
-    flights_data = validated_data.get('flights', [])
-    for flight_data in flights_data:
-        # Directly add the flight price to total_price.
-        total_price += flight_data.get('price', 0)
-
-    # Assuming similar structure for hotels and activities, add their prices to total_price as needed.
-
-    # Update the total price in validated_data.
-    validated_data['price'] = total_price
-
-    return validated_data
+    # calc price dynamicly
+    # if request.data.get("type") == "custom":
+    # request.data._mutable = True
+    request.data["price"] = 0
+    for i in dict(request.data).get("hotels"):
+        request.data["price"] += float(HotelBooking.objects.filter(id=int(i)).first().totalPrice)
+    for i in dict(request.data).get("flights"):
+        request.data["price"] += float(Flight.objects.filter(id=int(i)).first().price)
+    for i in dict(request.data).get("activities"):
+        request.data["price"] += float(Activity.objects.filter(id=int(i)).first().price)
+    # request.data._mutable = False
+    # print(request.data)
+    return request
 
 
 
@@ -260,9 +263,9 @@ class TravelPackages(viewsets.ModelViewSet):
             return self.serializer_class
 
     def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        request = dynamicpricecalc(request)
-        request.data._mutable = False
+        #request.data._mutable = True
+        #request = dynamicpricecalc(request)
+        #request.data._mutable = False
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):

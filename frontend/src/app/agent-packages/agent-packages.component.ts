@@ -29,8 +29,6 @@ export class AgentPackagesComponent implements OnInit {
     this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
     this.travelPackages = data;
     });
-    console.log("Fetched travelPackages in agent-packages")
-    console.log(this.travelPackages);
     this.newPackageCheck = false;
   }
 
@@ -57,14 +55,20 @@ export class AgentPackagesComponent implements OnInit {
       activities: [],
       photos: [],
       startingDate: new Date(),
-      endingDate: new Date()
+      endingDate: new Date(),
+      user: 1 //TODO: get the user ID from the backend
     };
   }
 
   savePackage(): void {
+    let authToken: any = sessionStorage.getItem('accessToken')!;
+      if (authToken === null) {
+        console.error('No access token found in the session storage');
+      }
     if (this.newPackage) {
       const newPackage: NewTravelPackage = this.newPackage!;
-      this.travelingPackageService.addTravelPackage(newPackage).subscribe({
+      console.log("newPackage and authToken: ", newPackage, authToken);
+      this.travelingPackageService.addTravelPackage(newPackage, authToken).subscribe({
         next: (response) => {console.log('Package saved successfully!', response); this.reloadCurrentRoute()},
         error: (error) => console.error('Error saving package:', error)});
       this.newPackageCheck = false;
@@ -78,7 +82,7 @@ export class AgentPackagesComponent implements OnInit {
       } else {
         this.travelPackages.push(this.editingPackage);
       }
-      this.travelingPackageService.editTravelPackage(this.editingPackage.id, this.editingPackage).subscribe({
+      this.travelingPackageService.editTravelPackage(this.editingPackage.id, this.editingPackage, authToken).subscribe({
         next: (response) => {console.log('Package saved successfully!', response); this.reloadCurrentRoute()},
         error: (error) => console.error('Error saving package:', error)});
       this.editingPackage = undefined;
@@ -121,49 +125,6 @@ export class AgentPackagesComponent implements OnInit {
     this.uploadedImages = [];
   }
 
-
-  /**
-  handleFileInput(event: any): void {
-    if (!this.editingPackage) return;
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const photo: Photo = { url: e.target.result, caption: '' };
-        this.editingPackage!.photos = [photo];
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-  **/
-
-  /**
-  handleFileInput(event: any, uploadDir: string): void {
-    const files: FileList = event.target.files;
-    if (files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
-        this.uploadService.uploadFile(files[i], uploadDir).subscribe(
-          event => {
-            console.log('File upload event:', event);
-            // Handle the upload event, e.g., progress, completion, etc.
-          },
-          error => console.error('File upload error:', error)
-        );
-      }
-    }
-  }
-**/
-
-  /*
-    handleFileInput(event: any): void {
-    const files: FileList = event.target.files;
-    if (files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
-        this.selectedFiles.push(files[i]); //TODO: error here, why??????????
-      }
-    }
-  }
-*/
 
   handleFileInput(event: any): void {
     const fileList: FileList = event.target.files;
@@ -301,6 +262,8 @@ deleteAllUploadedImages(): void {
 
     const selectedPackage = this.travelPackages.find(p => p.id === this.selectedPackageId);
     if (!selectedPackage) return [];
+
+    console.log("hotel 0: ", selectedPackage.hotels![0]);
 
     const flights = selectedPackage.flights?.map(item => ({ ...item, itemType: 'flight', sortDate: item.departureDate })) || [];
     const hotels = selectedPackage.hotels?.map(item => ({ ...item, itemType: 'hotel', sortDate: item.checkIn })) || [];

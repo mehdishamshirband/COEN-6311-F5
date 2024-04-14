@@ -94,7 +94,7 @@ class Hotel(models.Model):
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     website = models.CharField(max_length=255, null=True)
-    photos = models.ManyToManyField(Photo, blank=True)
+    photos = models.ManyToManyField(Photo, related_name='photos', blank=True)
 
     class Meta:
         ordering = ["name"]

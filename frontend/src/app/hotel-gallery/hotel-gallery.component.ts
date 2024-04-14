@@ -17,6 +17,7 @@
     hotelList: Hotel[] = [];
     hotelBookingList: HotelBooking[] = []
     searchPerformed = false;
+    pricePerNight: number[] = [];
 
     @Output() hotelAdded = new EventEmitter<boolean>();
 
@@ -37,6 +38,11 @@
         console.error('Error fetching hotels:', error);
       }
     });
+
+      for (let i = 0; i < 500; i++) {
+        this.pricePerNight[i] = Math.floor(Math.random() * (180 - 60 + 1)) + 60;
+      }
+      console.log("pricePerNights: ", this.pricePerNight);
     }
 
 
@@ -62,12 +68,14 @@
 
      addToJourney(hotel: Hotel) {
       const formValue = this.searchForm.value;
+      const checkIn = new Date(formValue.checkInDate);
+      const checkOut = new Date(formValue.checkOutDate);
       const hotelBooking: HotelBooking = {
-        id: hotel.id, // Or generate a unique ID as needed //TODO
+        id: hotel.id,
         hotel: hotel,
-        checkIn: new Date(formValue.checkInDate), // TODO: offset in the date by one day...
-        checkOut: new Date(formValue.checkOutDate), // TODO: same
-        totalPrice: 1000, // FETCH THE PRICE FROM BACKEND //TODO
+        checkIn: checkIn,
+        checkOut: checkOut,
+        totalPrice: Math.round((checkOut.getTime() - checkIn.getTime()) / (24 * 60 * 60 * 1000) * this.pricePerNight[hotel.id])
       };
 
       this.journeyService.addHotelBooking(hotelBooking);

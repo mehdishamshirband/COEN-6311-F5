@@ -7,23 +7,6 @@ from datetime import datetime
 import random
 
 
-"""
-class PhotoSerializer(serializers.ModelSerializer):
-    url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Photo
-        fields = ['url', 'caption']
-
-    def get_url(self, obj):
-        request = self.context.get('request')
-        if obj.url:  # Since the ImageField in your Photo model is named 'url'
-            photo_url = obj.url.url  # Get the relative URL from the ImageField
-            return request.build_absolute_uri(photo_url)  # Convert to absolute URL
-        else:
-            return None
-"""
-
 class PhotoSerializer(serializers.ModelSerializer):
     url = serializers.ImageField(required=False)
     upload_dir = serializers.CharField(max_length=255, allow_blank=True, required=False)
@@ -59,10 +42,18 @@ class FlightSerializer(serializers.ModelSerializer):
 class HotelSerializer(serializers.ModelSerializer):
     photos = PhotoSerializer(many=True, read_only=True)
     photo_ids = serializers.ListField(child=serializers.IntegerField(), write_only=True, required=False)
+    #photos = serializers.SerializerMethodField()
 
     class Meta:
         model = Hotel
         fields = ['name', 'location', 'website', 'photos', 'photo_ids']
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        print("Photos instance check:", instance.photos.all())  # Check what's being retrieved here
+        representation['photos'] = PhotoSerializer(instance.photos.all(), many=True,
+                                                   context={'request': self.context.get('request')}).data
+        return representation
 
     @transaction.atomic
     def create(self, validated_data):
@@ -74,14 +65,14 @@ class HotelSerializer(serializers.ModelSerializer):
             hotel.photos.set(photos)
 
         return hotel
+
+
 class HotelDSerializer(serializers.ModelSerializer):  # Detailed
 
     class Meta:
         model = Hotel
         fields = '__all__'
         depth = 2
-
-
 
 class HotelBookingSerializer(serializers.ModelSerializer):
     hotel = HotelSerializer()
@@ -91,10 +82,21 @@ class HotelBookingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
+
+        """
+        hotel_data = validated_data.pop('hotel')
+        hotel_serializer = HotelSerializer(data=hotel_data, context=self.context)
+        if hotel_serializer.is_valid(raise_exception=True):
+            hotel = hotel_serializer.save()
+        hotel_booking = HotelBooking.objects.create(hotel=hotel, **validated_data)
+        return hotel_booking
+        """
         hotel_data = validated_data.pop('hotel')
         hotel = HotelSerializer.create(HotelSerializer(), validated_data=hotel_data)
         hotel_booking = HotelBooking.objects.create(hotel=hotel, **validated_data)
         return hotel_booking
+
+
 
 class HotelBookingDSerializer(serializers.ModelSerializer):  # Detailed
     class Meta:
@@ -130,7 +132,7 @@ class ActivityDSerializer(serializers.ModelSerializer):  # Detailed
         depth = 1
 
 
-class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove this comment) - By Mehdi <-- ???
+class TravelPackageSerializer(serializers.ModelSerializer):
     hotels = HotelBookingSerializer(many=True)
     activities = ActivitySerializer(many=True)
     flights = FlightSerializer(many=True, allow_null=True)
@@ -139,8 +141,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove t
 
     class Meta:
         model = TravelPackage
-        fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos']
-    exclude = ['user', 'type']
+        fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos', 'user']
 
     @transaction.atomic
     def create(self, validated_data):
@@ -177,6 +178,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove t
         if user.is_agent:
             validated_data['type'] = 'PRE-MADE'
         else:
+            print(user)
             validated_data['type'] = 'CUSTOM'
 
         validated_data['user'] = user

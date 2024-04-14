@@ -76,8 +76,8 @@
                 <div>Check-out: {{ item['checkOut'] | date:'mediumDate' }}</div>
               </div>
               <!-- Image container for Hotel -->
-              <div *ngIf="item['hotel']['photos']">
-                <img [src]="item['hotel']['photos'].url" class="img-fluid rounded-2" alt="{{ item['hotel']['photos'].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
+              <div *ngIf="item['hotel']['photos'] && item['hotel']['photos'].length > 0">
+                <img [src]="item['hotel']['photos'][0].url" class="img-fluid rounded-2" alt="{{ item['hotel']['photos'][0].caption || 'Hotel photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
               </div>
             </div>
           </ng-container>
@@ -90,14 +90,15 @@
                 <div>Date: {{ item['date'] | date:'mediumDate' }} at {{ item['location'] }}</div>
               </div>
               <!-- Image container for Activity, displaying the first photo -->
-              <!--
+
               <div *ngIf="item['photos'] && item['photos'].length > 0">
                 <img [src]="item['photos'][0].url" class="img-fluid rounded-2" alt="{{ item['photos'][0].caption || 'Activity photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
               </div>
-              -->
+              <!--
               <div>
                 <img [src]="item['photos'].url" class="img-fluid rounded-2" alt="{{ item['photos'].caption || 'Activity photo' }}" style="object-fit: cover; width: 200px; height: 150px;">
               </div>
+              -->
             </div>
           </ng-container>
 

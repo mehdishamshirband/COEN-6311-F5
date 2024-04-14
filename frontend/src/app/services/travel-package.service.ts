@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable} from '@angular/core';
 import {NewTravelPackage, TravelPackage} from '../interfaces/booking.interface';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {lastValueFrom, Observable, of} from "rxjs";
 
 @Injectable({
@@ -449,12 +449,24 @@ export class TravelPackageService {
   }
 **/
 
-  addTravelPackage(formData: NewTravelPackage): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}Packages/`, formData);
+  addTravelPackage(formData: NewTravelPackage, token: String): Observable<any> {
+    const authorization = 'Bearer ' + token;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+    });
+    console.log("formData: ", formData);
+    console.log("headers: ", headers);
+    return this.http.post<any>(`${this.baseUrl}Packages/`, formData, { headers: headers });
   }
 
-  editTravelPackage(id: number, formData: Partial<NewTravelPackage>): Observable<any> {
-    return this.http.patch<any>(`${this.baseUrl}Packages/${id}/`, formData);
+  editTravelPackage(id: number, formData: Partial<NewTravelPackage>, token: String): Observable<any> {
+    const authorization = 'Bearer ' + token;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+    });
+    return this.http.put<any>(`${this.baseUrl}Packages/${id}/`, formData, { headers: headers });
   }
 
   onePackageById(id: number): Observable<TravelPackage> {

@@ -70,10 +70,10 @@
         </div>
         <!-- Hotel Photo -->
         <div class="col-md-2 d-flex align-items-center justify-content-center p-2">
-          <img *ngIf="!hotelBooking.hotel.photo && hotelBooking.hotel.photo"
-               [src]="hotelBooking.hotel.photo.url"
+          <img *ngIf="hotelBooking.hotel.photos && hotelBooking.hotel.photos.length > 0"
+               [src]="hotelBooking.hotel.photos[0].url"
                alt="{{ hotelBooking.hotel.name }}"
-               class="activity-photo">
+               class="hotel-photo">
         </div>
         <!-- Hotel Details -->
         <div class="col-md-8">
@@ -106,8 +106,8 @@
       </div>
       <!-- Activity Photo -->
       <div class="col-md-2 d-flex align-items-center justify-content-center p-2">
-        <img *ngIf="!activity.photos && activity.photos && activity.photos.length > 0"
-             [src]="activity.photos.url"
+        <img *ngIf="activity.photos && activity.photos.length > 0"
+             [src]="activity.photos[0].url"
              alt="{{ activity.name }}"
              class="activity-photo">
       </div>
