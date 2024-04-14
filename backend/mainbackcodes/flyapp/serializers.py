@@ -140,7 +140,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove t
     class Meta:
         model = TravelPackage
         fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos']
-        exclude = ['user', 'type']
+    exclude = ['user', 'type']
 
     @transaction.atomic
     def create(self, validated_data):
