@@ -21,6 +21,7 @@ import { CancelledBookingComponent } from "./cancelled-booking/cancelled-booking
 import { CheckoutComponent } from "./checkout/checkout.component";
 import { PaymentComponent } from "./payment/payment.component";
 import { PaymentSuccessComponent } from "./payment-success/payment-success.component";
+import { ResetPasswordComponent } from "./reset-password/reset-password.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -40,6 +41,7 @@ const routes: Routes = [
   { path: 'login', component: UserLoginComponent },
   { path: 'signup', component: UserSignUpComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
+  { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'agent-packages/activities', component: AgentActivityManagementComponent }, //TODO: delete
   { path: 'agent-packages/flights', component: AgentFlightManagementComponent }, //TODO: delete
   { path: 'agent-packages/hotels', component: AgentHotelManagementComponent }, //TODO: delete

@@ -21,7 +21,7 @@ export class CheckoutComponent {
               private router: Router,
               public cartService: CartService) {}
 
-  isLogged: boolean = false; // Add check with backend to know if user already logged in
+  isLogged: boolean = false;
   showLogin: boolean = true;
   rightGuestData: boolean = true;
 
@@ -41,6 +41,14 @@ export class CheckoutComponent {
 
   ngOnInit() {
     this.checkoutService.clearLocalStoreGuestData();
+    this.alreadyLogged();
+  }
+
+  alreadyLogged() {
+    this.isLogged = sessionStorage.getItem('accessToken') !== null;
+    if (this.isLogged) {
+      //TODO retrieve data from user account
+    }
   }
 
   continueAsGuest() {
@@ -74,7 +82,7 @@ export class CheckoutComponent {
   }
 
   continueToPayment() {
-    // Change alert to red text in the form
+    // TODO Change alert to red text in the form
     this.rightGuestData = true;
     this.CheckEmptyFields();
     this.checkEmail();

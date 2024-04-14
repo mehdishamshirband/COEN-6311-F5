@@ -770,6 +770,8 @@ class PasswordResetView(APIView):
 
         subject = "Password Recovery"
         message = f"Use the following code to reset your password: {reset_code}"
+        message += "\n You can use the following link to reset your password: http://localhost:4200/reset-password"
+        message += "\n\nIf you did not request a password reset, please ignore this email."
 
         mail = mt.Mail(
             sender=mt.Address(email="mailtrap@demomailtrap.com", name="FlyApp Email"),

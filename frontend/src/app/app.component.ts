@@ -36,5 +36,14 @@ export class AppComponent {
     });
   }
 
+  alreadyLoggedIn() {
+    if (sessionStorage.getItem('accessToken') === null) {
+      void this.router.navigate(['/login']);
+    }
+    else {
+      void this.router.navigate(['/account']);
+    }
+  }
+
 
 }

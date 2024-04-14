@@ -280,13 +280,14 @@ class NotifSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('email', 'password')
+        fields = ('email', 'password', 'first_Name', 'last_Name')
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
         email = validated_data.get('email')
         password = validated_data.get('password')
-        first_name = validated_data.get('firstName')
-        last_name = validated_data.get('lastName')
-        user = CustomUser.objects.create_user(email=email, password=password, first_name=first_name, last_name=last_name)
+        print(validated_data)
+        first_Name = validated_data.get('first_Name')
+        last_Name = validated_data.get('last_Name')
+        user = CustomUser.objects.create_user(email=email, password=password, first_Name=first_Name, last_Name=last_Name)
         return user

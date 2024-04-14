@@ -61,6 +61,14 @@
         <div class="col"><strong>Zipcode:</strong></div>
         <div class="col">{{ user.zipcode }}</div>
       </div>
+      <div class="row mb-2">
+        <div class="col"><strong>First Line Address:</strong></div>
+        <div class="col">{{ user.firstLineAddress }}</div>
+      </div>
+      <div class="row mb-2">
+        <div class="col"><strong>Second Line Address:</strong></div>
+        <div class="col">{{ user.secondLineAddress }}</div>
+      </div>
     </div>
 
     <div *ngIf="editMode">
@@ -115,14 +123,28 @@
           <input type="text" class="form-control" id="zipcode" [(ngModel)]="user.zipcode" name="zipcode" #zipcodeInput (blur)="checkIfEmpty(zipcodeInput)">
           <label [class.active]="user.zipcode" for="zipcode">Zipcode</label>
         </div>
+        <div class="form-group floating-label mb-3">
+          <input type="text" class="form-control" id="firstLineAddress" [(ngModel)]="user.firstLineAddress" name="firstLineAddress" #firstLineAddressInput (blur)="checkIfEmpty(firstLineAddressInput)">
+          <label [class.active]="user.firstLineAddress" for="firstLineAddress">First Line Address</label>
+        </div>
+        <div class="form-group floating-label mb-3">
+          <input type="text" class="form-control" id="secondLineAddress" [(ngModel)]="user.secondLineAddress" name="secondLineAddress" #secondLineAddressInput (blur)="checkIfEmpty(secondLineAddressInput)">
+          <label [class.active]="user.secondLineAddress" for="secondLineAddress">Second Line Address</label>
+        </div>
         <button class="btn btn-custom-primary" style="margin-right: 4px" (click)="saveChanges()">Save Changes</button>
         <button class="btn btn-custom-secondary" style="margin-left: 4px" (click)="toggleEditMode()">Cancel</button>
       </form>
     </div>
-    <div class="section-delete-account mt-5">
+    <div class="button-option mt-5">
       <hr>
-      <div class="title-delete-account"><h5>Account Deletion</h5></div>
         <button class="btn btn-primary-cancel" (click)="confirmAccountDeletion($event)">Delete account</button>
+        <button *ngIf="!isAgent && !requestAlreadySent" class="btn btn-primary-agent" (click)="requestAgent()">Request to be an agent</button>
+        <span class="text mt-4 mb-4" *ngIf="!isAgent && requestAlreadySent">Request in process</span>
+        <span class="text mt-4 mb-4" *ngIf="isAgent">Welcome 007</span>
+        <button class="btn btn-primary-logout" (click)="logOut()">Log Out</button>
+    </div>
+    <div class="section-log-out mt-5">
+
     </div>
   </div>
 </div>
