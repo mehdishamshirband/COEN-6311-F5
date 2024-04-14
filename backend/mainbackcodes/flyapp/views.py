@@ -21,7 +21,7 @@ from .models import Billing, Flight, Hotel, Activity, HotelBooking, Notification
 from .serializers import ActivitySerializer, ActivityDSerializer, BillingSerializer, HotelBookingSerializer, HotelSerializer, \
     BookingDSerializer, HotelBookingDSerializer, HotelDSerializer, FlightSerializer, NotifSerializer, PackageModificationSerializer, \
     PackageModificationDSerializer, BookingSerializer, TravelPackageSerializer, TravelPackageDSerializer, \
-    PhotoSerializer, UserRegistrationSerializer
+    PhotoSerializer, UserRegistrationSerializer, generate_unique_booking_no
 
 from datetime import datetime
 from django.utils.crypto import get_random_string
@@ -297,6 +297,18 @@ class BillingDetail(viewsets.ModelViewSet):
     serializer_class = BillingSerializer
     permission_classes = [CustomReadOnlyOrCreatePermission, ]
 
+    def create(self, request, *args, **kwargs):
+        try:
+            new_billing = BillingSerializer(data=request.data)
+
+            if not new_billing.is_valid():
+                raise serializers.ValidationError(new_billing.errors)
+
+            new_billing.save()
+            return Response({"msg": "billing created successfully", "id": new_billing.data.get("id")})
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
 
 class BookingDetail(viewsets.ModelViewSet):
     queryset = Booking.objects.all()
@@ -310,6 +322,8 @@ class BookingDetail(viewsets.ModelViewSet):
             return self.serializer_class
 
     def create(self, request, *args, **kwargs):
+
+        """
         if request.data.get("travelPackage"):
             request.data._mutable = True
             request.data["cost"] = str(
@@ -321,6 +335,38 @@ class BookingDetail(viewsets.ModelViewSet):
 
         # print("data:",request.data)
         return super().create(request, *args, **kwargs)
+        """
+
+        try:
+
+            billing = Billing.objects.get(id=request.data.get("billing").get("id"))
+            travel_package = TravelPackage.objects.get(id=request.data.get("travelPackage").get("id"))
+
+            new_booking = BookingSerializer(data=request.data, partial=True)
+            print(new_booking)
+            '''
+            new_booking = Booking.objects.create(
+                bookingNo=generate_unique_booking_no(),
+                firstName=request.data.get("firstName"),
+                lastName=request.data.get("lastName"),
+                email=request.data.get("email"),
+                phone=request.data.get("phone"),
+                bookingState=request.data.get("bookingState"),
+                cost=request.data.get("cost"),
+                billing=billing,
+                travelPackage=travel_package,
+            )
+            '''
+
+            new_booking.save()
+
+            # email_send_booking_details(new_booking)
+
+            return Response({"msg": "booking created successfully", "bookingNo": new_booking.bookingNo})
+
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
 
     def update(self, request, *args, **kwargs):
         if self.get_object().bookingState == "confirmed":
@@ -591,11 +637,37 @@ class PhotoUploadView(APIView):
         photo.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class CreatePaymentIntents(APIView):
+    def post(self, request) -> JsonResponse:
+        try:
+            data = request.data
+            print(data)
+
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+
+            # Create a PaymentIntent with the order amount and currency
+            intent = stripe.PaymentIntent.create(
+                amount=data['amount'],
+                currency='cad', # Check if we can put it in auto like in frontend
+                # In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+                automatic_payment_methods={
+                    'enabled': True,
+                },
+            )
+
+            return JsonResponse({
+                'clientSecret': intent['client_secret'],
+                'paymentIntent': {'status': 'succeeded'}
+            })
+
+        except Exception as e:
+            return JsonResponse({"error": {'message': str(e)}}, status=403)
+
+
 class PaymentView(generics.CreateAPIView):
     permission_classes = [IsAgent, ]
 
     def post(self, request, format=None):
-        print(request.data)
 
         if not Booking.objects.get(bookingNo=request.data.get("bookingNo")):
             raise serializers.ValidationError(f"Please add a BookingNo to start the proccess")

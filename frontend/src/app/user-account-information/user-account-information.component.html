@@ -14,7 +14,7 @@
       </div>
       <div class="row mb-2">
         <div class="col"><strong>Email Address:</strong></div>
-        <div class="col">{{ user.emailAddress }}</div>
+        <div class="col">{{ user.email }}</div>
       </div>
       <div class="row mb-2">
         <div class="col"><strong>Password:</strong></div>
@@ -71,11 +71,11 @@
             type="email"
             class="form-control"
             id="emailAddress"
-            [(ngModel)]="user.emailAddress"
+            [(ngModel)]="user.email"
             #emailInput
             (blur)="checkIfEmpty(emailInput)"
             name="emailAddress">
-          <label [class.active]="user.emailAddress" for="emailAddress">Email address</label>
+          <label [class.active]="user.email" for="emailAddress">Email address</label>
         </div>
         <div class="mb-3">
           <input type="password" class="form-control" style="min-height: 50px" id="password" placeholder="************" name="password">

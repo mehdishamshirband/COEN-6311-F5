@@ -14,13 +14,13 @@ import { UserService } from '../services/user.service';
 })
 export class ForgotPasswordComponent {
   userForgetPassword : UserForgetPassword = {
-    emailAddress: ''
+    email: ''
   }
 
 constructor(private userService: UserService) { }
 
   ForgetPassword() {
-    console.warn(this.userService.validateEmail(this.userForgetPassword.emailAddress));
+    console.warn(this.userService.validateEmail(this.userForgetPassword.email));
     console.warn(this.userForgetPassword);
   }
 }

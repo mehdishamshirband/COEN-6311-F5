@@ -1,6 +1,6 @@
 export interface User {
   id: number;
-  emailAddress: string;
+  email: string;
   firstName: string;
   lastName: string;
   birthDate?: Date;
@@ -25,18 +25,18 @@ export interface GuestProfile {
 }
 
 export interface UserLogin {
-  emailAddress: string;
+  email: string;
   password: string;
 }
 
 export interface UserRegister {
   firstName: string;
   lastName: string;
-  emailAddress: string;
+  email: string;
   password: string;
   confirmPassword: string;
 }
 
 export interface UserForgetPassword {
-  emailAddress: string;
+  email: string;
 }

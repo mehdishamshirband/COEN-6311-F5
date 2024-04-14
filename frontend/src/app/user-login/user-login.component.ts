@@ -13,13 +13,13 @@ import { UserService } from '../services/user.service';
 })
 export class UserLoginComponent {
   userLogin : UserLogin = {
-    emailAddress: '',
+    email: '',
     password: ''
   }
   constructor(private userService: UserService) { }
 
   Login() {
-    console.warn(this.userService.validateEmail(this.userLogin.emailAddress));
+    console.warn(this.userService.validateEmail(this.userLogin.email));
     console.warn(this.userService.validatePassword(this.userLogin.password));
     console.warn(this.userLogin);
   }

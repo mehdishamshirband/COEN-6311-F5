@@ -42,7 +42,7 @@ urlpatterns = [
     path('upload/photo/', PhotoUploadView.as_view(), name='photo-upload'),
     path('photos/<int:id>/delete/', PhotoUploadView.as_view(), name='photo-delete'),
     path('admin-tools/', include('admin_tools.urls')),
-    path('process-payment/', views.PaymentView.as_view(), name='process_payment'),
+    path('process-payment/', views.CreatePaymentIntents.as_view(), name='process_payment'),
     path('api-auth/', include('rest_framework.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Login
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),  # Refresh token
