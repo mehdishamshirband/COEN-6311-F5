@@ -130,7 +130,7 @@ class ActivityDSerializer(serializers.ModelSerializer):  # Detailed
         depth = 1
 
 
-class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove this comment) - By Mehdi <-- ???
+class TravelPackageSerializer(serializers.ModelSerializer):
     hotels = HotelBookingSerializer(many=True)
     activities = ActivitySerializer(many=True)
     flights = FlightSerializer(many=True, allow_null=True)
@@ -139,8 +139,7 @@ class TravelPackageSerializer(serializers.ModelSerializer):   # (Do not remove t
 
     class Meta:
         model = TravelPackage
-        fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos']
-    exclude = ['user', 'type']
+        fields = ['id', 'name', 'price', 'description', 'hotels', 'activities', 'flights', 'startingDate', 'endingDate', 'photo_ids', 'photos', 'user']
 
     @transaction.atomic
     def create(self, validated_data):

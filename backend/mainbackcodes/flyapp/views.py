@@ -260,9 +260,9 @@ class TravelPackages(viewsets.ModelViewSet):
             return self.serializer_class
 
     def create(self, request, *args, **kwargs):
-        request.data._mutable = True
-        request = dynamicpricecalc(request)
-        request.data._mutable = False
+        #request.data._mutable = True
+        #request = dynamicpricecalc(request) #Todo: re-implement but currently generating errors
+        #request.data._mutable = False
         return super().create(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):

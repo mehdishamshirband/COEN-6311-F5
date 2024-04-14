@@ -22,6 +22,13 @@ export class UserLoginComponent {
     console.warn(this.userService.validateEmail(this.userLogin.email));
     console.warn(this.userService.validatePassword(this.userLogin.password));
     console.warn(this.userLogin);
+
+    this.userService.getToken(this.userLogin).subscribe((result: any) => {
+      if (result.error) {
+        alert(result.error.email[0]);
+      }
+      console.warn(result);
+    });
   }
 
 }

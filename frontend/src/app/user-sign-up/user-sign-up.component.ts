@@ -41,6 +41,7 @@ export class UserSignUpComponent {
     }
 
     if(this.data_validator.every(Boolean)) {
+      console.log("userRegister: ", this.userRegister);
       this.userService.createUser(this.userRegister).subscribe((result: any) => {
         if (result.error) {
           alert(result.error.email[0]);
