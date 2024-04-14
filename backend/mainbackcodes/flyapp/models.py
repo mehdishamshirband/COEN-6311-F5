@@ -8,7 +8,12 @@ from django.contrib.auth.models import AbstractUser, UserManager
 # Create your models here.
 class CustomUserManager(UserManager):
     def create_user(self, email, password=None, is_agent=False, **extra_fields):
-        user = self.model(email=self.normalize_email(email), **extra_fields)
+        if 'username' in extra_fields:
+            username = extra_fields.pop('username')
+        else:
+            username = None
+
+        user = self.model(email=self.normalize_email(email), username=username, **extra_fields)
         user.is_agent = is_agent
         user.set_password(password)
         user.save(using=self._db)
@@ -30,12 +35,12 @@ class CustomUserManager(UserManager):
 
 
 class CustomUser(AbstractUser):
-    username = None
+    username = models.CharField(max_length=20, unique=True, null=True)
     email = models.EmailField(unique=True)
     is_agent = models.BooleanField(default=False)
     reset_code = models.CharField(max_length=10, blank=True, null=True)
-    first_name = models.CharField(max_length=255, blank=True, null=True)
-    last_name = models.CharField(max_length=255, blank=True, null=True)
+    first_name = models.CharField(max_length=30, blank=True, null=True)
+    last_name = models.CharField(max_length=30, blank=True, null=True)
 
     objects = CustomUserManager()
 
