@@ -339,31 +339,22 @@ class BookingDetail(viewsets.ModelViewSet):
         """
 
         try:
+            temp = request
+            temp._mutable = True
+            temp.data['travelPackage'] = temp.data['travelPackage']['id']
+            temp.data['billing'] = temp.data['billing']['id']
+            temp.data['bookingNo'] = generate_unique_booking_no()
+            temp._mutable = False
 
-            billing = Billing.objects.get(id=request.data.get("billing").get("id"))
-            travel_package = TravelPackage.objects.get(id=request.data.get("travelPackage").get("id"))
+            new_booking = BookingSerializer(data=temp.data)
 
-            new_booking = BookingSerializer(data=request.data, partial=True)
-            print(new_booking)
-            '''
-            new_booking = Booking.objects.create(
-                bookingNo=generate_unique_booking_no(),
-                firstName=request.data.get("firstName"),
-                lastName=request.data.get("lastName"),
-                email=request.data.get("email"),
-                phone=request.data.get("phone"),
-                bookingState=request.data.get("bookingState"),
-                cost=request.data.get("cost"),
-                billing=billing,
-                travelPackage=travel_package,
-            )
-            '''
+            if not new_booking.is_valid():
+                raise serializers.ValidationError(new_booking.errors)
 
             new_booking.save()
+            # email_send_booking_details(new_booking) # From Benoit : Can't work because travel package is just and id not an object
 
-            # email_send_booking_details(new_booking)
-
-            return Response({"msg": "booking created successfully", "bookingNo": new_booking.bookingNo})
+            return Response({"msg": "booking created successfully", "bookingNo": temp.data['bookingNo']})
 
         except Exception as e:
             return JsonResponse({"error": {'message': str(e)}}, status=403)

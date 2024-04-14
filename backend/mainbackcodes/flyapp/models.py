@@ -206,7 +206,7 @@ class Booking(models.Model):
     bookingNo = models.IntegerField(unique=True)
     cost = models.FloatField()
     # details = models.CharField(max_length=255)
-    billing = models.OneToOneField(Billing, on_delete=models.CASCADE)
+    billing = models.ForeignKey(Billing, on_delete=models.CASCADE)
     bookingState = models.CharField(max_length=255, choices=status, default='CREATED')
     travelPackage = models.ForeignKey(TravelPackage, on_delete=models.CASCADE)
     purchaseDate = models.DateTimeField(auto_now_add=True)

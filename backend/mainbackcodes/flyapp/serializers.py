@@ -207,12 +207,12 @@ class TravelPackageDSerializer(serializers.ModelSerializer):  # Detailed
 class BillingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Billing
-        exclude = ['user']
+        # exclude = ['user']
+        fields = '__all__'
 
     def create(self, validated_data):
-        print("SERIALIZERRRR", validated_data)
-        user = self.context['request'].user
-        validated_data['user'] = user
+        # user = self.context['request'].user # This line is causing an error, self.context is an empty dict
+        # validated_data['user'] = user
 
         return super().create(validated_data)
 
@@ -221,7 +221,7 @@ def generate_unique_booking_no():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
 
     unique_identifier = random.randint(1000, 9999)
-    booking_no = f"{timestamp}{unique_identifier}"
+    booking_no = int(f"{timestamp}{unique_identifier}")
 
     return booking_no
 
@@ -237,12 +237,11 @@ class BookingDSerializer(serializers.ModelSerializer):  # Detailed
 class BookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Booking
-        exclude = ['user', 'bookingNo', 'bookingState']
+        exclude = ['bookingState']
 
     def create(self, validated_data):
-        user = self.context['request'].user
-        validated_data['user'] = user
-        validated_data['bookingNo'] = generate_unique_booking_no()
+        # user = self.context['request'].user # It never works, self.context is an empty dict
+        # validated_data['user'] = user
 
         return super().create(validated_data)
 

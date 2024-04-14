@@ -4,16 +4,16 @@ export interface Photo {
 }
 
 export enum PaymentType {
-  Visa = 'Visa',
+  Visa = 'visa',
   Mastercard = 'Mastercard',
   Paypal = 'Paypal',
   Stripe = 'Stripe'
 }
 
 export enum PaymentState {
-  FirstDeposit = 'First_Deposit',
-  SecondDeposit = 'Second_Deposit',
-  LastDeposit = 'Last_Deposit',
+  FirstDeposit = 'firstdeposit',
+  SecondDeposit = 'seconddeposit',
+  LastDeposit = 'lastdeposit',
 }
 
 export enum BookingState {

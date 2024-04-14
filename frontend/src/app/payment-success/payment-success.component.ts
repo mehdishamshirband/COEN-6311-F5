@@ -33,6 +33,11 @@ export class PaymentSuccessComponent implements OnInit {
   check_error = false;
   _result!: any;
 
+  header = new HttpHeaders({
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + sessionStorage.getItem('accessToken')!
+  });
+
   constructor(public cartService: CartService,
               private checkoutService: CheckoutService,
               private http: HttpClient) {}
@@ -45,7 +50,7 @@ export class PaymentSuccessComponent implements OnInit {
 
     this.billingInformation = {
       id: 0,
-      paymentType: PaymentType.Stripe, // Seems impossible to get the card type from the card element
+      paymentType: PaymentType.Visa, // Seems impossible to get the card type from the card element
       paymentState: PaymentState.LastDeposit,
       firstName: this.guestData.firstName,
       lastName: this.guestData.lastName,
@@ -78,8 +83,9 @@ export class PaymentSuccessComponent implements OnInit {
     }
 
     if (!this.check_error){
-      this.cartService.clearLocalCart();
-      this.checkoutService.clearLocalStoreGuestData();
+      // TODO : Uncomment this line when the backend is ready
+      //this.cartService.clearLocalCart();
+      //this.checkoutService.clearLocalStoreGuestData();
     }
 
   }
@@ -107,8 +113,6 @@ export class PaymentSuccessComponent implements OnInit {
       nbr_child: nbr_person.nbr_child,
     };
 
-    console.warn("Booking send", this.bookingInformation)
-
     void this.postBookingData(this.bookingInformation).subscribe((result: any) => {
       if (result.error) {
         console.warn("Error", result.error);
@@ -125,15 +129,13 @@ export class PaymentSuccessComponent implements OnInit {
 
 
   postBillingData(billingInformation: Billing): Observable<Billing> {
-    let header = new HttpHeaders({
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + sessionStorage.getItem('accessToken')!
-    });
+    let body : any = billingInformation;
+    body.user = 1; // New feature from back, require to add user even if we can't fetch the user id from the backend
 
-    console.warn('Header sent', header)
+    console.warn("Billing send", body)
 
     return this.http.post<Billing>(
-          `${this.baseUrl}BillingDetail/`, billingInformation , {headers: header}
+          `${this.baseUrl}BillingDetail/`, body , {headers: this.header}
         );
   }
 
@@ -144,8 +146,13 @@ export class PaymentSuccessComponent implements OnInit {
   }
 
   postBookingData(bookingInformation: Booking): Observable<Booking> {
+    let body : any = bookingInformation;
+    body.user = 1; // New feature from back, require to add user even if we can't fetch the user id from the backend
+
+    console.warn("Booking send", body)
+
     return this.http.post<Booking>(
-          `${this.baseUrl}Booking/`, bookingInformation
+          `${this.baseUrl}Booking/`, body, {headers: this.header}
         );
   }
 
