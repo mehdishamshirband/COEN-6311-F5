@@ -49,6 +49,11 @@ export class TravelPackageDetailsComponent implements OnInit {
       return;
     }
 
+    let cartId = JSON.parse(localStorage.getItem('localCart')!).map((item: any) => item.id);
+    if (cartId.includes(packageId)) {
+      this.removeFromCart = true;
+    }
+
     // Subscribe is an asynchronous function, need to await the result using async/await
     this._travelPackage = await this.travelPackageService.getTravelPackageByIdSynchronous(packageIdString);
     console.warn('Travel Package:', this._travelPackage);

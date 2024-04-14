@@ -61,7 +61,7 @@ export class FlightGalleryComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error fetching flights:', error);
-        // Show a message to user //TODO
+        alert('No more flights available');
       }
     });
   }

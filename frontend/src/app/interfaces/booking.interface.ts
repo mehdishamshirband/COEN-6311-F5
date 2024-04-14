@@ -110,8 +110,6 @@ export interface TravelPackage {
   startingDate: Date;
   endingDate: Date;
   photos?: Photo[];
-  nbr_adult?: number; //TODO: delete
-  nbr_child?: number; //TODO: delete
 }
 
 export interface NewTravelPackage {
