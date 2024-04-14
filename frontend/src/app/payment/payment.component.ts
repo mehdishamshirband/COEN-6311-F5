@@ -112,12 +112,9 @@ export class PaymentComponent implements OnInit{
   private baseUrl = 'http://localhost:8000/';
 
   createPaymentIntent(amount: number): Observable<PaymentIntent> {
-    // Stripe understands amount as cents
-    let float_value : number = amount * 100;
-
     return this.http.post<PaymentIntent>(
       `${this.baseUrl}process-payment/`,
-      { 'amount': float_value }
+      { 'amount': amount }
     );
   }
 

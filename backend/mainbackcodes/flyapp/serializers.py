@@ -210,6 +210,7 @@ class BillingSerializer(serializers.ModelSerializer):
         exclude = ['user']
 
     def create(self, validated_data):
+        print("SERIALIZERRRR", validated_data)
         user = self.context['request'].user
         validated_data['user'] = user
 

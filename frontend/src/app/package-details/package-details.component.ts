@@ -38,9 +38,8 @@ export class TravelPackageDetailsComponent implements OnInit {
     const packageIdString = +this.route.snapshot.paramMap.get('id')!;
 
     if (packageIdString === null) {
-    console.error('Package ID is missing');
-    return;
-
+      console.error('Package ID is missing');
+      return;
     }
 
     const packageId = +packageIdString

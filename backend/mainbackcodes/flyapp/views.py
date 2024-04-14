@@ -299,6 +299,7 @@ class BillingDetail(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         try:
+            #print(request.data)
             new_billing = BillingSerializer(data=request.data)
 
             if not new_billing.is_valid():
@@ -641,13 +642,13 @@ class CreatePaymentIntents(APIView):
     def post(self, request) -> JsonResponse:
         try:
             data = request.data
-            print(data)
+            print(int(round(data['amount'] * 100, 2)))  # Cents
 
             stripe.api_key = settings.STRIPE_SECRET_KEY
 
             # Create a PaymentIntent with the order amount and currency
             intent = stripe.PaymentIntent.create(
-                amount=data['amount'],
+                amount=int(round(data['amount'] * 100, 2)),
                 currency='cad', # Check if we can put it in auto like in frontend
                 # In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
                 automatic_payment_methods={

@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {NgIf} from "@angular/common";
 import {CartService} from "../services/cart.service";
 import {CheckoutService} from "../services/checkout.service";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   Billing,
   Booking,
@@ -125,8 +125,15 @@ export class PaymentSuccessComponent implements OnInit {
 
 
   postBillingData(billingInformation: Billing): Observable<Billing> {
+    let header = new HttpHeaders({
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + sessionStorage.getItem('accessToken')!
+    });
+
+    console.warn('Header sent', header)
+
     return this.http.post<Billing>(
-          `${this.baseUrl}BillingDetail/`, billingInformation
+          `${this.baseUrl}BillingDetail/`, billingInformation , {headers: header}
         );
   }
 
