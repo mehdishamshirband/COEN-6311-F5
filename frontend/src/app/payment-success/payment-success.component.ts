@@ -33,7 +33,7 @@ export class PaymentSuccessComponent implements OnInit {
   private baseUrl = 'http://localhost:8000/';
   check_error = false;
   _result!: any;
-  travelPackageId!: number;
+  travelPackageId: number = -1;
 
   header = new HttpHeaders({
       "Content-Type": "application/json",
@@ -79,6 +79,7 @@ export class PaymentSuccessComponent implements OnInit {
 
 
     for (let i = 0; i < this.cartService.user_cart.length; i++) {
+      this.travelPackageId = -1;
       this.checkCustomPackage(this.cartService.user_cart[i]);
 
       if (this.cartService.user_cart[i].name === "Your perfect journey") {

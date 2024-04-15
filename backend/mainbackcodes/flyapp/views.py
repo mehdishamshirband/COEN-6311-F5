@@ -158,6 +158,13 @@ class HotelsBooking(viewsets.ModelViewSet):
         else:
             return self.serializer_class
 
+    def get_queryset(self):
+        results = super(HotelsBooking, self).get_queryset()
+        value = dict(self.request.query_params.items())['location']
+        results = results.filter(hotel__location__icontains=value)
+
+        return results
+
     filterset_fields = {'hotel': ['exact'], 'totalPrice': ['lte', 'gte'], 'checkOut': ['lte', 'gte'],
                         'checkIn': ['lte', 'gte']}
 
