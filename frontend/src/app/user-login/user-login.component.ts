@@ -3,11 +3,12 @@ import {Router, RouterModule} from '@angular/router';
 import { FormsModule }   from '@angular/forms';
 import { UserLogin } from '../interfaces/user.interface';
 import { UserService } from '../services/user.service';
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-user-login',
   standalone: true,
-  imports: [RouterModule, FormsModule],
+  imports: [RouterModule, FormsModule, NgIf],
   templateUrl: './user-login.component.html',
   styleUrl: './user-login.component.css'
 })
@@ -38,7 +39,7 @@ export class UserLoginComponent {
       let token = this.userService.postToken(this.userLogin).subscribe({
         next: (token) => {
           if(token) {
-            void this.router.navigate(['/account'], {state: {authToken: token}});
+            this.chooseCheckoutOrAccount(token);
           }
           else {
             alert('Invalid email or password');
@@ -50,6 +51,18 @@ export class UserLoginComponent {
       });
     }
   }
+
+  chooseCheckoutOrAccount(token: string) {
+    if (history.state.checkout) {
+      void this.router.navigate(['/account'], {state: {authToken: token, checkout: true}});
+    }
+    else {
+      void this.router.navigate(['/account'], {state: {authToken: token}});
+    }
+  }
+
+
+  protected readonly sessionStorage = sessionStorage;
 }
 
 

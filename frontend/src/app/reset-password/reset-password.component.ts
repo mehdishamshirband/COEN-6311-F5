@@ -4,15 +4,17 @@ import {Router} from "@angular/router";
 import {UserResetPassword} from "../interfaces/user.interface";
 import {RouterModule} from "@angular/router";
 import {UserService} from "../services/user.service";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-    imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        RouterModule
-    ],
+  imports: [
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    NgIf
+  ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.css'
 })
@@ -62,4 +64,5 @@ export class ResetPasswordComponent {
 
   }
 
+    protected readonly sessionStorage = sessionStorage;
 }

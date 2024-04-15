@@ -51,6 +51,10 @@ export class CheckoutComponent {
     }
   }
 
+  goToLogin() {
+    void this.router.navigate(['/login'], {state: {checkout: true}});
+  }
+
   continueAsGuest() {
     this.showLogin = false;
   }

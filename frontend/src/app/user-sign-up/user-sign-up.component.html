@@ -1,4 +1,4 @@
-<div class="container signup-container">
+<div class="container signup-container" *ngIf="!sessionStorage.getItem('accessToken')">
   <h2 class="text-center mb-4">Sign Up</h2>
   <form (ngSubmit)="signUp()">
     <div class="form-group">
@@ -28,4 +28,8 @@
   <div class="text-center mt-3">
     Already have an account? <a [routerLink]="['/login']" class="login-link">Log In</a>
   </div>
+</div>
+
+<div class="h-100 d-flex align-items-center justify-content-center" *ngIf="sessionStorage.getItem('accessToken')">
+  <h3 class="my-2">You are already logged in !</h3>
 </div>

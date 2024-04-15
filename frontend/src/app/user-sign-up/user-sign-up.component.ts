@@ -4,11 +4,12 @@ import { FormsModule }   from '@angular/forms';
 import { UserRegister } from '../interfaces/user.interface';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-user-sign-up',
   standalone: true,
-  imports: [RouterModule, FormsModule],
+    imports: [RouterModule, FormsModule, NgIf],
   templateUrl: './user-sign-up.component.html',
   styleUrl: './user-sign-up.component.css'
 })
@@ -21,6 +22,7 @@ export class UserSignUpComponent {
     password: '',
     confirmPassword: ''
   };
+  protected readonly sessionStorage = sessionStorage;
 
   data_validator = [true, true, true];
 
