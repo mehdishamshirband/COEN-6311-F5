@@ -23,7 +23,9 @@ export class TravelPackageGalleryComponent implements OnInit {
 
   ngOnInit() {
     this.travelingPackageService.getAllTravelPackages().subscribe({next: (travelPackages) => {
-        this.travelPackageList = travelPackages;
+        this.travelPackageList = travelPackages.filter((travelPackage) => {
+          return !travelPackage.name.includes('Your perfect journey');
+        }); // Don't include custom travel packages
         this.filteredTravelPackageList = this.travelPackageList;
         console.warn('Travel Packages:', travelPackages);
       },

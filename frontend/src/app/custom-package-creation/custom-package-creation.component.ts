@@ -7,8 +7,18 @@ import { ActivityGalleryComponent } from "../activity-gallery/activity-gallery.c
 import { DatePipe } from "@angular/common";
 import {AppModule} from "../app.module";
 import {MinToHoursMinPipe} from "../min-to-hours-min.pipe";
-import {Activity, Flight, HotelBooking} from "../interfaces/booking.interface";
+import {
+  Activity,
+  Flight,
+  HotelBooking,
+  NbrPerson,
+  NewTravelPackage,
+  TravelPackage
+} from "../interfaces/booking.interface";
 import {JourneyItem} from "../interfaces/booking.interface";
+import {CartService} from "../services/cart.service";
+import {FormsModule} from "@angular/forms";
+import {Router} from "@angular/router";
 
 @Component({
   standalone: true,
@@ -20,7 +30,8 @@ import {JourneyItem} from "../interfaces/booking.interface";
     HotelGalleryComponent,
     ActivityGalleryComponent,
     DatePipe,
-    MinToHoursMinPipe
+    MinToHoursMinPipe,
+    FormsModule
   ],
   styleUrls: ['./custom-package-creation.component.css']
 })
@@ -31,7 +42,13 @@ export class CustomPackageCreationComponent {
   showHotelSearch = false;
   showActivitySearch = false;
 
-  constructor(public journeyService: JourneyService) {}
+  text_button = 'Add Flight\nAdd Hotel\nAdd Activity';
+
+  nbrPerson = this.cartService.user_cart_nbr_person(0);
+
+  constructor(public journeyService: JourneyService,
+              private cartService: CartService,
+              private router: Router) {}
 
   removeFlight(flightId: number) {
     const index = this.journeyService.flights.findIndex(f => f.id === flightId);
@@ -82,6 +99,49 @@ get sortedJourneyItems() {
 }
 
 
+calculateTotalPrice() {
+  let totalPrice = 0;
+  this.journeyService.flights.forEach(f => totalPrice += f.price);
+  this.journeyService.hotels.forEach(h => totalPrice += h.totalPrice);
+  this.journeyService.activities.forEach(a => totalPrice += a.price);
+  return totalPrice;
+}
+
+earliestFlight() {
+  if (this.journeyService.flights.length === 0) {
+    return null;
+  }
+  return this.journeyService.flights.reduce((a, b) => a.departureDate < b.departureDate ? a : b);
+}
+
+latestFlight() {
+  if (this.journeyService.flights.length === 0) {
+    return null;
+  }
+  return this.journeyService.flights.reduce((a, b) => a.arrivalDate > b.arrivalDate ? a : b);
+}
+
+
+addToCart(): void {
+    let rnd = Math.floor(Math.random() * 10000);
+    let custom_travel_package: TravelPackage = {
+      id: rnd,
+      name: "Your perfect journey",
+      description: "Your perfect journey",
+      price: this.calculateTotalPrice(),
+      flights: this.journeyService.flights,
+      hotels: this.journeyService.hotels,
+      activities: this.journeyService.activities,
+      startingDate: this.earliestFlight()!.departureDate,
+      endingDate: this.latestFlight()!.arrivalDate,
+    }
+    this.nbrPerson.id = rnd;
+
+    //this.cartService.localAddToCart(custom_travel_package, this.nbrPerson);
+    //this.journeyService.emptyJourney();
+    //void this.router.navigate(['/cart']);
+
+  }
 
 
 }

@@ -264,9 +264,15 @@ class TravelPackages(viewsets.ModelViewSet):
             return self.serializer_class
 
     def create(self, request, *args, **kwargs):
-        #request.data._mutable = True
-        #request = dynamicpricecalc(request)
-        #request.data._mutable = False
+
+        request._mutable = True
+        request.data["endingDate"] = request.data.get("endingDate")[:10]  # Get only the date part, not the timezone
+        request.data["startingDate"] = request.data.get("startingDate")[:10]
+        for i in range(len(request.data["hotels"])):
+            request.data["hotels"][i]["checkIn"] = request.data["hotels"][i]["checkIn"][:10]
+            request.data["hotels"][i]["checkOut"] = request.data["hotels"][i]["checkOut"][:10]
+        request._mutable = False
+
         return super().create(request, *args, **kwargs)
 
     """
@@ -277,10 +283,10 @@ class TravelPackages(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         print("Destroy here") #TODO: delete
         #raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
-
+    """
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
-    """
+
 
     def get_queryset(self):
         all_package = super(TravelPackages, self).get_queryset()
@@ -290,6 +296,9 @@ class TravelPackages(viewsets.ModelViewSet):
             return all_package
 
         for key in list(all_package[0].__dict__)[1:]:  # Get all fields names except the first one which is private
+            if 'user' in key.lower():
+                continue
+
             key = f'{key}__icontains'
             if all_package.filter(**{key: filtervalue}).exists():
                 results = results | all_package.filter(**{key: filtervalue})

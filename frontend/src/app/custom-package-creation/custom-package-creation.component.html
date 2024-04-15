@@ -11,7 +11,19 @@
     <button class="btn btn-custom-primary mx-2" (click)="showHotelSearch = true; showFlightSearch = false; showActivitySearch = false">Add Hotel</button>
     <button class="btn btn-custom-primary mx-2" (click)="showActivitySearch = true; showFlightSearch = false; showHotelSearch = false;">Add Activity</button>
   </div>
-
+  <div class="d-flex justify-content-center" *ngIf="journeyService.flights.length >= 2 && journeyService.hotels.length && journeyService.activities.length">
+          <div style="margin-right: 25px;">
+            <label class="form-label">Number of adults:</label>
+            <input type="number" class="form-control mb-2" min="1" max="10" step="1" [(ngModel)]="nbrPerson.nbr_adult">
+          </div>
+          <div>
+            <label class="form-label">Number of children:</label>
+            <input type="number" class="form-control mb-2" min="0" max="10" step="1" [(ngModel)]="nbrPerson.nbr_child">
+          </div>
+  </div>
+  <div class="d-flex justify-content-center mb-4" style="margin-top: 15px;">
+    <button class="btn btn-custom-primary mx-2" title="{{text_button}}" [disabled]="journeyService.flights.length < 2 || !journeyService.hotels.length || !journeyService.activities.length" (click)="addToCart()">Add to Cart</button>
+  </div>
   <ng-template #flightItem let-flight>
     <a class="list-group-item list-group-item-action">
       <div class="row align-items-center">

@@ -62,4 +62,8 @@ export class JourneyService {
   isEmpty(): boolean {
     return this.journey.flights.length === 0 && this.journey.hotels.length === 0 && this.journey.activities.length === 0;
   }
+
+  emptyJourney() {
+    this.journey = { flights: [], hotels: [], activities: [] };
+  }
 }

@@ -37,7 +37,7 @@ export class AgentPackagesComponent implements OnInit {
     // A trick to reload the current route
     let currentUrl = this.router.url;
     this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
-      this.router.navigate([currentUrl]);
+      void this.router.navigate([currentUrl]);
     });
   }
 

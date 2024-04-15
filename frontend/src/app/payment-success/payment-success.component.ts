@@ -3,6 +3,7 @@ import {NgIf} from "@angular/common";
 import {CartService} from "../services/cart.service";
 import {CheckoutService} from "../services/checkout.service";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { TravelPackageService } from "../services/travel-package.service";
 import {
   Billing,
   Booking,
@@ -32,6 +33,7 @@ export class PaymentSuccessComponent implements OnInit {
   private baseUrl = 'http://localhost:8000/';
   check_error = false;
   _result!: any;
+  travelPackageId!: number;
 
   header = new HttpHeaders({
       "Content-Type": "application/json",
@@ -40,7 +42,8 @@ export class PaymentSuccessComponent implements OnInit {
 
   constructor(public cartService: CartService,
               private checkoutService: CheckoutService,
-              private http: HttpClient) {}
+              private http: HttpClient,
+              private travelPackageService: TravelPackageService) {}
 
   async ngOnInit() {
     this.result = history.state.result;
@@ -76,10 +79,15 @@ export class PaymentSuccessComponent implements OnInit {
 
 
     for (let i = 0; i < this.cartService.user_cart.length; i++) {
-      let id: number = this.cartService.user_cart[i].id;
-      this.CreateAndPostBooking(this.cartService.user_cart[i], this.cartService.user_cart_nbr_person(id));
+      this.checkCustomPackage(this.cartService.user_cart[i]);
+
+      if (this.cartService.user_cart[i].name === "Your perfect journey") {
+        await new Promise(f => setTimeout(f, 1000));
+        // Wait for the custom package to be added (1 second)
+      }
+
+      this.CreateAndPostBooking(this.cartService.user_cart[i], this.cartService.user_cart_nbr_person(this.travelPackageId), this.travelPackageId);
       console.log(this.bookingInformation);
-      //this.checkoutService.postBooking(this.bookingInformation);
     }
 
     if (!this.check_error){
@@ -89,7 +97,9 @@ export class PaymentSuccessComponent implements OnInit {
 
   }
 
-  CreateAndPostBooking = (travelPackage : TravelPackage, nbr_person: NbrPerson) => {
+  CreateAndPostBooking = (travelPackage : TravelPackage, nbr_person: NbrPerson, travelPackageId: number) => {
+    travelPackage.id = travelPackageId; // Don't change anything when pre-made, but update the id when custom package
+
     this.bookingInformation = {
       id: 0,
       bookingNo: '0',
@@ -161,5 +171,37 @@ export class PaymentSuccessComponent implements OnInit {
       return Object.assign({}, item, arr2[i]);
     });
   }
+
+  checkCustomPackage = (travelPackage: TravelPackage): any => {
+    if (travelPackage.name === "Your perfect journey") {
+      let authToken: string = sessionStorage.getItem('accessToken')!;
+      let new_travelPackage: any = travelPackage;
+      new_travelPackage.user = 1; // Can't fetch the user id from the backend
+      console.warn("Custom package sent", new_travelPackage);
+      this.addTravelPackageSynchronous(new_travelPackage, authToken).then((data) => {
+        this._result =  data;
+
+        if (this._result.error) {
+          console.warn("Error adding custom package", this._result.error.message);
+          this.check_error = true;
+        }
+        else{
+          console.warn("Custom package added", this._result);
+          this.travelPackageId = this._result.id;
+        }
+      });
+
+      }
+    else{
+      this.travelPackageId = travelPackage.id;
+    }
+    }
+
+    async addTravelPackageSynchronous(travelPackage: any, authToken: string) {
+      return await lastValueFrom(this.travelPackageService.addTravelPackage(travelPackage, authToken)).then((data) => {
+        return data;
+      });
+    }
+
 
 }
