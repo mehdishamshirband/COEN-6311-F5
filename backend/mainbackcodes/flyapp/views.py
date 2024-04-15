@@ -84,6 +84,7 @@ class CustomReadOnlyOrCreatePermission(BasePermission):
         if request.user.is_anonymous:
             return request.method == 'GET'
         elif request.user.is_staff or request.user.is_agent:
+            print("Has permissions here") #TODO: delete this debug line
             return True
         # Allow read-only access for authenticated users (GET requests)
         elif request.method == 'GET':
@@ -268,17 +269,18 @@ class TravelPackages(viewsets.ModelViewSet):
         #request.data._mutable = False
         return super().create(request, *args, **kwargs)
 
-    def update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
-
+    """
     def partial_update(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
+        print("Partial update here") #TODO: delete
+        #raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     def destroy(self, request, *args, **kwargs):
-        raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
+        print("Destroy here") #TODO: delete
+        #raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
 
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
+    """
 
     def get_queryset(self):
         all_package = super(TravelPackages, self).get_queryset()

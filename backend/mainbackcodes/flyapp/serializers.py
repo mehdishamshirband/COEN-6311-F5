@@ -185,6 +185,65 @@ class TravelPackageSerializer(serializers.ModelSerializer):
 
         return travel_package
 
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        # instance fields
+        instance_fields = ['name', 'description', 'price', 'startingDate', 'endingDate', 'user']
+        for field in instance_fields:
+            if field in validated_data:
+                setattr(instance, field, validated_data[field])
+        instance.save()
+
+        # nested fields
+        nested_fields = {
+            'hotels': (HotelBookingSerializer, instance.hotels),
+            'activities': (ActivitySerializer, instance.activities),
+            'flights': (FlightSerializer, instance.flights)
+        }
+        for field_name, (serializer_class, relationship) in nested_fields.items():
+            if field_name in validated_data:
+                items_data = validated_data.pop(field_name)
+                self.update_nested_relationships(items_data, serializer_class, relationship)
+
+        # photos
+        if 'photo_ids' in validated_data:
+            photo_ids = set(validated_data.pop('photo_ids'))
+            current_photos = set(instance.photos.values_list('id', flat=True))
+
+            # Photos to add
+            new_photos = photo_ids - current_photos
+            if new_photos:
+                new_photo_instances = Photo.objects.filter(id__in=new_photos)
+                instance.photos.add(*new_photo_instances)
+
+            # Photos to remove
+            photos_to_remove = current_photos - photo_ids
+            if photos_to_remove:
+                old_photo_instances = Photo.objects.filter(id__in=photos_to_remove)
+                instance.photos.remove(*old_photo_instances)
+
+        return instance
+
+    def update_nested_relationships(self, items_data, serializer_class, relationship):
+        # Existing item IDs
+        existing_item_ids = {item.id for item in relationship.all()}
+        incoming_item_ids = {item.get('id') for item in items_data if item.get('id')}
+
+        # Delete items not present in the incoming data
+        relationship.filter(id__in=(existing_item_ids - incoming_item_ids)).delete()
+
+        # Update existing items and create new ones
+        for item_data in items_data:
+            item_id = item_data.get('id', None)
+            if item_id:
+                item_instance = relationship.get(id=item_id)
+                serializer_class(context={'request': self.context.get('request')}).update(item_instance, item_data)
+            else:
+                # Create new instance if id is not provided (it's a new item)
+                new_item = serializer_class(context={'request': self.context.get('request')}).create(item_data)
+                relationship.add(new_item)
+
+
 
 class TravelPackageDSerializer(serializers.ModelSerializer):  # Detailed
 

@@ -460,12 +460,13 @@ export class TravelPackageService {
     return this.http.post<any>(`${this.baseUrl}Packages/`, formData, { headers: headers });
   }
 
-  editTravelPackage(id: number, formData: Partial<NewTravelPackage>, token: String): Observable<any> {
+  editTravelPackage(id: number, formData: Partial<NewTravelPackage>, userID: number, token: String): Observable<any> {
     const authorization = 'Bearer ' + token;
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
       'Authorization': authorization,
     });
+    formData.user = userID;
     return this.http.put<any>(`${this.baseUrl}Packages/${id}/`, formData, { headers: headers });
   }
 

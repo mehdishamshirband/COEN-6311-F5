@@ -22,6 +22,7 @@ export class AgentPackagesComponent implements OnInit {
   newPhotosSelected?: boolean;
   photosAdded?: boolean;
   photoAddedIDs: number[] = [];
+  userID: number = 1;
 
   constructor(private travelingPackageService: TravelPackageService, private uploadService: UploadService, private router: Router) { }
 
@@ -82,7 +83,7 @@ export class AgentPackagesComponent implements OnInit {
       } else {
         this.travelPackages.push(this.editingPackage);
       }
-      this.travelingPackageService.editTravelPackage(this.editingPackage.id, this.editingPackage, authToken).subscribe({
+      this.travelingPackageService.editTravelPackage(this.editingPackage.id, this.editingPackage, this.userID, authToken).subscribe({
         next: (response) => {console.log('Package saved successfully!', response); this.reloadCurrentRoute()},
         error: (error) => console.error('Error saving package:', error)});
       this.editingPackage = undefined;
@@ -262,8 +263,6 @@ deleteAllUploadedImages(): void {
 
     const selectedPackage = this.travelPackages.find(p => p.id === this.selectedPackageId);
     if (!selectedPackage) return [];
-
-    console.log("hotel 0: ", selectedPackage.hotels![0]);
 
     const flights = selectedPackage.flights?.map(item => ({ ...item, itemType: 'flight', sortDate: item.departureDate })) || [];
     const hotels = selectedPackage.hotels?.map(item => ({ ...item, itemType: 'hotel', sortDate: item.checkIn })) || [];
