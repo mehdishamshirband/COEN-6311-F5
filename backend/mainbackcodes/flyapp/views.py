@@ -158,6 +158,13 @@ class HotelsBooking(viewsets.ModelViewSet):
         else:
             return self.serializer_class
 
+    def get_queryset(self):
+        results = super(HotelsBooking, self).get_queryset()
+        value = dict(self.request.query_params.items())['location']
+        results = results.filter(hotel__location__icontains=value)
+
+        return results
+
     filterset_fields = {'hotel': ['exact'], 'totalPrice': ['lte', 'gte'], 'checkOut': ['lte', 'gte'],
                         'checkIn': ['lte', 'gte']}
 
@@ -571,16 +578,37 @@ def revenueCalc(data):
     return revenue
 
 
+payment_status = (
+    ('created', 'CREATED'),
+    ('processing', 'PROCESSING'),
+    ('canceled', 'CANCELED'),
+    ('failed', 'FAILED'),
+    ('modified', 'MODIFIED'),
+    ('confirmed', 'CONFIRMED'),
+    ('refunded', 'REFUNDED')
+)
+
 class Reports(viewsets.ViewSet):
-    permission_classes = [IsAdminUser, ]
+    # permission_classes = [IsAgent, ] # It was admin ??
 
     def list(self, request):
-        query = Booking.objects.filter(bookingState="confirmed").all()
-        serializer = BookingSerializer(query, many=True)
-        print("fooo", serializer)
-        total = revenueCalc(query)
-        return Response({"records": serializer.data, "revenue": total,
-                         "billings": BillingSerializer(Billing.objects.all(), many=True).data})
+        query = Booking.objects.filter().all()
+        revenue = {}
+        records = {}
+        total_revenue = 0
+        total_records = 0
+
+        for key, _ in payment_status:
+            temp = query.filter(bookingState__icontains=key).all()
+            revenue[key] = round(revenueCalc(temp), 2)
+            records[key] = temp.count()
+            total_revenue += revenue[key]
+            total_records += records[key]
+
+        revenue["total"] = round(total_revenue, 2)
+        records["total"] = total_records
+
+        return Response({"booking_record": records, "revenue": revenue})
 
     def retrieve(self, request, pk=None):
         queryset = Booking.objects.filter(bookingState="confirmed").filter(firstName=pk)

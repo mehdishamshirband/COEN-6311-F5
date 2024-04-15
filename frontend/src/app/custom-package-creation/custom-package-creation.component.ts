@@ -137,9 +137,9 @@ addToCart(): void {
     }
     this.nbrPerson.id = rnd;
 
-    //this.cartService.localAddToCart(custom_travel_package, this.nbrPerson);
-    //this.journeyService.emptyJourney();
-    //void this.router.navigate(['/cart']);
+    this.cartService.localAddToCart(custom_travel_package, this.nbrPerson);
+    this.journeyService.emptyJourney();
+    void this.router.navigate(['/cart']);
 
   }
 

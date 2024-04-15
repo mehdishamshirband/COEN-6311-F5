@@ -1,0 +1,36 @@
+
+<h1>Report Page</h1>
+<hr>
+
+<h2>Bookings Overview</h2>
+<ul>
+    <li><b>Total Bookings: {{ report_data.booking_record.total }}</b></li>
+    <li>Booking Status Breakdown:
+        <ul>
+            <li>Created: {{ report_data.booking_record.created }}</li>
+            <li>Processing: {{ report_data.booking_record.processing }}</li>
+            <li>Canceled: {{ report_data.booking_record.canceled }}</li>
+            <li>Failed: {{ report_data.booking_record.failed }}</li>
+            <li>Modified: {{ report_data.booking_record.modified }}</li>
+            <li>Confirmed: {{ report_data.booking_record.confirmed }}</li>
+            <li>Refunded: {{ report_data.booking_record.refunded }}</li>
+        </ul>
+    </li>
+</ul>
+
+<h2>Revenue Overview</h2>
+<ul>
+    <li><b>Total Revenue: ${{ report_data.revenue.total }}</b></li>
+    <li>Revenue Status Breakdown:
+        <ul>
+            <li>Created: ${{ report_data.revenue.created }}</li>
+            <li>Processing: ${{ report_data.revenue.processing }}</li>
+            <li>Canceled: ${{ report_data.revenue.canceled }}</li>
+            <li>Failed: ${{ report_data.revenue.failed }}</li>
+            <li>Modified: ${{ report_data.revenue.modified }}</li>
+            <li>Confirmed: ${{ report_data.revenue.confirmed }}</li>
+            <li>Refunded: ${{ report_data.revenue.refunded }}</li>
+        </ul>
+    </li>
+</ul>
+
