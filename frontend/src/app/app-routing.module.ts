@@ -22,9 +22,11 @@ import { CheckoutComponent } from "./checkout/checkout.component";
 import { PaymentComponent } from "./payment/payment.component";
 import { PaymentSuccessComponent } from "./payment-success/payment-success.component";
 import { ResetPasswordComponent } from "./reset-password/reset-password.component";
+import { AgentReportComponent } from "./agent-report/agent-report.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
+  { path: 'agent-report', component: AgentReportComponent },
   { path: 'booking-details/:bookingNo', component: UserBookingInformationComponent },
   { path: 'cancelled-booking/:bookingNo', component: CancelledBookingComponent },
   { path: 'bookings', component: UserBookingsListComponent},
