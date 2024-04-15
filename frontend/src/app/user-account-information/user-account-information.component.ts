@@ -59,6 +59,10 @@ export class UserAccountInformationComponent implements OnInit {
       console.error('No access token found in the session storage');
     }
 
+    if (history.state.checkout) {
+      void this.router.navigate(['/checkout']);
+    }
+
 
     // Fetch the user information
     this.userService.getUserInfo(authToken).subscribe({

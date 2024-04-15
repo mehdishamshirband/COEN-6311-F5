@@ -42,4 +42,6 @@ constructor(private userService: UserService,
       alert('Invalid email');
     }
     }
+
+    protected readonly sessionStorage = sessionStorage;
 }

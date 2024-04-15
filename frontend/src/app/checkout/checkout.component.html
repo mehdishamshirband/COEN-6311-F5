@@ -10,13 +10,10 @@
 <!-- If user is not logged in and the cart is not empty-->
 <div class="d-flex flex-column" *ngIf="showLogin && !isLogged && cartService.user_cart.length">
   <div class="d-flex-element">
-    <button class="btn btn-primary" [routerLink]="['/login']">Login</button>
+    <span><h4><b>You must be logged in to continue</b></h4></span>
   </div>
   <div class="d-flex-element">
-    <span>or</span>
-  </div>
-  <div class="d-flex-element">
-    <button class="btn btn-primary" (click)="continueAsGuest()">Continue as a guest</button>
+    <button class="btn btn-primary" (click)="goToLogin()">Login</button>
   </div>
 </div>
 
