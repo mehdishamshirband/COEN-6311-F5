@@ -470,6 +470,21 @@ export class TravelPackageService {
     return this.http.put<any>(`${this.baseUrl}Packages/${id}/`, formData, { headers: headers });
   }
 
+  deleteTravelPackage(packageID: number, userID: number, token: String): Observable<any> {
+    const authorization = 'Bearer ' + token;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': authorization,
+    });
+    const options = {
+        headers: headers,
+        body: {
+            user: userID
+        }
+    };
+    return this.http.delete<any>(`${this.baseUrl}Packages/${packageID}`, options);
+  }
+
   onePackageById(id: number): Observable<TravelPackage> {
     this.getTravelPackageById(id)?.subscribe({next: (travelPackage) => {
         this.Package = travelPackage;

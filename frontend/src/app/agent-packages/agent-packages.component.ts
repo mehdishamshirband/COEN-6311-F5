@@ -110,6 +110,17 @@ export class AgentPackagesComponent implements OnInit {
     }
   }
   deletePackage(index: number): void {
+    let authToken: any = sessionStorage.getItem('accessToken')!;
+    if (authToken === null) {
+      console.error('No access token found in the session storage');
+    }
+    const packageID = this.travelPackages[index].id;
+    this.travelingPackageService.deleteTravelPackage(packageID, this.userID, authToken).subscribe({
+      next: (response) => {console.log('Package deleted successfully!', response); this.reloadCurrentRoute()},
+      error: (error) => console.error('Error deleting package:', error)});
+    this.newPackageCheck = false;
+    this.newPackage = undefined;
+    this.selectedPackageId = undefined;
     this.travelPackages.splice(index, 1);
   }
 

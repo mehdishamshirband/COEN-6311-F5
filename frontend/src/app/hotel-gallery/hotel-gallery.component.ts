@@ -30,6 +30,7 @@
     }
 
     ngOnInit() {
+      /*
       this.hotelService.getAllHotels().subscribe({ next: (hotels) => {
         this.hotelList = hotels;
         console.warn('Hotels:', hotels);
@@ -38,7 +39,7 @@
         console.error('Error fetching hotels:', error);
       }
     });
-
+      */
       for (let i = 0; i < 500; i++) {
         this.pricePerNight[i] = Math.floor(Math.random() * (180 - 60 + 1)) + 60;
       }
