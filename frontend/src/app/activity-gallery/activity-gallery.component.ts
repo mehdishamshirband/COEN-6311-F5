@@ -32,6 +32,7 @@ export class ActivityGalleryComponent implements OnInit {
   }
 
   ngOnInit() {
+    /**
     void this.activityService.getAllActivities().subscribe({
       next: (activities : Activity[]) => {
         this.activityList = activities;
@@ -42,6 +43,7 @@ export class ActivityGalleryComponent implements OnInit {
         console.error('Error fetching activities:', error);
       }
     });
+    **/
   }
 
 searchActivities() {

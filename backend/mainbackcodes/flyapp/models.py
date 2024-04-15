@@ -34,8 +34,8 @@ class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
     is_agent = models.BooleanField(default=False)
     reset_code = models.CharField(max_length=10, blank=True, null=True)
-    first_Name = models.CharField(max_length=100, blank=True, null=True)
-    last_Name = models.CharField(max_length=100, blank=True, null=True)
+    first_name = models.CharField(max_length=100, blank=True, null=True)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
 
     objects = CustomUserManager()
 
@@ -140,7 +140,7 @@ types = (
 
 class TravelPackage(models.Model):
     # ignore type field in ui (only used in backend)
-    type = models.CharField(max_length=255, choices=types, blank=True, default="CUSTOM")
+    type = models.CharField(max_length=255, choices=types, blank=True, default="PRE-MADE")
     name = models.CharField(max_length=255)
     price = models.FloatField()
     description = models.CharField(max_length=255)

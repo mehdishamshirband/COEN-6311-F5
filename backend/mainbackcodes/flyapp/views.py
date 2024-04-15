@@ -277,10 +277,10 @@ class TravelPackages(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         print("Destroy here") #TODO: delete
         #raise exceptions.MethodNotAllowed(detail="You are not allowed to perform this action", method=request.method)
-
+    """
     filterset_fields = {'price': ['lte', 'gte'], 'name': ['icontains'], 'type': ['icontains'],
                         'startingDate': ['lte', 'gte'], 'endingDate': ['lte', 'gte']}
-    """
+
 
     def get_queryset(self):
         all_package = super(TravelPackages, self).get_queryset()

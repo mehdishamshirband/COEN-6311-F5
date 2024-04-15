@@ -31,6 +31,7 @@ export class FlightGalleryComponent implements OnInit {
   }
 
   ngOnInit() {
+    /**
     this.flightService.getAllFlights().subscribe({ next: (flights) => {
         this.flightList = flights;
         console.warn('Flights:', flights);
@@ -39,7 +40,7 @@ export class FlightGalleryComponent implements OnInit {
         console.error('Error fetching flights:', error);
       }
     });
-
+    **/
   }
 
   formInit() {
