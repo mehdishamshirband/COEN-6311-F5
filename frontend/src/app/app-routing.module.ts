@@ -23,6 +23,7 @@ import { PaymentComponent } from "./payment/payment.component";
 import { PaymentSuccessComponent } from "./payment-success/payment-success.component";
 import { ResetPasswordComponent } from "./reset-password/reset-password.component";
 import { AgentReportComponent } from "./agent-report/agent-report.component";
+import { NotificationComponent } from "./notification/notification.component";
 
 const routes: Routes = [
   { path: 'agent-packages', component: AgentPackagesComponent },
@@ -48,7 +49,7 @@ const routes: Routes = [
   { path: 'agent-packages/flights', component: AgentFlightManagementComponent }, //TODO: delete
   { path: 'agent-packages/hotels', component: AgentHotelManagementComponent }, //TODO: delete
   { path: 'account', component: UserAccountInformationComponent},
-
+  { path: 'notification/:id', component: NotificationComponent},
 
   { path: '', redirectTo: '/search', pathMatch: 'full' }
 ];

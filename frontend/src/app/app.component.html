@@ -21,6 +21,9 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/agent-report" routerLinkActive="active">Agent Report</a>
       </li>
+      <li class="nav-item" *ngIf="sessionStorage.getItem('accessToken')">
+        <a class="nav-link" routerLink="/notification/{{user_id}}" routerLinkActive="active">Notification</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" routerLink="/custom-package" routerLinkActive="active">Custom Package</a>
       </li>

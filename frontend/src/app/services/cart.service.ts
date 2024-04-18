@@ -13,7 +13,7 @@ export class CartService {
 
   get cart_total(): number {
     // Compute the total price of the cart
-    return this.user_cart.reduce((acc: number, item: any) => acc + item.price, 0);
+    return this.user_cart.reduce((acc: number, item: any) => acc + item.price, 0).toFixed(2);
   }
 
   cart_total_parameter(user_cart: any): number {

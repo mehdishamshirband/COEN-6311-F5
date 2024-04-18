@@ -25,6 +25,7 @@ export class AppComponent {
   cartItems = 0;
   private _travelPackage?: TravelPackageService;
   public baseUrl = "http://127.0.0.1:8000/"
+  user_id = 1; // default user id, can't fetch the data of the user from the backend
 
   ngOnInit(): void {
     let cartData = localStorage.getItem('localCart');
@@ -46,4 +47,5 @@ export class AppComponent {
   }
 
 
+    protected readonly sessionStorage = sessionStorage;
 }

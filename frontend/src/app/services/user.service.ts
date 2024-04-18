@@ -3,6 +3,7 @@ import { User, UserLogin, UserRegister, UserForgetPassword, UserResetPassword } 
 import {lastValueFrom, Observable, of} from "rxjs";
 import {TravelPackage} from "../interfaces/booking.interface";
 import { HttpClient } from '@angular/common/http';
+import { EMPTY } from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -61,7 +62,8 @@ export class UserService {
   }
 
   getUserInfo(token: string): Observable<User> {
-    return this.http.post<User>(`${this.baseUrl}/api-auth/`, token);
+    return EMPTY // Can't fetch user info from the backend
+    // return this.http.post<User>(`${this.baseUrl}/api-auth/`, token);
   }
 
   forgetPassword(userData: UserForgetPassword): Observable<any> {

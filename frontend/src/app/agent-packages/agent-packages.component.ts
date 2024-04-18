@@ -28,7 +28,9 @@ export class AgentPackagesComponent implements OnInit {
 
   ngOnInit(): void {
     this.travelingPackageService.getAllTravelPackages().subscribe((data: TravelPackage[]) => {
-    this.travelPackages = data;
+      this.travelPackages = data.filter((travelPackage) => {
+          return !travelPackage.name.includes('Your perfect journey');
+        });
     });
     this.newPackageCheck = false;
   }
