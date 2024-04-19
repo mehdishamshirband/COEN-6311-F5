@@ -1,4 +1,4 @@
-<div class="container mt-3">
+<div class="container mt-3" *ngIf="sessionStorage.getItem('accessToken')">
   <div class="mb-3" style="margin-left: 12px"><h2>Travel Packages Management</h2></div>
   <button *ngIf="!editingPackage" class="btn btn-custom-primary" style="margin-left: 12px; margin-bottom: 30px" (click)="initNewPackage()">Add New Package</button>
   <div class="container mt-3">
@@ -230,4 +230,9 @@
       </div>
     </div>
   </div>
+</div>
+
+
+<div class="h-100 d-flex align-items-center justify-content-center" *ngIf="!sessionStorage.getItem('accessToken')">
+  <h3 class="my-2">You need to be login as an agent to access this functionnality !</h3>
 </div>

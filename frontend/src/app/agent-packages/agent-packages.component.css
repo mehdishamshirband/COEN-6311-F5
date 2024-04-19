@@ -44,3 +44,9 @@ form {
 .card {
   border-color: #6c757d;
 }
+
+.my-2{
+  color: lightgray;
+  opacity: 0.8;
+  padding-top: 100px;
+}

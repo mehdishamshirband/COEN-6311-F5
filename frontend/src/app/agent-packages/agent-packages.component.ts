@@ -302,4 +302,5 @@ deleteAllUploadedImages(): void {
   }
 
   protected readonly Date = Date;
+    protected readonly sessionStorage = sessionStorage;
 }

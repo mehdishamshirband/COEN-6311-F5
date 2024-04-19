@@ -15,10 +15,10 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/bookings" routerLinkActive="active">Customer Bookings View</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="sessionStorage.getItem('accessToken')">
         <a class="nav-link" routerLink="/agent-packages" routerLinkActive="active">Agent Packages</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" *ngIf="sessionStorage.getItem('accessToken')">
         <a class="nav-link" routerLink="/agent-report" routerLinkActive="active">Agent Report</a>
       </li>
       <li class="nav-item" *ngIf="sessionStorage.getItem('accessToken')">

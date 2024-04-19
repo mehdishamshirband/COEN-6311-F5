@@ -1,10 +1,13 @@
 import { Component } from '@angular/core';
 import { HttpClient } from "@angular/common/http";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-agent-report',
   standalone: true,
-  imports: [],
+  imports: [
+    NgIf
+  ],
   templateUrl: './agent-report.component.html',
   styleUrl: './agent-report.component.css'
 })
@@ -21,4 +24,6 @@ export class AgentReportComponent {
       this.report_data = data;
     });
   }
+
+    protected readonly sessionStorage = sessionStorage;
 }
